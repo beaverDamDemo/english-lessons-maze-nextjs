@@ -27,38 +27,31 @@
   top: 28%;
   left: 22%;
 }
-
 .location2 {
-  top: 22%;
-  left: 53%;
-}
-
-.location3 {
-  top: 21%;
-  left: 80%;
-}
-
-.location4 {
   top: 53%;
   left: 18%;
 }
-
-.location5 {
-  top: 49%;
-  left: 74%;
-}
-
-.location6 {
+.location3 {
   top: 66%;
   left: 13%;
 }
-
-.location7 {
+.location4 {
+  top: 90%;
+  left: 53%;
+}
+.location5 {
   top: 80%;
   left: 70%;
 }
-
+.location6 {
+  top: 49%;
+  left: 74%;
+}
+.location7 {
+  top: 21%;
+  left: 80%;
+}
 .location8 {
-  top: 90%;
+  top: 22%;
   left: 53%;
 }
