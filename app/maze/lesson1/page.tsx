@@ -428,6 +428,12 @@ const MazePage: FC = () => {
   const [gameWon, setGameWon] = useState(false);
   const gameRef = useRef<Phaser.Game | null>(null);
 
+  // Lesson 1 color theme - Green
+  const themeColor = '#4CAF50';
+  const themeColorDark = '#45a049';
+  const backgroundGradient =
+    'linear-gradient(135deg, #4CAF50 0%, #2e7d32 100%)';
+
   const handleQuizComplete = (finalScore: number) => {
     setMaxMoves(finalScore);
     setQuizComplete(true);
@@ -483,7 +489,12 @@ const MazePage: FC = () => {
   if (!quizComplete) {
     return (
       <div
-        style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          background: backgroundGradient,
+        }}
       >
         <MazeHeader score={score} />
         <div
@@ -495,7 +506,39 @@ const MazePage: FC = () => {
             padding: '20px',
           }}
         >
-          <Quiz onComplete={handleQuizComplete} />
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '40px',
+              borderRadius: '16px',
+              maxWidth: '550px',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+              border: `3px solid ${themeColor}`,
+            }}
+          >
+            <h1
+              style={{
+                marginTop: 0,
+                marginBottom: '10px',
+                color: themeColor,
+                textAlign: 'center',
+                fontSize: '32px',
+              }}
+            >
+              Lesson 1: Basic Pronouns
+            </h1>
+            <p
+              style={{
+                color: '#666',
+                textAlign: 'center',
+                marginBottom: '30px',
+                fontSize: '16px',
+              }}
+            >
+              Start by taking a quick quiz to earn moves for the maze challenge!
+            </p>
+            <Quiz onComplete={handleQuizComplete} primaryColor={themeColor} />
+          </div>
         </div>
       </div>
     );
@@ -515,22 +558,24 @@ const MazePage: FC = () => {
             alignItems: 'center',
             padding: '20px',
             flexDirection: 'column',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: backgroundGradient,
           }}
         >
           <div
             style={{
               textAlign: 'center',
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              padding: '40px',
+              backgroundColor: 'rgba(255, 255, 255, 0.98)',
+              padding: '50px 40px',
               borderRadius: '20px',
-              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+              border: `3px solid ${themeColor}`,
+              maxWidth: '500px',
             }}
           >
             <h1
               style={{
                 fontSize: '48px',
-                color: '#4CAF50',
+                color: themeColor,
                 margin: '0 0 20px 0',
               }}
             >
@@ -554,21 +599,28 @@ const MazePage: FC = () => {
               style={{
                 display: 'inline-block',
                 padding: '15px 40px',
-                backgroundColor: '#4CAF50',
+                backgroundColor: themeColor,
                 color: 'white',
                 textDecoration: 'none',
                 borderRadius: '8px',
                 fontSize: '18px',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                transition: 'background-color 0.3s',
+                transition: 'all 0.3s ease',
                 border: 'none',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#45a049';
+              onMouseEnter={(e: any) => {
+                e.currentTarget.style.backgroundColor = themeColorDark;
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow =
+                  '0 6px 16px rgba(0, 0, 0, 0.3)';
               }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#4CAF50';
+              onMouseLeave={(e: any) => {
+                e.currentTarget.style.backgroundColor = themeColor;
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow =
+                  '0 4px 12px rgba(0, 0, 0, 0.2)';
               }}
             >
               Return to Map
@@ -611,31 +663,50 @@ const MazePage: FC = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
               zIndex: 1000,
               padding: '20px',
+              backdropFilter: 'blur(4px)',
             }}
           >
             <div
               style={{
                 backgroundColor: 'white',
-                padding: '30px',
-                borderRadius: '12px',
-                maxWidth: '500px',
-                maxHeight: '80vh',
+                padding: '35px',
+                borderRadius: '16px',
+                maxWidth: '520px',
+                maxHeight: '85vh',
                 overflowY: 'auto',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+                border: `3px solid ${themeColor}`,
               }}
             >
-              <h2 style={{ marginTop: 0, color: '#333' }}>Complete the Quiz</h2>
-              <p style={{ color: '#666', marginBottom: '20px' }}>
+              <h2
+                style={{
+                  marginTop: 0,
+                  marginBottom: '10px',
+                  color: themeColor,
+                  fontSize: '28px',
+                  fontWeight: 'bold',
+                }}
+              >
+                Complete the Quiz
+              </h2>
+              <p
+                style={{
+                  color: '#666',
+                  marginBottom: '25px',
+                  fontSize: '15px',
+                  lineHeight: '1.5',
+                }}
+              >
                 Answer 5 questions correctly to earn more moves and continue
                 Lesson 1.
               </p>
-              <Quiz onComplete={handleQuizComplete} />
+              <Quiz onComplete={handleQuizComplete} primaryColor={themeColor} />
             </div>
           </div>
         )}
