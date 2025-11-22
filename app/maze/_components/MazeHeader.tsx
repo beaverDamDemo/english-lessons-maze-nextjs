@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import styles from './MazeHeader.module.css';
 
-export default function MazeHeader() {
+export default function MazeHeader({ score }: { score: number }) {
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.backArrow}>
         ← Back
       </Link>
-      {/* Later you can add stats here */}
+      <div className={styles.score}>Score: {score}</div>
     </header>
   );
 }

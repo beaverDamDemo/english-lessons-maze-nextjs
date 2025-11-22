@@ -1,8 +1,10 @@
 ﻿'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as Phaser from 'phaser';
 import MazeHeader from '../_components/MazeHeader';
+import dynamic from 'next/dynamic';
+import type { FC } from 'react';
 
 class MazeScene extends Phaser.Scene {
   // Declare all the fields you use
@@ -372,12 +374,11 @@ class MazeScene extends Phaser.Scene {
   }
 }
 
-import dynamic from 'next/dynamic';
-import type { FC } from 'react';
-
 const MazePage: FC = () => {
+  const [score, setScore] = useState(0);
+
   useEffect(() => {
-    if (typeof window === 'undefined') return; // guard
+    if (typeof window === 'undefined') return;
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
@@ -395,7 +396,7 @@ const MazePage: FC = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <MazeHeader />
+      <MazeHeader score={score} />
 
       <div
         style={{
@@ -407,7 +408,13 @@ const MazePage: FC = () => {
       >
         <div id="game"></div>
       </div>
+
+      {/* Temporary button to simulate earning points */}
+      <button onClick={() => setScore(score + 1)}>
+        Earn Lesson Point Temporary
+      </button>
     </div>
   );
 };
+
 export default dynamic(() => Promise.resolve(MazePage), { ssr: false });
