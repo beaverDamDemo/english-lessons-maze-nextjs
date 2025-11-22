@@ -1,0 +1,64 @@
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.mapContainer a {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgb(255, 217, 2); /* semi-transparent red circle */
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  /* background-image: url('/assets/house-icon.png');
+  background-size: cover;
+  background-repeat: no-repeat; */
+}
+.mapContainer a:hover {
+  transform: scale(1.2);
+  background-color: rgb(255, 208, 0);
+}
+
+.location1 {
+  top: 28%;
+  left: 22%;
+}
+
+.location2 {
+  top: 22%;
+  left: 53%;
+}
+
+.location3 {
+  top: 21%;
+  left: 80%;
+}
+
+.location4 {
+  top: 53%;
+  left: 18%;
+}
+
+.location5 {
+  top: 49%;
+  left: 74%;
+}
+
+.location6 {
+  top: 66%;
+  left: 13%;
+}
+
+.location7 {
+  top: 80%;
+  left: 70%;
+}
+
+.location8 {
+  top: 90%;
+  left: 53%;
+}
