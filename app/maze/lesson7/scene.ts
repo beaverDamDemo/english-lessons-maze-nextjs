@@ -84,7 +84,7 @@ export class MazeScene extends Phaser.Scene {
     this.physics.add.overlap(this.bullets, this.enemies, (bullet, enemy) => { bullet.destroy(); enemy.destroy(); });
 
     const centerX = Number(this.sys.game.config.width) / 2;
-    const baseY = Number(this.sys.game.config.height) - 120;
+    const baseY = Number(this.sys.game.config.height) - 105;
     this.fireBtn = this.add.text(centerX + 150, baseY, '🔥', { fontSize: '64px' }).setOrigin(0.5).setInteractive();
     this.fireBtn.on('pointerdown', () => this.fireWeapon());
     this.upBtn = this.add.text(centerX, baseY - 70, '⬆️', { fontSize: '64px' }).setOrigin(0.5).setInteractive();

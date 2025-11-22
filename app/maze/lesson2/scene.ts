@@ -143,7 +143,7 @@ export class MazeScene extends Phaser.Scene {
 
     // Mobile controls
     const centerX = Number(this.sys.game.config.width) / 2;
-    const baseY = Number(this.sys.game.config.height) - 120;
+    const baseY = Number(this.sys.game.config.height) - 105;
     this.fireBtn = this.add
       .text(centerX + 150, baseY, '🔥', { fontSize: '64px' })
       .setOrigin(0.5)
