@@ -74,7 +74,7 @@ export class MazeScene extends Phaser.Scene {
     this.addMoreMoves =
       this.registry.get('addMoreMoves') || ((moves: number) => { });
 
-    this.cameras.main.setBackgroundColor('#228B22');
+    this.cameras.main.setBackgroundColor('#4CAF50'); // Lesson 1 green
     this.maze = this.generateMaze(rows, cols);
 
     // Walls

@@ -34,7 +34,7 @@ export class MazeScene extends Phaser.Scene {
   preload() {
     this.load.spritesheet('avatar', 'https://labs.phaser.io/assets/sprites/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('goal', 'https://labs.phaser.io/assets/sprites/star.png');
-    this.load.image('wall', 'https://labs.phaser.io/assets/sprites/block.png');
+    this.load.image('wall', '/assets/tinified/tile-green-2.png');
     this.load.image('enemy', '/assets/tinified/little-menace.png');
     this.load.image('bullet', 'https://labs.phaser.io/assets/sprites/bullet.png');
   }
@@ -43,7 +43,7 @@ export class MazeScene extends Phaser.Scene {
     const rows = 21, cols = 21;
     this.tileSize = 24;
     this.walkSpeed = 70;
-    this.cameras.main.setBackgroundColor('#228B22');
+    this.cameras.main.setBackgroundColor('#F44336');
     this.maze = this.generateMaze(rows, cols);
 
     for (let y = 0; y < rows; y++) {

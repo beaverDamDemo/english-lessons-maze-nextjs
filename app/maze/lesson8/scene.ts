@@ -43,7 +43,7 @@ export class MazeScene extends Phaser.Scene {
     const rows = 21, cols = 21;
     this.tileSize = 24;
     this.walkSpeed = 70;
-    this.cameras.main.setBackgroundColor('#228B22');
+    this.cameras.main.setBackgroundColor('#3F51B5');
     this.maze = this.generateMaze(rows, cols);
 
     for (let y = 0; y < rows; y++) {

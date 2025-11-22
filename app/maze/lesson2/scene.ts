@@ -46,7 +46,8 @@ export class MazeScene extends Phaser.Scene {
       },
     );
     this.load.image('goal', 'https://labs.phaser.io/assets/sprites/star.png');
-    this.load.image('wall', 'https://labs.phaser.io/assets/sprites/block.png');
+    const contrastBlockSvg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMkMzRTUwIiBzdHJva2U9IiMxNjIzMjgiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==';
+    this.load.image('wall', contrastBlockSvg);
     this.load.image('enemy', '/assets/tinified/little-menace.png');
     this.load.image(
       'bullet',
@@ -60,7 +61,7 @@ export class MazeScene extends Phaser.Scene {
     this.tileSize = 24;
     this.walkSpeed = 70;
 
-    this.cameras.main.setBackgroundColor('#228B22');
+    this.cameras.main.setBackgroundColor('#2196F3'); // Lesson 2 blue
     this.maze = this.generateMaze(rows, cols);
 
     // Walls
