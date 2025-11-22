@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import * as Phaser from 'phaser';
+import MazeHeader from '../_components/MazeHeader';
 
 class MazeScene extends Phaser.Scene {
   // Declare all the fields you use
@@ -393,8 +394,19 @@ const MazePage: FC = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div id="game"></div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <MazeHeader />
+
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+        }}
+      >
+        <div id="game"></div>
+      </div>
     </div>
   );
 };

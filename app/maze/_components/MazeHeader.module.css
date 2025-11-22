@@ -1,0 +1,22 @@
+/* app/maze/_components/MazeHeader.module.css */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: #222;
+  color: #fff;
+  font-size: 18px;
+}
+
+.backArrow {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  margin-right: auto;
+  transition: transform 0.2s ease;
+}
+
+.backArrow:hover {
+  transform: scale(1.1);
+  color: #ffcc00;
+}
