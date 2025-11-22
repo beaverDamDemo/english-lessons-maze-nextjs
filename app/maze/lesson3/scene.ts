@@ -8,11 +8,17 @@ export class MazeScene extends Phaser.Scene {
   goalY!: number;
   tileSize!: number;
   walkSpeed!: number;
+  movesRemaining!: number;
+  maxMoves!: number;
+  onNoMoves!: () => void;
+  onWin!: () => void;
+  addMoreMoves!: (moves: number) => void;
 
   maze!: number[][]; // 2D array for maze grid
   player!: Phaser.GameObjects.Sprite;
   goal!: Phaser.GameObjects.Sprite;
   winText!: Phaser.GameObjects.Text;
+  movesText!: Phaser.GameObjects.Text;
 
   enemies!: Phaser.Physics.Arcade.Group;
   bullets!: Phaser.Physics.Arcade.Group;
@@ -60,6 +66,13 @@ export class MazeScene extends Phaser.Scene {
     this.tileSize = 24;
     this.walkSpeed = 70;
 
+    // Move handling: read initial maxMoves and callbacks from registry
+    this.maxMoves = this.registry.get('maxMoves') || 5;
+    this.movesRemaining = this.maxMoves;
+    this.onNoMoves = this.registry.get('onNoMoves') || (() => { });
+    this.onWin = this.registry.get('onWin') || (() => { });
+    this.addMoreMoves = this.registry.get('addMoreMoves') || ((moves: number) => { });
+
     this.cameras.main.setBackgroundColor('#FF9800');
     this.maze = this.generateMaze(rows, cols);
 
@@ -99,6 +112,14 @@ export class MazeScene extends Phaser.Scene {
     this.winText = this.add
       .text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' })
       .setVisible(false);
+
+    // Display moves remaining
+    this.movesText = this.add
+      .text(10, 10, `Moves: ${this.movesRemaining}/${this.maxMoves}`, {
+        fontSize: '18px',
+        color: '#fff',
+      })
+      .setOrigin(0);
 
     // Animations
     this.anims.create({
@@ -234,6 +255,13 @@ export class MazeScene extends Phaser.Scene {
 
   autoWalk(dir: { dx: number; dy: number; anim: string; }) {
     if (this.moving) return;
+
+    // Check moves
+    if (this.movesRemaining <= 0) {
+      if (this.onNoMoves) this.onNoMoves();
+      return;
+    }
+
     this.moving = true;
     this.lastDir = dir;
 
@@ -289,8 +317,13 @@ export class MazeScene extends Phaser.Scene {
         this.player.setFrame(4);
         this.moving = false;
         this.playerTween = null;
+        // Consume one move
+        this.movesRemaining--;
+        if (this.movesText) this.movesText.setText(`Moves: ${this.movesRemaining}/${this.maxMoves}`);
+
         if (this.gridX === this.goalX && this.gridY === this.goalY) {
           this.winText.setVisible(true);
+          this.onWin();
         }
       },
     });
@@ -316,6 +349,12 @@ export class MazeScene extends Phaser.Scene {
     let count = 0;
     for (const d of dirs) if (this.isPath(x + d.dx, y + d.dy)) count++;
     return count;
+  }
+
+  addMoreMovesToScene(newMoves: number) {
+    this.movesRemaining += newMoves;
+    if (this.movesText) this.movesText.setText(`Moves: ${this.movesRemaining}/${this.maxMoves + newMoves}`);
+    this.maxMoves += newMoves;
   }
 
   // Maze generator only
