@@ -1,8 +1,9 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import * as Phaser from 'phaser';
 import MazeHeader from '../_components/MazeHeader';
+import Quiz from './Quiz';
 import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 
@@ -14,11 +15,17 @@ class MazeScene extends Phaser.Scene {
   goalY!: number;
   tileSize!: number;
   walkSpeed!: number;
+  movesRemaining!: number;
+  maxMoves!: number;
+  onNoMoves!: () => void;
+  onWin!: () => void;
+  addMoreMoves!: (moves: number) => void;
 
   maze!: number[][]; // 2D array for maze grid
   player!: Phaser.GameObjects.Sprite;
   goal!: Phaser.GameObjects.Sprite;
   winText!: Phaser.GameObjects.Text;
+  movesText!: Phaser.GameObjects.Text;
 
   enemies!: Phaser.Physics.Arcade.Group;
   bullets!: Phaser.Physics.Arcade.Group;
@@ -53,7 +60,7 @@ class MazeScene extends Phaser.Scene {
     );
     this.load.image('goal', 'https://labs.phaser.io/assets/sprites/star.png');
     this.load.image('wall', 'https://labs.phaser.io/assets/sprites/block.png');
-    this.load.image('enemy', '/assets/little-menace.png');
+    this.load.image('enemy', '/assets/tinified/little-menace.png');
     this.load.image(
       'bullet',
       'https://labs.phaser.io/assets/sprites/bullet.png',
@@ -65,6 +72,14 @@ class MazeScene extends Phaser.Scene {
       cols = 21;
     this.tileSize = 24;
     this.walkSpeed = 70;
+
+    // Get maxMoves from registry (set by React component)
+    this.maxMoves = this.registry.get('maxMoves') || 5;
+    this.movesRemaining = this.maxMoves;
+    this.onNoMoves = this.registry.get('onNoMoves') || (() => {});
+    this.onWin = this.registry.get('onWin') || (() => {});
+    this.addMoreMoves =
+      this.registry.get('addMoreMoves') || ((moves: number) => {});
 
     this.cameras.main.setBackgroundColor('#228B22');
     this.maze = this.generateMaze(rows, cols);
@@ -105,6 +120,14 @@ class MazeScene extends Phaser.Scene {
     this.winText = this.add
       .text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' })
       .setVisible(false);
+
+    // Display moves remaining
+    this.movesText = this.add
+      .text(10, 10, `Moves: ${this.movesRemaining}/${this.maxMoves}`, {
+        fontSize: '18px',
+        color: '#fff',
+      })
+      .setOrigin(0);
 
     // Animations
     this.anims.create({
@@ -240,6 +263,13 @@ class MazeScene extends Phaser.Scene {
 
   autoWalk(dir: { dx: number; dy: number; anim: string }) {
     if (this.moving) return;
+
+    // Check if player has moves remaining
+    if (this.movesRemaining <= 0) {
+      this.onNoMoves();
+      return;
+    }
+
     this.moving = true;
     this.lastDir = dir;
 
@@ -295,8 +325,16 @@ class MazeScene extends Phaser.Scene {
         this.player.setFrame(4);
         this.moving = false;
         this.playerTween = null;
+
+        // Consume one move
+        this.movesRemaining--;
+        this.movesText.setText(
+          `Moves: ${this.movesRemaining}/${this.maxMoves}`,
+        );
+
         if (this.gridX === this.goalX && this.gridY === this.goalY) {
           this.winText.setVisible(true);
+          this.onWin();
         }
       },
     });
@@ -322,6 +360,14 @@ class MazeScene extends Phaser.Scene {
     let count = 0;
     for (const d of dirs) if (this.isPath(x + d.dx, y + d.dy)) count++;
     return count;
+  }
+
+  addMoreMovesToScene(newMoves: number) {
+    this.movesRemaining += newMoves;
+    this.movesText.setText(
+      `Moves: ${this.movesRemaining}/${this.maxMoves + newMoves}`,
+    );
+    this.maxMoves += newMoves;
   }
 
   // Maze generator only
@@ -376,9 +422,38 @@ class MazeScene extends Phaser.Scene {
 
 const MazePage: FC = () => {
   const [score, setScore] = useState(0);
+  const [quizComplete, setQuizComplete] = useState(false);
+  const [maxMoves, setMaxMoves] = useState(0);
+  const [showQuizOverlay, setShowQuizOverlay] = useState(false);
+  const [gameWon, setGameWon] = useState(false);
+  const gameRef = useRef<Phaser.Game | null>(null);
+
+  const handleQuizComplete = (finalScore: number) => {
+    setMaxMoves(finalScore);
+    setQuizComplete(true);
+    setShowQuizOverlay(false);
+    // Add moves to the existing scene instead of reloading
+    if (gameRef.current) {
+      const scene = gameRef.current.scene.getScene('MazeScene') as any;
+      if (scene && scene.addMoreMovesToScene) {
+        scene.addMoreMovesToScene(finalScore);
+      }
+    }
+  };
+
+  const handleNoMoves = () => {
+    setShowQuizOverlay(true);
+  };
+
+  const handleWin = () => {
+    setGameWon(true);
+  };
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !quizComplete || gameWon) return;
+
+    // Only initialize game once when quiz is first completed
+    if (gameRef.current) return;
 
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
@@ -391,28 +466,180 @@ const MazePage: FC = () => {
     };
 
     const game = new Phaser.Game(config);
-    return () => game.destroy(true);
-  }, []);
+    gameRef.current = game;
+    // Pass maxMoves and callbacks to the scene via registry
+    game.registry.set('maxMoves', maxMoves);
+    game.registry.set('onNoMoves', handleNoMoves);
+    game.registry.set('onWin', handleWin);
+
+    return () => {
+      if (gameWon) {
+        game.destroy(true);
+        gameRef.current = null;
+      }
+    };
+  }, [quizComplete, gameWon]);
+
+  if (!quizComplete) {
+    return (
+      <div
+        style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}
+      >
+        <MazeHeader score={score} />
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px',
+          }}
+        >
+          <Quiz onComplete={handleQuizComplete} />
+        </div>
+      </div>
+    );
+  }
+
+  if (gameWon) {
+    return (
+      <div
+        style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}
+      >
+        <MazeHeader score={score} />
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px',
+            flexDirection: 'column',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          }}
+        >
+          <div
+            style={{
+              textAlign: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              padding: '40px',
+              borderRadius: '20px',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            <h1
+              style={{
+                fontSize: '48px',
+                color: '#4CAF50',
+                margin: '0 0 20px 0',
+              }}
+            >
+              🎉 Congratulations! 🎉
+            </h1>
+            <p style={{ fontSize: '20px', color: '#333', margin: '10px 0' }}>
+              You successfully completed the maze!
+            </p>
+            <p
+              style={{
+                fontSize: '16px',
+                color: '#666',
+                margin: '20px 0 30px 0',
+              }}
+            >
+              Great job navigating through the challenges. You're making
+              excellent progress in mastering English!
+            </p>
+            <a
+              href="/maze"
+              style={{
+                display: 'inline-block',
+                padding: '15px 40px',
+                backgroundColor: '#4CAF50',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '8px',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s',
+                border: 'none',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#45a049';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#4CAF50';
+              }}
+            >
+              Return to Map
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        position: 'relative',
+      }}
+    >
       <MazeHeader score={score} />
 
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-        }}
-      >
-        <div id="game"></div>
-      </div>
+      <div style={{ flex: 1, position: 'relative' }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+          }}
+        >
+          <div id="game"></div>
+        </div>
 
-      {/* Temporary button to simulate earning points */}
-      <button onClick={() => setScore(score + 1)}>
-        Earn Lesson Point Temporary
-      </button>
+        {/* Quiz Overlay */}
+        {showQuizOverlay && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.85)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              zIndex: 1000,
+              padding: '20px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: 'white',
+                padding: '30px',
+                borderRadius: '12px',
+                maxWidth: '500px',
+                maxHeight: '80vh',
+                overflowY: 'auto',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <h2 style={{ marginTop: 0, color: '#333' }}>Complete the Quiz</h2>
+              <p style={{ color: '#666', marginBottom: '20px' }}>
+                Answer 5 questions correctly to earn more moves and continue
+                Lesson 1.
+              </p>
+              <Quiz onComplete={handleQuizComplete} />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

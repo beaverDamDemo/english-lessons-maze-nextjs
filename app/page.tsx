@@ -9,7 +9,7 @@ export default function MapPage() {
   return (
     <div className={styles.mapContainer}>
       <Image
-        src="/assets/map-with-8-clickable-locations.png"
+        src="/assets/tinified/map-with-8-clickable-locations.png"
         alt="Game Map"
         fill
         priority

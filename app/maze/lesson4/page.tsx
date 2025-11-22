@@ -53,7 +53,7 @@ class MazeScene extends Phaser.Scene {
     );
     this.load.image('goal', 'https://labs.phaser.io/assets/sprites/star.png');
     this.load.image('wall', 'https://labs.phaser.io/assets/sprites/block.png');
-    this.load.image('enemy', '/assets/little-menace.png');
+    this.load.image('enemy', '/assets/tinified/little-menace.png');
     this.load.image(
       'bullet',
       'https://labs.phaser.io/assets/sprites/bullet.png',
