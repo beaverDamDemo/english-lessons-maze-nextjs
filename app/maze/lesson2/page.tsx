@@ -1,8 +1,8 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
 import * as Phaser from 'phaser';
-import MazeHeader from '../_components/MazeHeader';
+import MazePageComponent from '../_components/MazePageComponent';
+import Quiz from './Quiz';
 import dynamic from 'next/dynamic';
 import type { FC } from 'react';
 
@@ -375,45 +375,23 @@ class MazeScene extends Phaser.Scene {
 }
 
 const MazePage: FC = () => {
-  const [score, setScore] = useState(0);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return; // guard
-
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
-      width: 504,
-      height: 720,
-      backgroundColor: '#228B22',
-      scene: MazeScene,
-      parent: 'game',
-      physics: { default: 'arcade', arcade: { debug: false } },
-    };
-
-    const game = new Phaser.Game(config);
-    return () => game.destroy(true);
-  }, []);
+  // Lesson 2 color theme - Blue
+  const themeColor = '#2196F3';
+  const themeColorDark = '#1976D2';
+  const backgroundGradient =
+    'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <MazeHeader score={score} />
-
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-        }}
-      >
-        <div id="game"></div>
-      </div>
-
-      {/* Temporary button to simulate earning points */}
-      <button onClick={() => setScore(score + 1)}>
-        Earn Lesson Point Temporary
-      </button>
-    </div>
+    <MazePageComponent
+      MazeScene={MazeScene}
+      Quiz={Quiz}
+      lessonNumber={2}
+      lessonTitle="Verb Tenses"
+      themeColor={themeColor}
+      themeColorDark={themeColorDark}
+      backgroundGradient={backgroundGradient}
+    />
   );
 };
+
 export default dynamic(() => Promise.resolve(MazePage), { ssr: false });
