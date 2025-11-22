@@ -34,6 +34,22 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Reset default page spacing so layout doesn't get squeezed */
+html,
+body,
+#__next {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Use border-box sizing everywhere to avoid unexpected overflow */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* Example usage */
 button {
   background: var(--secondary);
