@@ -352,9 +352,9 @@ export class MazeScene extends Phaser.Scene {
   }
 
   addMoreMovesToScene(newMoves: number) {
-    this.movesRemaining += newMoves;
-    if (this.movesText) this.movesText.setText(`Moves: ${this.movesRemaining}/${this.maxMoves + newMoves}`);
-    this.maxMoves += newMoves;
+    this.maxMoves = newMoves;
+    this.movesRemaining = newMoves;
+    if (this.movesText) this.movesText.setText(`Moves: ${this.movesRemaining}/${this.maxMoves}`);
   }
 
   // Maze generator only
