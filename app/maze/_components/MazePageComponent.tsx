@@ -29,6 +29,7 @@ const MazePageComponent: FC<MazePageProps> = ({
   const [quizComplete, setQuizComplete] = useState(false);
   const [maxMoves, setMaxMoves] = useState(0);
   const [showQuizOverlay, setShowQuizOverlay] = useState(false);
+  const [overlayVisible, setOverlayVisible] = useState(false);
   const [gameWon, setGameWon] = useState(false);
   const [scale, setScale] = useState(1);
   const gameRef = useRef<Phaser.Game | null>(null);
@@ -37,7 +38,9 @@ const MazePageComponent: FC<MazePageProps> = ({
   const handleQuizComplete = (finalScore: number) => {
     setMaxMoves(finalScore);
     setQuizComplete(true);
-    setShowQuizOverlay(false);
+    // fade out the overlay, then unmount it
+    setOverlayVisible(false);
+    setTimeout(() => setShowQuizOverlay(false), 300);
     // Add moves to the existing scene instead of reloading
     if (gameRef.current) {
       const scene = gameRef.current.scene.getScene('MazeScene') as any;
@@ -49,6 +52,8 @@ const MazePageComponent: FC<MazePageProps> = ({
 
   const handleNoMoves = () => {
     setShowQuizOverlay(true);
+    // mount then fade in
+    setTimeout(() => setOverlayVisible(true), 20);
   };
 
   const handleWin = () => {
@@ -75,10 +80,9 @@ const MazePageComponent: FC<MazePageProps> = ({
     return () => window.removeEventListener('resize', calculateScale);
   }, []);
 
+  // Initialize the Phaser game on mount so the maze is visible behind the quiz.
   useEffect(() => {
-    if (typeof window === 'undefined' || !quizComplete || gameWon) return;
-
-    // Only initialize game once when quiz is first completed
+    if (typeof window === 'undefined') return;
     if (gameRef.current) return;
 
     const config: Phaser.Types.Core.GameConfig = {
@@ -93,93 +97,54 @@ const MazePageComponent: FC<MazePageProps> = ({
 
     const game = new Phaser.Game(config);
     gameRef.current = game;
-    // Pass maxMoves and callbacks to the scene via registry
+    // Set initial registry values and callbacks
     game.registry.set('maxMoves', maxMoves);
     game.registry.set('onNoMoves', handleNoMoves);
     game.registry.set('onWin', handleWin);
 
+    // When the scene has been created, show the quiz overlay after 0.5s
+    // so the maze is visible briefly before the quiz fades in.
+    const tryShowOverlay = () => {
+      // Wait 500ms showing the maze, then mount the overlay and fade it in
+      setTimeout(() => {
+        setShowQuizOverlay(true);
+        // next tick: trigger CSS fade-in
+        setTimeout(() => setOverlayVisible(true), 20);
+      }, 500);
+    };
+
+    // If the scene is available, listen for its 'create' event; otherwise fall back to a short delay.
+    try {
+      const scene = game.scene.getScene('MazeScene') as any;
+      if (scene && scene.events && typeof scene.events.once === 'function') {
+        scene.events.once('create', tryShowOverlay);
+      } else {
+        tryShowOverlay();
+      }
+    } catch (e) {
+      tryShowOverlay();
+    }
+
     return () => {
-      if (gameWon) {
-        game.destroy(true);
+      // Clean up game on unmount or when the component is torn down
+      if (gameRef.current) {
+        gameRef.current.destroy(true);
         gameRef.current = null;
       }
     };
-  }, [quizComplete, gameWon]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (!quizComplete) {
-    return (
-      <div
-        ref={containerRef}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100vw',
-          height: '100vh',
-          overflow: 'auto',
-          backgroundColor: '#f0f0f0',
-        }}
-      >
-        <div
-          style={{
-            transform: `scale(${scale})`,
-            transformOrigin: 'center center',
-            display: 'flex',
-            flexDirection: 'column',
-            width: '1200px',
-            height: '800px',
-            background: backgroundGradient,
-          }}
-        >
-          <MazeHeader score={score} />
-          <div
-            style={{
-              flex: 1,
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '20px',
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: 'white',
-                padding: '40px',
-                borderRadius: '16px',
-                maxWidth: '550px',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-                border: `3px solid ${themeColor}`,
-              }}
-            >
-              <h1
-                style={{
-                  marginTop: 0,
-                  marginBottom: '10px',
-                  color: themeColor,
-                  textAlign: 'center',
-                  fontSize: '32px',
-                }}
-              >
-                Lesson {lessonNumber}: {lessonTitle}
-              </h1>
-              <p
-                style={{
-                  color: '#666',
-                  textAlign: 'center',
-                  marginBottom: '30px',
-                  fontSize: '16px',
-                }}
-              >
-                Start by taking a quick quiz to earn moves for the maze
-                challenge!
-              </p>
-              <Quiz onComplete={handleQuizComplete} primaryColor={themeColor} />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Keep registry's maxMoves in sync when it changes (useful if scene reads it).
+  useEffect(() => {
+    if (gameRef.current) {
+      try {
+        gameRef.current.registry.set('maxMoves', maxMoves);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [maxMoves]);
 
   if (gameWon) {
     return (
@@ -340,6 +305,10 @@ const MazePageComponent: FC<MazePageProps> = ({
                 zIndex: 1000,
                 padding: '20px',
                 backdropFilter: 'blur(4px)',
+                // Fade via opacity transition controlled by overlayVisible
+                opacity: overlayVisible ? 1 : 0,
+                transition: 'opacity 300ms ease',
+                pointerEvents: overlayVisible ? 'auto' : 'none',
               }}
             >
               <div
