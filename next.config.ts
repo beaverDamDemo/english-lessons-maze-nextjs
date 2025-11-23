@@ -1,14 +1,12 @@
-/** @type {import('next').NextConfig} */
 const isProd = process.env.NODE_ENV === 'production';
-
 const nextConfig = {
-  output: 'export', // 👈 replaces next export
-  basePath: '/english-lessons-maze',
-  // assetPrefix: isProd ? '/english-lessons-maze/' : '',
-  eslint: { ignoreDuringBuilds: true },
+  reactStrictMode: true,
   images: {
-    unoptimized: true, // 👈 required for static export
+    unoptimized: true, // Disable default image optimization
   },
+  assetPrefix: isProd ? '/english-lessons-maze/' : '',
+  basePath: isProd ? '/english-lessons-maze' : '',
+  output: 'export'
 };
 
 export default nextConfig;
