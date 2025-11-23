@@ -4,11 +4,11 @@ import { useEffect, useState, useRef } from 'react';
 import * as Phaser from 'phaser';
 import MazeHeader from './MazeHeader';
 import dynamic from 'next/dynamic';
-import type { FC } from 'react';
+import type { FC, MouseEvent } from 'react';
 
 interface MazePageProps {
-  MazeScene: any;
-  Quiz: any;
+  MazeScene: Phaser.Types.Scenes.SceneType;
+  Quiz: React.ComponentType<Record<string, unknown>>;
   lessonNumber: number;
   lessonTitle: string;
   themeColor: string;
@@ -20,12 +20,13 @@ const MazePageComponent: FC<MazePageProps> = ({
   MazeScene,
   Quiz,
   lessonNumber,
-  lessonTitle,
   themeColor,
   themeColorDark,
   backgroundGradient,
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [score, setScore] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [quizComplete, setQuizComplete] = useState(false);
   const [maxMoves, setMaxMoves] = useState(0);
   const [showQuizOverlay, setShowQuizOverlay] = useState(false);
@@ -33,7 +34,6 @@ const MazePageComponent: FC<MazePageProps> = ({
   const [gameWon, setGameWon] = useState(false);
   const [scale, setScale] = useState(1);
   const gameRef = useRef<Phaser.Game | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleQuizComplete = (finalScore: number) => {
     setMaxMoves(finalScore);
@@ -43,7 +43,12 @@ const MazePageComponent: FC<MazePageProps> = ({
     setTimeout(() => setShowQuizOverlay(false), 300);
     // Add moves to the existing scene instead of reloading
     if (gameRef.current) {
-      const scene = gameRef.current.scene.getScene('MazeScene') as any;
+      const scene = gameRef.current.scene.getScene(
+        'MazeScene',
+      ) as Phaser.Scene & {
+        addMoreMovesToScene?: (n: number) => void;
+        events?: Phaser.Events.EventEmitter;
+      };
       if (scene && scene.addMoreMovesToScene) {
         scene.addMoreMovesToScene(finalScore);
       }
@@ -115,13 +120,18 @@ const MazePageComponent: FC<MazePageProps> = ({
 
     // If the scene is available, listen for its 'create' event; otherwise fall back to a short delay.
     try {
-      const scene = game.scene.getScene('MazeScene') as any;
+      const scene = game.scene.getScene('MazeScene') as Phaser.Scene & {
+        events?: Phaser.Events.EventEmitter;
+      };
       if (scene && scene.events && typeof scene.events.once === 'function') {
-        scene.events.once('create', tryShowOverlay);
+        (scene.events as Phaser.Events.EventEmitter).once(
+          'create',
+          tryShowOverlay,
+        );
       } else {
         tryShowOverlay();
       }
-    } catch (e) {
+    } catch {
       tryShowOverlay();
     }
 
@@ -140,7 +150,7 @@ const MazePageComponent: FC<MazePageProps> = ({
     if (gameRef.current) {
       try {
         gameRef.current.registry.set('maxMoves', maxMoves);
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
@@ -211,7 +221,7 @@ const MazePageComponent: FC<MazePageProps> = ({
                   margin: '20px 0 30px 0',
                 }}
               >
-                Great job navigating through the challenges. You're making
+                Great job navigating through the challenges. You&apos;re making
                 excellent progress in mastering English!
               </p>
               <a
@@ -230,17 +240,17 @@ const MazePageComponent: FC<MazePageProps> = ({
                   border: 'none',
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
                 }}
-                onMouseEnter={(e: any) => {
-                  e.currentTarget.style.backgroundColor = themeColorDark;
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow =
-                    '0 6px 16px rgba(0, 0, 0, 0.3)';
+                onMouseEnter={(e: MouseEvent<HTMLAnchorElement>) => {
+                  const el = e.currentTarget as HTMLAnchorElement;
+                  el.style.backgroundColor = themeColorDark;
+                  el.style.transform = 'translateY(-2px)';
+                  el.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3)';
                 }}
-                onMouseLeave={(e: any) => {
-                  e.currentTarget.style.backgroundColor = themeColor;
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow =
-                    '0 4px 12px rgba(0, 0, 0, 0.2)';
+                onMouseLeave={(e: MouseEvent<HTMLAnchorElement>) => {
+                  const el = e.currentTarget as HTMLAnchorElement;
+                  el.style.backgroundColor = themeColor;
+                  el.style.transform = 'translateY(0)';
+                  el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
                 }}
               >
                 Return to Map

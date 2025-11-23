@@ -71,7 +71,8 @@ export class MazeScene extends Phaser.Scene {
     this.movesRemaining = this.maxMoves;
     this.onNoMoves = this.registry.get('onNoMoves') || (() => { });
     this.onWin = this.registry.get('onWin') || (() => { });
-    this.addMoreMoves = this.registry.get('addMoreMoves') || ((moves: number) => { });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    this.addMoreMoves = this.registry.get('addMoreMoves') || ((_moves: number) => { });
 
     this.cameras.main.setBackgroundColor('#FF9800');
     this.maze = this.generateMaze(rows, cols);
@@ -142,13 +143,13 @@ export class MazeScene extends Phaser.Scene {
     // Enemies
     this.enemies = this.physics.add.group();
     for (let i = 0; i < 5; i++) {
-      let ex = Phaser.Math.Between(2, cols - 3);
-      let ey = Phaser.Math.Between(2, rows - 3);
+      const ex = Phaser.Math.Between(2, cols - 3);
+      const ey = Phaser.Math.Between(2, rows - 3);
       if (this.maze[ey][ex] === 0 && !(ex === 1 && ey === 1)) {
-        let enemy = this.enemies
+        const enemy = this.enemies
           .create(ex * this.tileSize, ey * this.tileSize, 'enemy')
           .setOrigin(0)
-          .setDisplaySize(this.tileSize, this.tileSize);
+          .setDisplaySize(this.tileSize, this.tileSize) as Phaser.GameObjects.Sprite & { gridX?: number; gridY?: number; };
         enemy.gridX = ex;
         enemy.gridY = ey;
       }
@@ -156,10 +157,18 @@ export class MazeScene extends Phaser.Scene {
 
     // Bullets
     this.bullets = this.physics.add.group();
-    this.physics.add.overlap(this.bullets, this.enemies, (bullet, enemy) => {
-      bullet.destroy();
-      enemy.destroy();
-    });
+    this.physics.add.overlap(
+      this.bullets,
+      this.enemies,
+      (bullet: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile, enemy: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile) => {
+        if ('gameObject' in bullet) {
+          (bullet.gameObject as Phaser.GameObjects.GameObject).destroy();
+        }
+        if ('gameObject' in enemy) {
+          (enemy.gameObject as Phaser.GameObjects.GameObject).destroy();
+        }
+      },
+    );
 
     // Mobile controls
     const centerX = Number(this.sys.game.config.width) / 2;
@@ -187,18 +196,10 @@ export class MazeScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    this.upBtn.on('pointerdown', () =>
-      this.autoWalk({ dx: 0, dy: -1, anim: 'right' }),
-    );
-    this.downBtn.on('pointerdown', () =>
-      this.autoWalk({ dx: 0, dy: 1, anim: 'left' }),
-    );
-    this.leftBtn.on('pointerdown', () =>
-      this.autoWalk({ dx: -1, dy: 0, anim: 'left' }),
-    );
-    this.rightBtn.on('pointerdown', () =>
-      this.autoWalk({ dx: 1, dy: 0, anim: 'right' }),
-    );
+    this.upBtn.on('pointerdown', () => this.autoWalk({ dx: 0, dy: -1, anim: 'right' }));
+    this.downBtn.on('pointerdown', () => this.autoWalk({ dx: 0, dy: 1, anim: 'left' }));
+    this.leftBtn.on('pointerdown', () => this.autoWalk({ dx: -1, dy: 0, anim: 'left' }));
+    this.rightBtn.on('pointerdown', () => this.autoWalk({ dx: 1, dy: 0, anim: 'right' }));
 
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
@@ -249,7 +250,7 @@ export class MazeScene extends Phaser.Scene {
     this.physics.velocityFromRotation(
       Phaser.Math.Angle.Between(0, 0, this.lastDir.dx, this.lastDir.dy),
       200,
-      bullet.body.velocity,
+      (bullet as Phaser.GameObjects.GameObject & { body: Phaser.Physics.Arcade.Body; }).body.velocity,
     );
   }
 
@@ -281,7 +282,7 @@ export class MazeScene extends Phaser.Scene {
       if (
         this.enemies
           .getChildren()
-          .some((e: any) => e.gridX === nx && e.gridY === ny)
+          .some((e: Phaser.GameObjects.GameObject & { gridX?: number; gridY?: number; }) => e.gridX === nx && e.gridY === ny)
       )
         break;
 
@@ -360,7 +361,7 @@ export class MazeScene extends Phaser.Scene {
   // Maze generator only
   generateMaze(rows: number, cols: number) {
     const maze = Array.from({ length: rows }, () => Array(cols).fill(1));
-    const stack: any[] = [];
+    const stack: { x: number; y: number; }[] = [];
     const start = { x: 1, y: 1 };
     maze[start.y][start.x] = 0;
     stack.push(start);
