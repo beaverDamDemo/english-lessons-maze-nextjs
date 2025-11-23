@@ -14,7 +14,8 @@
     "next": "16.0.3",
     "phaser": "^3.90.0",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "touch-cli": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
