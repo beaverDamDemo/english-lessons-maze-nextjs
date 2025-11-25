@@ -11,18 +11,18 @@ const questions = [
   },
   {
     q: 'Consectetur adipiscing elit. Which one is right?',
-    options: ['Wrong', 'Correct', 'Wrong', 'Wrong'],
-    answer: 1,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Sed do eiusmod tempor. Pick the right one.',
-    options: ['Wrong', 'Wrong', 'Correct', 'Wrong'],
-    answer: 2,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Incididunt ut labore et dolore. What should you pick?',
-    options: ['Wrong', 'Wrong', 'Wrong', 'Correct'],
-    answer: 3,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Magna aliqua ut enim. Where is the answer?',
@@ -31,18 +31,18 @@ const questions = [
   },
   {
     q: 'Ad minim veniam quis. Find the correct one.',
-    options: ['Wrong', 'Correct', 'Wrong', 'Wrong'],
-    answer: 1,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Nostrud exercitation ullamco. Pick the right choice.',
-    options: ['Wrong', 'Wrong', 'Correct', 'Wrong'],
-    answer: 2,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Laboris nisi ut aliquip. Select the answer.',
-    options: ['Wrong', 'Wrong', 'Wrong', 'Correct'],
-    answer: 3,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Ex ea commodo consequat. Which is correct?',
@@ -51,18 +51,18 @@ const questions = [
   },
   {
     q: 'Duis aute irure dolor. Pick this one.',
-    options: ['Wrong', 'Correct', 'Wrong', 'Wrong'],
-    answer: 1,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'In reprehenderit in voluptate. Choose wisely.',
-    options: ['Wrong', 'Wrong', 'Correct', 'Wrong'],
-    answer: 2,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Velit esse cillum dolore. What is the answer?',
-    options: ['Wrong', 'Wrong', 'Wrong', 'Correct'],
-    answer: 3,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Eu fugiat nulla pariatur. Can you find it?',
@@ -71,18 +71,18 @@ const questions = [
   },
   {
     q: 'Excepteur sint occaecat cupidatat non. Pick correctly.',
-    options: ['Wrong', 'Correct', 'Wrong', 'Wrong'],
-    answer: 1,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Proident sunt in culpa qui officia. Make your choice.',
-    options: ['Wrong', 'Wrong', 'Correct', 'Wrong'],
-    answer: 2,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Deserunt mollit anim id est laborum. What is right?',
-    options: ['Wrong', 'Wrong', 'Wrong', 'Correct'],
-    answer: 3,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Sed ut perspiciatis unde omnis iste. Pick the answer.',
@@ -91,18 +91,18 @@ const questions = [
   },
   {
     q: 'Natus error sit voluptatem accusantium. Choose one.',
-    options: ['Wrong', 'Correct', 'Wrong', 'Wrong'],
-    answer: 1,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Doloremque laudantium totam rem aperiam. Which one?',
-    options: ['Wrong', 'Wrong', 'Correct', 'Wrong'],
-    answer: 2,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Eaque ipsa quae ab illo inventore. Pick this.',
-    options: ['Wrong', 'Wrong', 'Wrong', 'Correct'],
-    answer: 3,
+    options: ['Correct', 'Wrong', 'Wrong', 'Wrong'],
+    answer: 0,
   },
   {
     q: 'Veritatis et quasi architecto beatae vitae. Got it?',
