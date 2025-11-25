@@ -1,12 +1,8 @@
-const isProd = process.env.NODE_ENV === 'production';
+// next.config.js
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    unoptimized: true, // Disable default image optimization
-  },
-  assetPrefix: isProd ? '/english-lessons-maze/' : '',
-  basePath: isProd ? '/english-lessons-maze' : '',
-  output: 'export'
+  swcMinify: true,
 };
 
-export default nextConfig;
+module.exports = nextConfig;
