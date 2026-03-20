@@ -92,21 +92,12 @@ export default function Quiz({
           >
             Question {current + 1} of {selectedQuestions.length}
           </p>
-          <div
-            style={{
-              height: '8px',
-              backgroundColor: '#e0e0e0',
-              borderRadius: '4px',
-              width: '100px',
-              overflow: 'hidden',
-            }}
-          >
+          <div className={styles.progressTrack}>
             <div
+              className={styles.progressFill}
               style={{
-                height: '100%',
                 backgroundColor: primaryColor,
-                width: `${((current + 1) / selectedQuestions.length) * 100}%`,
-                transition: 'width 0.3s ease',
+                width: `${(current / selectedQuestions.length) * 100}%`,
               }}
             />
           </div>
