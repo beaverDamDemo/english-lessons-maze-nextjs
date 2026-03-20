@@ -190,7 +190,11 @@ export default function Quiz({
   }
 
   return (
-    <div style={{ padding: '0' }}>
+    <div
+      key={current}
+      className={styles.questionSlide}
+      style={{ padding: '0' }}
+    >
       <div style={{ marginBottom: '20px' }}>
         <div
           style={{
