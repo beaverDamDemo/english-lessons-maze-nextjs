@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import styles from '../_components/QuizButtons.module.css';
 import { questions } from './questions';
 
 export default function Quiz({
@@ -122,30 +123,8 @@ export default function Quiz({
           <button
             key={i}
             onClick={() => handleAnswer(i)}
-            style={{
-              padding: '12px 16px',
-              fontSize: '14px',
-              fontWeight: '500',
-              backgroundColor: primaryColor,
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
-              e.currentTarget.style.filter = 'brightness(0.9)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = primaryColor;
-              e.currentTarget.style.filter = 'brightness(1)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-            }}
+            className={styles.quizOptionButton}
+            style={{ backgroundColor: primaryColor }}
           >
             {opt}
           </button>

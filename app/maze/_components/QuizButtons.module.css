@@ -1,0 +1,46 @@
+.quizOptionButton {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.quizOptionButton:hover {
+  filter: brightness(0.82);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.28);
+}
+
+.quizOptionButton:active {
+  animation: quizPop 0.3s ease forwards;
+}
+
+.quizOptionButton:focus-visible {
+  outline: 3px solid #111;
+  outline-offset: 2px;
+}
+
+@keyframes quizPop {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(0.93);
+    filter: brightness(0.75);
+  }
+  65% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
