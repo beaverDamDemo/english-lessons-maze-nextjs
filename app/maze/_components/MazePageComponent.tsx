@@ -9,6 +9,7 @@ import type { FC, MouseEvent } from 'react';
 const TOTAL_LESSONS = 8;
 const STATS_KEY = 'englishMazeStats';
 const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
+const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
 
 interface MazePageProps {
   MazeScene: Phaser.Types.Scenes.SceneType;
@@ -131,6 +132,10 @@ const MazePageComponent: FC<MazePageProps> = ({
     setUnlockedLessons(nextUnlockedLessons);
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(UNLOCKED_KEY, String(nextUnlockedLessons));
+      window.localStorage.setItem(
+        PENDING_UNLOCK_KEY,
+        String(nextUnlockedLessons),
+      );
     }
     setGameWon(true);
   };

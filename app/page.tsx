@@ -11,6 +11,7 @@ const HEADER_HEIGHT = 44;
 const TOTAL_LESSONS = 8;
 const STATS_KEY = 'englishMazeStats';
 const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
+const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
 
 const lessons = [
   { num: 1, color: '#4CAF50', cls: 'location1' },
@@ -31,6 +32,9 @@ export default function MapPage() {
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [quizAttempts, setQuizAttempts] = useState(0);
   const [totalMovesEarned, setTotalMovesEarned] = useState(0);
+  const [highlightedLesson, setHighlightedLesson] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     const calculateScale = () => {
@@ -59,6 +63,16 @@ export default function MapPage() {
         ? Math.min(TOTAL_LESSONS, Math.max(1, parsedUnlocked))
         : 1;
       setUnlockedLessons(safeUnlocked);
+
+      const rawPending = window.localStorage.getItem(PENDING_UNLOCK_KEY);
+      const parsedPending = Number.parseInt(rawPending ?? '', 10);
+      const safePending = Number.isFinite(parsedPending)
+        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedPending))
+        : null;
+      if (safePending && safePending <= safeUnlocked) {
+        setHighlightedLesson(safePending);
+        window.localStorage.removeItem(PENDING_UNLOCK_KEY);
+      }
 
       const rawStats = window.localStorage.getItem(STATS_KEY);
       if (!rawStats) return;
@@ -91,6 +105,12 @@ export default function MapPage() {
       document.removeEventListener('visibilitychange', loadProgress);
     };
   }, []);
+
+  useEffect(() => {
+    if (!highlightedLesson) return;
+    const timeoutId = window.setTimeout(() => setHighlightedLesson(null), 7000);
+    return () => window.clearTimeout(timeoutId);
+  }, [highlightedLesson]);
 
   return (
     <div
@@ -147,10 +167,15 @@ export default function MapPage() {
                 <Link
                   key={num}
                   href={`/maze/lesson${num}`}
-                  className={`${styles[cls]} ${styles.locationPin}`}
+                  className={`${styles[cls]} ${styles.locationPin} ${
+                    num === highlightedLesson ? styles.newlyUnlocked : ''
+                  }`}
                   style={{ borderColor: color }}
                 >
                   {num}
+                  {num === highlightedLesson && (
+                    <span className={styles.unlockBadge}>New!</span>
+                  )}
                 </Link>
               ) : (
                 <div
