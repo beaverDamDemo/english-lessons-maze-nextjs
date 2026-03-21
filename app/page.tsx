@@ -22,6 +22,7 @@ const lessons = [
 
 export default function MapPage() {
   const [scale, setScale] = useState(1);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   useEffect(() => {
     const calculateScale = () => {
@@ -75,11 +76,22 @@ export default function MapPage() {
           }}
         >
           <div className={styles.mapContainer}>
+            {!isMapLoaded && (
+              <div
+                className={styles.loaderOverlay}
+                role="status"
+                aria-live="polite"
+              >
+                <div className={styles.loaderSpinner} aria-hidden="true" />
+                <span className={styles.loaderText}>Loading map...</span>
+              </div>
+            )}
             <Image
               src="/assets/tinified/map-with-8-clickable-locations.png"
               alt="Game Map"
               fill
               priority
+              onLoadingComplete={() => setIsMapLoaded(true)}
             />
             {lessons.map(({ num, color, cls, enabled }) =>
               enabled ? (
