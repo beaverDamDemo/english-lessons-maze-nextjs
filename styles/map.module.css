@@ -21,6 +21,20 @@
   text-transform: uppercase;
 }
 
+.mapFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #1c1c1c;
+  color: #e8e8e8;
+  font-size: 13px;
+  font-weight: 600;
+  border-top: 3px solid #4caf50;
+  flex-wrap: wrap;
+}
+
 .mapContainer {
   position: relative;
   width: 100%;

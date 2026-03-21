@@ -6,6 +6,10 @@ import MazeHeader from './MazeHeader';
 import dynamic from 'next/dynamic';
 import type { FC, MouseEvent } from 'react';
 
+const TOTAL_LESSONS = 8;
+const STATS_KEY = 'englishMazeStats';
+const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
+
 interface MazePageProps {
   MazeScene: Phaser.Types.Scenes.SceneType;
   Quiz: React.ComponentType<Record<string, unknown>>;
@@ -28,6 +32,14 @@ const MazePageComponent: FC<MazePageProps> = ({
   const [score, setScore] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [quizComplete, setQuizComplete] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [quizAttempts, setQuizAttempts] = useState(0);
+  const [totalMovesEarned, setTotalMovesEarned] = useState(0);
+  const [unlockedLessons, setUnlockedLessons] = useState(1);
+  const [lastQuizResult, setLastQuizResult] = useState<
+    'Correct' | 'Wrong' | 'N/A'
+  >('N/A');
   const [maxMoves, setMaxMoves] = useState(0);
   const [showQuizOverlay, setShowQuizOverlay] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -41,9 +53,46 @@ const MazePageComponent: FC<MazePageProps> = ({
   const mobileWidth = 504;
   const mobileHeight = 800;
 
+  const saveStats = (next: {
+    correctAnswers: number;
+    wrongAnswers: number;
+    quizAttempts: number;
+    totalMovesEarned: number;
+  }) => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(
+      STATS_KEY,
+      JSON.stringify({
+        correctAnswers: next.correctAnswers,
+        wrongAnswers: next.wrongAnswers,
+        quizAttempts: next.quizAttempts,
+        totalMovesEarned: next.totalMovesEarned,
+      }),
+    );
+  };
+
   const handleQuizComplete = (finalScore: number) => {
     setMaxMoves(finalScore);
+    setScore(finalScore);
     setQuizComplete(true);
+    const wasCorrect = finalScore > 0;
+    const nextCorrect = correctAnswers + (wasCorrect ? 1 : 0);
+    const nextWrong = wrongAnswers + (wasCorrect ? 0 : 1);
+    const nextAttempts = quizAttempts + 1;
+    const nextMovesEarned = totalMovesEarned + finalScore;
+
+    setCorrectAnswers(nextCorrect);
+    setWrongAnswers(nextWrong);
+    setQuizAttempts(nextAttempts);
+    setTotalMovesEarned(nextMovesEarned);
+    setLastQuizResult(wasCorrect ? 'Correct' : 'Wrong');
+    saveStats({
+      correctAnswers: nextCorrect,
+      wrongAnswers: nextWrong,
+      quizAttempts: nextAttempts,
+      totalMovesEarned: nextMovesEarned,
+    });
+
     // fade out the overlay, then unmount it
     setOverlayVisible(false);
     setTimeout(() => setShowQuizOverlay(false), 300);
@@ -68,8 +117,47 @@ const MazePageComponent: FC<MazePageProps> = ({
   };
 
   const handleWin = () => {
+    const nextUnlockedLessons = Math.min(
+      TOTAL_LESSONS,
+      Math.max(unlockedLessons, lessonNumber + 1),
+    );
+    setUnlockedLessons(nextUnlockedLessons);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(UNLOCKED_KEY, String(nextUnlockedLessons));
+    }
     setGameWon(true);
   };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const rawStats = window.localStorage.getItem(STATS_KEY);
+    if (rawStats) {
+      try {
+        const parsed = JSON.parse(rawStats) as {
+          correctAnswers?: number;
+          wrongAnswers?: number;
+          quizAttempts?: number;
+          totalMovesEarned?: number;
+        };
+
+        setCorrectAnswers(parsed.correctAnswers ?? 0);
+        setWrongAnswers(parsed.wrongAnswers ?? 0);
+        setQuizAttempts(parsed.quizAttempts ?? 0);
+        setTotalMovesEarned(parsed.totalMovesEarned ?? 0);
+      } catch {
+        // ignore malformed local storage values
+      }
+    }
+
+    const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
+    const parsedUnlocked = Number.parseInt(rawUnlocked ?? '1', 10);
+    setUnlockedLessons(
+      Number.isFinite(parsedUnlocked)
+        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedUnlocked))
+        : 1,
+    );
+  }, []);
 
   // Calculate scale to fit content to screen
   useEffect(() => {
@@ -269,6 +357,28 @@ const MazePageComponent: FC<MazePageProps> = ({
               </a>
             </div>
           </div>
+          <footer
+            style={{
+              backgroundColor: '#1c1c1c',
+              color: '#e8e8e8',
+              padding: '10px 14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              fontSize: '13px',
+              borderTop: `3px solid ${themeColor}`,
+              flexWrap: 'wrap',
+            }}
+          >
+            <span>Correct: {correctAnswers}</span>
+            <span>Wrong: {wrongAnswers}</span>
+            <span>
+              Unlocked Lessons: {unlockedLessons}/{TOTAL_LESSONS}
+            </span>
+            <span>Quiz Attempts: {quizAttempts}</span>
+            <span>Player Status: Winner</span>
+          </footer>
         </div>
       </div>
     );
@@ -364,8 +474,8 @@ const MazePageComponent: FC<MazePageProps> = ({
                     lineHeight: '1.5',
                   }}
                 >
-                  Answer 5 questions correctly to earn more moves and continue
-                  Lesson {lessonNumber}.
+                  Answer 1 question to earn more moves and continue Lesson{' '}
+                  {lessonNumber}.
                 </p>
                 <Quiz
                   onComplete={handleQuizComplete}
@@ -375,6 +485,28 @@ const MazePageComponent: FC<MazePageProps> = ({
             </div>
           )}
         </div>
+        <footer
+          style={{
+            backgroundColor: '#1c1c1c',
+            color: '#e8e8e8',
+            padding: '10px 14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '10px',
+            fontSize: '13px',
+            borderTop: `3px solid ${themeColor}`,
+            flexWrap: 'wrap',
+          }}
+        >
+          <span>Correct: {correctAnswers}</span>
+          <span>Wrong: {wrongAnswers}</span>
+          <span>
+            Unlocked Lessons: {unlockedLessons}/{TOTAL_LESSONS}
+          </span>
+          <span>Total Moves Earned: {totalMovesEarned}</span>
+          <span>Last Quiz: {lastQuizResult}</span>
+        </footer>
       </div>
     </div>
   );

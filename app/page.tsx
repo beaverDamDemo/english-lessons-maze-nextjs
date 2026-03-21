@@ -8,21 +8,29 @@ import { useState, useEffect } from 'react';
 
 const APP_VERSION = '0.0.14';
 const HEADER_HEIGHT = 44;
+const TOTAL_LESSONS = 8;
+const STATS_KEY = 'englishMazeStats';
+const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
 
 const lessons = [
-  { num: 1, color: '#4CAF50', cls: 'location1', enabled: true },
-  { num: 2, color: '#2196F3', cls: 'location2', enabled: false },
-  { num: 3, color: '#FF9800', cls: 'location3', enabled: false },
-  { num: 4, color: '#F44336', cls: 'location4', enabled: false },
-  { num: 5, color: '#9C27B0', cls: 'location5', enabled: false },
-  { num: 6, color: '#009688', cls: 'location6', enabled: false },
-  { num: 7, color: '#E91E63', cls: 'location7', enabled: false },
-  { num: 8, color: '#3F51B5', cls: 'location8', enabled: false },
+  { num: 1, color: '#4CAF50', cls: 'location1' },
+  { num: 2, color: '#2196F3', cls: 'location2' },
+  { num: 3, color: '#FF9800', cls: 'location3' },
+  { num: 4, color: '#F44336', cls: 'location4' },
+  { num: 5, color: '#9C27B0', cls: 'location5' },
+  { num: 6, color: '#009688', cls: 'location6' },
+  { num: 7, color: '#E91E63', cls: 'location7' },
+  { num: 8, color: '#3F51B5', cls: 'location8' },
 ];
 
 export default function MapPage() {
   const [scale, setScale] = useState(1);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [unlockedLessons, setUnlockedLessons] = useState(1);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState(0);
+  const [quizAttempts, setQuizAttempts] = useState(0);
+  const [totalMovesEarned, setTotalMovesEarned] = useState(0);
 
   useEffect(() => {
     const calculateScale = () => {
@@ -41,6 +49,43 @@ export default function MapPage() {
     calculateScale();
     window.addEventListener('resize', calculateScale);
     return () => window.removeEventListener('resize', calculateScale);
+  }, []);
+
+  useEffect(() => {
+    const loadProgress = () => {
+      const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
+      const parsedUnlocked = Number.parseInt(rawUnlocked ?? '1', 10);
+      const safeUnlocked = Number.isFinite(parsedUnlocked)
+        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedUnlocked))
+        : 1;
+      setUnlockedLessons(safeUnlocked);
+
+      const rawStats = window.localStorage.getItem(STATS_KEY);
+      if (!rawStats) return;
+
+      try {
+        const parsed = JSON.parse(rawStats) as {
+          correctAnswers?: number;
+          wrongAnswers?: number;
+          quizAttempts?: number;
+          totalMovesEarned?: number;
+        };
+        setCorrectAnswers(parsed.correctAnswers ?? 0);
+        setWrongAnswers(parsed.wrongAnswers ?? 0);
+        setQuizAttempts(parsed.quizAttempts ?? 0);
+        setTotalMovesEarned(parsed.totalMovesEarned ?? 0);
+      } catch {
+        // ignore malformed values
+      }
+    };
+
+    loadProgress();
+    window.addEventListener('focus', loadProgress);
+    window.addEventListener('storage', loadProgress);
+    return () => {
+      window.removeEventListener('focus', loadProgress);
+      window.removeEventListener('storage', loadProgress);
+    };
   }, []);
 
   return (
@@ -93,8 +138,8 @@ export default function MapPage() {
               priority
               onLoadingComplete={() => setIsMapLoaded(true)}
             />
-            {lessons.map(({ num, color, cls, enabled }) =>
-              enabled ? (
+            {lessons.map(({ num, color, cls }) =>
+              num <= unlockedLessons ? (
                 <Link
                   key={num}
                   href={`/maze/lesson${num}`}
@@ -115,6 +160,16 @@ export default function MapPage() {
           </div>
         </div>
       </div>
+
+      <footer className={styles.mapFooter}>
+        <span>Correct: {correctAnswers}</span>
+        <span>Wrong: {wrongAnswers}</span>
+        <span>
+          Unlocked Lessons: {unlockedLessons}/{TOTAL_LESSONS}
+        </span>
+        <span>Quiz Attempts: {quizAttempts}</span>
+        <span>Total Moves Earned: {totalMovesEarned}</span>
+      </footer>
     </div>
   );
 }
