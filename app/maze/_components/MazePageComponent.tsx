@@ -6,7 +6,7 @@ import MazeHeader from './MazeHeader';
 import dynamic from 'next/dynamic';
 import type { FC, MouseEvent } from 'react';
 
-const TOTAL_LESSONS = 8;
+const TOTAL_LESSONS = 9;
 const STATS_KEY = 'englishMazeStats';
 const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
 const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';

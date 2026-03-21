@@ -7,8 +7,9 @@ import styles from '../styles/map.module.css';
 import { useState, useEffect } from 'react';
 
 const APP_VERSION = '0.0.14';
-const HEADER_HEIGHT = 44;
-const TOTAL_LESSONS = 8;
+const MAP_ASPECT_RATIO = 1024 / 1536;
+const MAP_IMAGE_CACHE_BUSTER = '20260321-1';
+const TOTAL_LESSONS = 9;
 const STATS_KEY = 'englishMazeStats';
 const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
 const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
@@ -22,10 +23,10 @@ const lessons = [
   { num: 6, color: '#009688', cls: 'location6' },
   { num: 7, color: '#E91E63', cls: 'location7' },
   { num: 8, color: '#3F51B5', cls: 'location8' },
+  { num: 9, color: '#795548', cls: 'location9' },
 ];
 
 export default function MapPage() {
-  const [scale, setScale] = useState(1);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [unlockedLessons, setUnlockedLessons] = useState(1);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -35,25 +36,6 @@ export default function MapPage() {
   const [highlightedLesson, setHighlightedLesson] = useState<number | null>(
     null,
   );
-
-  useEffect(() => {
-    const calculateScale = () => {
-      const baseWidth = 1200;
-      const baseHeight = 800;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight - HEADER_HEIGHT;
-
-      const scaleByWidth = windowWidth / baseWidth;
-      const scaleByHeight = windowHeight / baseHeight;
-
-      const newScale = Math.min(scaleByWidth, scaleByHeight);
-      setScale(Math.max(newScale, 0.5));
-    };
-
-    calculateScale();
-    window.addEventListener('resize', calculateScale);
-    return () => window.removeEventListener('resize', calculateScale);
-  }, []);
 
   useEffect(() => {
     const loadProgress = () => {
@@ -131,17 +113,16 @@ export default function MapPage() {
         style={{
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           flex: 1,
           overflow: 'auto',
         }}
       >
         <div
           style={{
-            transform: `scale(${scale})`,
-            transformOrigin: 'center center',
-            width: '1200px',
-            height: '800px',
+            width: '100vw',
+            maxWidth: '100%',
+            aspectRatio: MAP_ASPECT_RATIO,
           }}
         >
           <div className={styles.mapContainer}>
@@ -156,10 +137,11 @@ export default function MapPage() {
               </div>
             )}
             <Image
-              src="/assets/tinified/map-with-8-clickable-locations.png"
+              src={`/assets/tinified/map-with-9-clickable-locations.png?v=${MAP_IMAGE_CACHE_BUSTER}`}
               alt="Game Map"
               fill
               priority
+              unoptimized
               onLoadingComplete={() => setIsMapLoaded(true)}
             />
             {lessons.map(({ num, color, cls }) =>
