@@ -107,6 +107,10 @@ export class MazeScene extends Phaser.Scene {
       .text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' })
       .setVisible(false);
 
+    this.winText = this.add
+      .text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' })
+      .setVisible(false);
+
     // Move handling: read initial maxMoves and callbacks from registry
     this.maxMoves = this.registry.get('maxMoves') ?? 5;
     this.movesRemaining = this.maxMoves;

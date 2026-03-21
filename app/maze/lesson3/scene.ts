@@ -114,6 +114,10 @@ export class MazeScene extends Phaser.Scene {
       .text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' })
       .setVisible(false);
 
+    this.winText = this.add
+      .text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' })
+      .setVisible(false);
+
     // Display moves remaining
     this.movesText = this.add
       .text(10, 10, `Moves: ${this.movesRemaining}/${this.maxMoves}`, {

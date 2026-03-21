@@ -75,6 +75,7 @@ export class MazeScene extends Phaser.Scene {
     this.goalY = rows - 2;
     this.player = this.add.sprite(this.gridX * this.tileSize, this.gridY * this.tileSize, 'avatar', 4).setOrigin(0).setDisplaySize(this.tileSize, this.tileSize);
     this.goal = this.add.sprite(this.goalX * this.tileSize, this.goalY * this.tileSize, 'goal').setOrigin(0).setDisplaySize(this.tileSize, this.tileSize);
+    this.winText = this.add.text(100, 200, 'YOU WIN!', { fontSize: '32px', color: '#fff' }).setVisible(false);
 
     // Display moves remaining
     this.movesText = this.add
@@ -251,7 +252,7 @@ export class MazeScene extends Phaser.Scene {
 
         const reachedGoal = this.gridX === this.goalX && this.gridY === this.goalY;
         if (reachedGoal) {
-          this.winText.setVisible(true);
+          if (this.winText) this.winText.setVisible(true);
           this.onWin();
         }
         if (!reachedGoal && this.movesRemaining <= 0) {
