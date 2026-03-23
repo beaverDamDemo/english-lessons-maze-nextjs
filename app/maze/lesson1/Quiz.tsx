@@ -4,6 +4,56 @@ import { useState } from 'react';
 import styles from '../_components/QuizButtons.module.css';
 import { questions } from './questions';
 
+type QuizQuestion = {
+  q: string;
+  options: string[];
+  answer: number;
+};
+
+function shuffleArray<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function buildBalancedQuestions(
+  source: QuizQuestion[],
+  count: number,
+): QuizQuestion[] {
+  const selected = shuffleArray(source).slice(0, count);
+  const targetAnswerSlots = shuffleArray(
+    Array.from({ length: count }, (_, i) => i % 4),
+  );
+
+  return selected.map((question, idx) => {
+    const correctText = question.options[question.answer];
+    const wrongOptions = shuffleArray(
+      question.options.filter((_, optionIdx) => optionIdx !== question.answer),
+    );
+    const correctIndex = targetAnswerSlots[idx];
+    const balancedOptions: string[] = [];
+    let wrongPointer = 0;
+
+    for (let optionIdx = 0; optionIdx < question.options.length; optionIdx++) {
+      if (optionIdx === correctIndex) {
+        balancedOptions.push(correctText);
+      } else {
+        balancedOptions.push(wrongOptions[wrongPointer]);
+        wrongPointer += 1;
+      }
+    }
+
+    return {
+      ...question,
+      options: balancedOptions,
+      answer: correctIndex,
+    };
+  });
+}
+
 export default function Quiz({
   onComplete,
   primaryColor = '#4CAF50',
@@ -13,8 +63,7 @@ export default function Quiz({
 }) {
   // Select only 5 random questions from the full question bank
   const [selectedQuestions] = useState(() => {
-    const shuffled = [...questions].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 5);
+    return buildBalancedQuestions(questions, 5);
   });
 
   const [current, setCurrent] = useState(0);
