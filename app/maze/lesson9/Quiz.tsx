@@ -155,27 +155,33 @@ export default function Quiz({
 }) {
   const [selectedQuestions] = useState(() => {
     const shuffled = [...questions].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 1);
+    return shuffled.slice(0, 5);
   });
 
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [feedbackIcon, setFeedbackIcon] = useState<'✓' | '✗' | null>(null);
 
   function handleAnswer(index: number) {
     let newScore = score;
-    if (index === selectedQuestions[current].answer) {
+    const isCorrect = index === selectedQuestions[current].answer;
+    if (isCorrect) {
       newScore = score + 1;
       setScore(newScore);
     }
+    setFeedbackIcon(isCorrect ? '✓' : '✗');
     const nextQuestion = current + 1;
 
-    if (nextQuestion >= selectedQuestions.length) {
-      setFinished(true);
-      onComplete(newScore);
-    } else {
-      setCurrent(nextQuestion);
-    }
+    setTimeout(() => {
+      setFeedbackIcon(null);
+      if (nextQuestion >= selectedQuestions.length) {
+        setFinished(true);
+        onComplete(newScore);
+      } else {
+        setCurrent(nextQuestion);
+      }
+    }, 300);
   }
 
   if (finished) {
@@ -212,8 +218,38 @@ export default function Quiz({
     <div
       key={current}
       className={styles.questionSlide}
-      style={{ padding: '0' }}
+      style={{ padding: '0', position: 'relative' }}
     >
+      {feedbackIcon && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: '80px',
+            fontWeight: 'bold',
+            zIndex: 2000,
+            animation: 'feedbackFadeOut 0.3s ease-out forwards',
+            color: feedbackIcon === '✓' ? '#4CAF50' : '#F44336',
+            textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          {feedbackIcon}
+        </div>
+      )}
+      <style>{`
+        @keyframes feedbackFadeOut {
+          0% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.5);
+          }
+        }
+      `}</style>
       <div style={{ marginBottom: '20px' }}>
         <div
           style={{

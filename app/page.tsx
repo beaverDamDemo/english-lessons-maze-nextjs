@@ -94,6 +94,25 @@ export default function MapPage() {
     return () => window.clearTimeout(timeoutId);
   }, [highlightedLesson]);
 
+  const handleResetProgress = () => {
+    if (
+      typeof window !== 'undefined' &&
+      window.confirm(
+        'Are you sure you want to reset all progress? This cannot be undone.',
+      )
+    ) {
+      window.localStorage.removeItem(STATS_KEY);
+      window.localStorage.removeItem(UNLOCKED_KEY);
+      window.localStorage.removeItem(PENDING_UNLOCK_KEY);
+      setCorrectAnswers(0);
+      setWrongAnswers(0);
+      setQuizAttempts(0);
+      setTotalMovesEarned(0);
+      setUnlockedLessons(1);
+      window.location.reload();
+    }
+  };
+
   return (
     <div
       style={{
@@ -182,6 +201,28 @@ export default function MapPage() {
         </span>
         <span>Quiz Attempts: {quizAttempts}</span>
         <span>Total Moves Earned: {totalMovesEarned}</span>
+        <button
+          onClick={handleResetProgress}
+          style={{
+            padding: '6px 12px',
+            fontSize: '12px',
+            backgroundColor: '#d32f2f',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: '600',
+            transition: 'background-color 0.2s ease',
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = '#b71c1c')
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = '#d32f2f')
+          }
+        >
+          Reset Progress
+        </button>
       </footer>
     </div>
   );
