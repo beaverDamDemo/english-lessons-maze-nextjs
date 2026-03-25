@@ -67,7 +67,7 @@ export class MazeScene extends Phaser.Scene {
     this.tileSize = 24;
     this.walkSpeed = 70;
 
-    this.cameras.main.setBackgroundColor('#2196F3'); // Lesson 2 blue
+    this.cameras.main.setBackgroundColor('#F44336'); // Lesson 2 red
     this.maze = this.generateMaze(rows, cols);
 
     // Walls

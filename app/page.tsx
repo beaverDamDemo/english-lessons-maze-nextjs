@@ -16,9 +16,9 @@ const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
 
 const lessons = [
   { num: 1, color: '#4CAF50', cls: 'location1' },
-  { num: 2, color: '#2196F3', cls: 'location2' },
+  { num: 2, color: '#F44336', cls: 'location2' },
   { num: 3, color: '#FF9800', cls: 'location3' },
-  { num: 4, color: '#F44336', cls: 'location4' },
+  { num: 4, color: '#2196F3', cls: 'location4' },
   { num: 5, color: '#9C27B0', cls: 'location5' },
   { num: 6, color: '#009688', cls: 'location6' },
   { num: 7, color: '#E91E63', cls: 'location7' },

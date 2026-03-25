@@ -22,10 +22,10 @@ const MazePage: FC = () => {
     };
   }, []);
   // Lesson 4 color theme
-  const themeColor = '#F44336';
-  const themeColorDark = '#D32F2F';
+  const themeColor = '#2196F3';
+  const themeColorDark = '#1976D2';
   const backgroundGradient =
-    'linear-gradient(135deg, #F44336 0%, #C62828 100%)';
+    'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)';
 
   if (!Scene) return <div>Loading...</div>;
 

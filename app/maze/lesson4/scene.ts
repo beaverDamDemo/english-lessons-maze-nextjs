@@ -58,7 +58,7 @@ export class MazeScene extends Phaser.Scene {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     this.addMoreMoves = this.registry.get('addMoreMoves') || ((_moves: number) => { });
 
-    this.cameras.main.setBackgroundColor('#F44336');
+    this.cameras.main.setBackgroundColor('#2196F3');
     this.maze = this.generateMaze(rows, cols);
 
     for (let y = 0; y < rows; y++) {
