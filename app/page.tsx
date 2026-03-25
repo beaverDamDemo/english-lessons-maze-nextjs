@@ -100,7 +100,7 @@ export default function MapPage() {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        minHeight: '100vh',
+        height: '100dvh',
         backgroundColor: '#f0f0f0',
       }}
     >
@@ -120,7 +120,9 @@ export default function MapPage() {
       >
         <div
           style={{
-            width: '100vw',
+            height: '100%',
+            maxHeight: '100%',
+            width: 'auto',
             maxWidth: '100%',
             aspectRatio: MAP_ASPECT_RATIO,
           }}
@@ -142,7 +144,7 @@ export default function MapPage() {
               fill
               priority
               unoptimized
-              onLoadingComplete={() => setIsMapLoaded(true)}
+              onLoad={() => setIsMapLoaded(true)}
             />
             {lessons.map(({ num, color, cls }) =>
               num <= unlockedLessons ? (
