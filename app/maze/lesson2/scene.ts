@@ -72,7 +72,7 @@ export class MazeScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor('#F44336');
+    this.cameras.main.setBackgroundColor('#1E4D3A');
 
     this.maxCredits = this.registry.get('maxMoves') ?? 0;
     this.credits = this.maxCredits;
