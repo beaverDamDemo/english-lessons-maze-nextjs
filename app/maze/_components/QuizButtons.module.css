@@ -28,6 +28,10 @@
 
 .questionSlide {
   animation: questionSlideIn 0.28s ease both;
+  max-width: 100%;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .progressTrack {
