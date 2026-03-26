@@ -19,7 +19,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: `English Lessons Maze`,
+  title: `Thai English Playland`,
   description: 'Generated to help learning english grammar through maze games.',
 };
 

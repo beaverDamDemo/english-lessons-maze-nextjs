@@ -5,10 +5,16 @@ import styles from './MazeHeader.module.css';
 
 const APP_VERSION = '0.0.14';
 
-export default function MazeHeader({ score }: { score: number }) {
+export default function MazeHeader({
+  score,
+  backHref = '/maze',
+}: {
+  score: number;
+  backHref?: string;
+}) {
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.backArrow}>
+      <Link href={backHref} className={styles.backArrow}>
         ← Back
       </Link>
       <div className={styles.metaGroup}>

@@ -1,0 +1,532 @@
+.homePage {
+  min-height: 100dvh;
+  padding: 24px;
+  display: grid;
+  gap: 18px;
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(255, 212, 125, 0.45),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 90% 0%,
+      rgba(125, 203, 255, 0.35),
+      transparent 45%
+    ),
+    linear-gradient(180deg, #fffaf0 0%, #f7f9ff 100%);
+}
+
+.playfulHome {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  padding: 24px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 18px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 192, 89, 0.45), transparent 40%),
+    radial-gradient(
+      circle at 100% 20%,
+      rgba(106, 221, 255, 0.35),
+      transparent 45%
+    ),
+    linear-gradient(145deg, #fff6cf 0%, #ffe8e1 50%, #e8f7ff 100%);
+}
+
+.shapeOne,
+.shapeTwo {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+.shapeOne {
+  width: 260px;
+  height: 260px;
+  left: -90px;
+  top: 40px;
+  border-radius: 38% 62% 55% 45% / 48% 38% 62% 52%;
+  background: rgba(255, 149, 0, 0.25);
+  animation: floatA 6s ease-in-out infinite;
+}
+
+.shapeTwo {
+  width: 280px;
+  height: 280px;
+  right: -100px;
+  bottom: 20px;
+  border-radius: 52% 48% 42% 58% / 62% 41% 59% 38%;
+  background: rgba(0, 190, 255, 0.2);
+  animation: floatB 7s ease-in-out infinite;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.centeredHeader {
+  justify-content: center;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
+  line-height: 1.1;
+  color: #1f2a44;
+}
+
+.heroCard,
+.statsCard,
+.lessonsCard {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #d9e3ff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(34, 52, 103, 0.08);
+}
+
+.hubGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.hubCard {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  padding: 18px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: #10203f;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 24px rgba(20, 33, 75, 0.12);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.hubCard:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 14px 28px rgba(20, 33, 75, 0.2);
+}
+
+.hubTitle {
+  font-size: 1.12rem;
+  font-weight: 800;
+}
+
+.hubText {
+  font-size: 0.94rem;
+  color: #24375f;
+}
+
+.mazeCard {
+  background: linear-gradient(135deg, #e2f0ff 0%, #d2f8ec 100%);
+}
+
+.casinoCard {
+  background: linear-gradient(135deg, #ffe1b8 0%, #ffd2e3 100%);
+}
+
+.pattayaCard {
+  background: linear-gradient(135deg, #d6f3ff 0%, #e7e0ff 100%);
+}
+
+.playfulScreen {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  padding: 20px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.casinoScreen {
+  background:
+    radial-gradient(
+      circle at 10% 10%,
+      rgba(255, 214, 153, 0.48),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(255, 148, 181, 0.3),
+      transparent 38%
+    ),
+    linear-gradient(145deg, #fff4d9 0%, #ffe4eb 55%, #fffaf2 100%);
+}
+
+.pattayaGamesScreen {
+  background:
+    radial-gradient(
+      circle at 12% 8%,
+      rgba(119, 220, 255, 0.34),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 88% 22%,
+      rgba(154, 174, 255, 0.26),
+      transparent 36%
+    ),
+    linear-gradient(145deg, #e5fbff 0%, #eef2ff 52%, #fff4da 100%);
+}
+
+.screenShapeOne,
+.screenShapeTwo {
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+.screenShapeOne {
+  width: 220px;
+  height: 220px;
+  left: -80px;
+  top: 32px;
+  border-radius: 40% 60% 47% 53% / 54% 38% 62% 46%;
+  background: rgba(255, 255, 255, 0.34);
+  animation: floatA 6s ease-in-out infinite;
+}
+
+.screenShapeTwo {
+  width: 240px;
+  height: 240px;
+  right: -90px;
+  bottom: 32px;
+  border-radius: 58% 42% 52% 48% / 45% 58% 42% 55%;
+  background: rgba(255, 255, 255, 0.3);
+  animation: floatB 7s ease-in-out infinite;
+}
+
+.screenHeader {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.headerHomeLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(126, 144, 198, 0.32);
+  color: #29457d;
+  font-size: 0.82rem;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(52, 71, 123, 0.08);
+  transition:
+    transform 0.15s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.headerHomeLink:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(52, 71, 123, 0.14);
+}
+
+.screenBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(108, 127, 185, 0.24);
+  background: rgba(255, 255, 255, 0.65);
+  color: #5c6a8f;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.screenTitle {
+  margin: 0;
+  font-size: clamp(1.55rem, 4vw, 2.2rem);
+  line-height: 1.05;
+  color: #1f2a44;
+}
+
+.screenCard {
+  width: min(720px, 100%);
+  align-self: center;
+  justify-self: center;
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(136, 152, 214, 0.22);
+  box-shadow: 0 14px 30px rgba(35, 53, 104, 0.1);
+  text-align: center;
+}
+
+.screenText {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #1f2a44;
+}
+
+.screenSubtext {
+  margin: 0;
+  color: #4a5c86;
+}
+
+.screenLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.footerBar {
+  margin-top: auto;
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rightFooterBar {
+  justify-content: flex-end;
+}
+
+.footerVersion {
+  margin-left: auto;
+  text-align: right;
+  font-size: 0.72rem;
+  line-height: 1;
+  color: #5b6987;
+}
+
+.heroLead {
+  margin: 0;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  font-weight: 700;
+  color: #1f2a44;
+}
+
+.heroSubtext {
+  margin: 8px 0 0;
+  color: #40527b;
+}
+
+.heroActions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.primaryButton,
+.secondaryButton,
+.lessonButton,
+.resetButton {
+  border-radius: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.primaryButton {
+  background: #1e5eff;
+  color: #fff;
+  padding: 11px 14px;
+  box-shadow: 0 6px 16px rgba(30, 94, 255, 0.28);
+}
+
+.primaryButton:hover {
+  background: #1247d6;
+  transform: translateY(-1px);
+}
+
+.secondaryButton {
+  background: #fff;
+  color: #1e5eff;
+  border: 1px solid #8eb1ff;
+  padding: 11px 14px;
+}
+
+.secondaryButton:hover {
+  background: #ecf2ff;
+}
+
+.sectionTitle {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  color: #24375f;
+}
+
+.statsGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.statItem {
+  background: #f6f9ff;
+  border: 1px solid #d6e3ff;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.8rem;
+  color: #4f6390;
+}
+
+.statValue {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1f2a44;
+}
+
+.lessonGrid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.lessonButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px;
+  background: #e9f0ff;
+  color: #1f3b7a;
+  border: 1px solid #c7d9ff;
+}
+
+.lessonButton:hover {
+  background: #d8e6ff;
+}
+
+.lockedLesson {
+  background: #efefef;
+  color: #737373;
+  border-color: #d3d3d3;
+  cursor: not-allowed;
+}
+
+.newlyUnlocked {
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.newBadge {
+  font-size: 0.72rem;
+  background: #19a15f;
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+.resetButton {
+  justify-self: start;
+  border: none;
+  background: #d43a3a;
+  color: #fff;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.resetButton:hover {
+  background: #a92727;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(25, 161, 95, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(25, 161, 95, 0);
+  }
+}
+
+@keyframes floatA {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes floatB {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(12px);
+  }
+}
+
+@media (max-width: 640px) {
+  .homePage {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .playfulHome {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .centeredHeader {
+    align-items: center;
+  }
+
+  .playfulScreen {
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .screenCard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .screenLinks {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .headerHomeLink {
+    min-height: 28px;
+    padding: 5px 10px;
+    font-size: 0.78rem;
+  }
+}

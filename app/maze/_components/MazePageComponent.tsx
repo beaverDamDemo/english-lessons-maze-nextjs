@@ -21,6 +21,13 @@ interface MazePageProps {
   themeColorDark: string;
   backgroundGradient: string;
   showWinScreen?: boolean;
+  totalLessons?: number;
+  statsKey?: string;
+  unlockedKey?: string;
+  pendingUnlockKey?: string;
+  backHref?: string;
+  returnHref?: string;
+  returnLabel?: string;
 }
 
 const MazePageComponent: FC<MazePageProps> = ({
@@ -31,6 +38,13 @@ const MazePageComponent: FC<MazePageProps> = ({
   themeColorDark,
   backgroundGradient,
   showWinScreen = true,
+  totalLessons = TOTAL_LESSONS,
+  statsKey = STATS_KEY,
+  unlockedKey = UNLOCKED_KEY,
+  pendingUnlockKey = PENDING_UNLOCK_KEY,
+  backHref = '/maze',
+  returnHref = '/maze',
+  returnLabel = 'Return to Map',
 }) => {
   const [score, setScore] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -62,7 +76,7 @@ const MazePageComponent: FC<MazePageProps> = ({
   }) => {
     if (typeof window === 'undefined') return;
     window.localStorage.setItem(
-      STATS_KEY,
+      statsKey,
       JSON.stringify({
         correctAnswers: next.correctAnswers,
         wrongAnswers: next.wrongAnswers,
@@ -119,25 +133,25 @@ const MazePageComponent: FC<MazePageProps> = ({
   const handleWin = () => {
     const persistedUnlocked =
       typeof window !== 'undefined'
-        ? Number.parseInt(window.localStorage.getItem(UNLOCKED_KEY) ?? '1', 10)
+        ? Number.parseInt(window.localStorage.getItem(unlockedKey) ?? '1', 10)
         : 1;
     const safePersistedUnlocked = Number.isFinite(persistedUnlocked)
-      ? Math.min(TOTAL_LESSONS, Math.max(1, persistedUnlocked))
+      ? Math.min(totalLessons, Math.max(1, persistedUnlocked))
       : 1;
     const nextUnlockedLessons = Math.min(
-      TOTAL_LESSONS,
+      totalLessons,
       Math.max(safePersistedUnlocked, lessonNumber + 1),
     );
     setUnlockedLessons(nextUnlockedLessons);
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(UNLOCKED_KEY, String(nextUnlockedLessons));
+      window.localStorage.setItem(unlockedKey, String(nextUnlockedLessons));
       if (nextUnlockedLessons > safePersistedUnlocked) {
         window.localStorage.setItem(
-          PENDING_UNLOCK_KEY,
+          pendingUnlockKey,
           String(nextUnlockedLessons),
         );
       } else {
-        window.localStorage.removeItem(PENDING_UNLOCK_KEY);
+        window.localStorage.removeItem(pendingUnlockKey);
       }
     }
     setGameWon(true);
@@ -146,7 +160,7 @@ const MazePageComponent: FC<MazePageProps> = ({
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const rawStats = window.localStorage.getItem(STATS_KEY);
+    const rawStats = window.localStorage.getItem(statsKey);
     if (rawStats) {
       try {
         const parsed = JSON.parse(rawStats) as {
@@ -165,14 +179,14 @@ const MazePageComponent: FC<MazePageProps> = ({
       }
     }
 
-    const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
+    const rawUnlocked = window.localStorage.getItem(unlockedKey);
     const parsedUnlocked = Number.parseInt(rawUnlocked ?? '1', 10);
     setUnlockedLessons(
       Number.isFinite(parsedUnlocked)
-        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedUnlocked))
+        ? Math.min(totalLessons, Math.max(1, parsedUnlocked))
         : 1,
     );
-  }, []);
+  }, [statsKey, totalLessons, unlockedKey]);
 
   // Calculate scale to fit content to screen
   useEffect(() => {
@@ -294,7 +308,7 @@ const MazePageComponent: FC<MazePageProps> = ({
             height: `${isMobilePortrait ? mobileHeight : desktopHeight}px`,
           }}
         >
-          <MazeHeader score={score} />
+          <MazeHeader score={score} backHref={backHref} />
           <div
             style={{
               flex: 1,
@@ -340,7 +354,7 @@ const MazePageComponent: FC<MazePageProps> = ({
                 excellent progress in mastering English!
               </p>
               <Link
-                href="/"
+                href={returnHref}
                 style={{
                   display: 'inline-block',
                   padding: '15px 40px',
@@ -368,7 +382,7 @@ const MazePageComponent: FC<MazePageProps> = ({
                   el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
                 }}
               >
-                Return to Map
+                {returnLabel}
               </Link>
             </div>
           </div>
@@ -389,7 +403,7 @@ const MazePageComponent: FC<MazePageProps> = ({
             <span>Correct: {correctAnswers}</span>
             <span>Wrong: {wrongAnswers}</span>
             <span>
-              Unlocked Lessons: {unlockedLessons}/{TOTAL_LESSONS}
+              Unlocked Lessons: {unlockedLessons}/{totalLessons}
             </span>
             <span>Quiz Attempts: {quizAttempts}</span>
             <span>Player Status: Winner</span>
@@ -422,7 +436,7 @@ const MazePageComponent: FC<MazePageProps> = ({
           position: 'relative',
         }}
       >
-        <MazeHeader score={score} />
+        <MazeHeader score={score} backHref={backHref} />
 
         <div style={{ flex: 1, position: 'relative' }}>
           <div
@@ -460,7 +474,7 @@ const MazePageComponent: FC<MazePageProps> = ({
                 Lesson complete!
               </span>
               <Link
-                href="/"
+                href={returnHref}
                 style={{
                   display: 'inline-block',
                   padding: '10px 16px',
@@ -473,7 +487,7 @@ const MazePageComponent: FC<MazePageProps> = ({
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
                 }}
               >
-                Return to Map
+                {returnLabel}
               </Link>
             </div>
           )}
