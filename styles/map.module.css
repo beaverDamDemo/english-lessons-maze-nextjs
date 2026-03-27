@@ -323,43 +323,6 @@
   background-color: #c8c8c8;
 }
 
-.location1 {
-  top: 81%;
-  left: 10%;
-}
-.location2 {
-  top: 81%;
-  left: 70%;
-}
-.location3 {
-  top: 65%;
-  left: 16%;
-}
-.location4 {
-  top: 51%;
-  left: 4%;
-}
-.location5 {
-  top: 54%;
-  left: 80%;
-}
-.location6 {
-  top: 37%;
-  left: 82%;
-}
-.location7 {
-  top: 37%;
-  left: 3%;
-}
-.location8 {
-  top: 25%;
-  left: 84%;
-}
-.location9 {
-  top: 22%;
-  left: 38%;
-}
-
 @media (max-width: 640px) {
   .pageHeader {
     padding: 8px 10px 6px;

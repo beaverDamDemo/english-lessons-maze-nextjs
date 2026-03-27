@@ -4,26 +4,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../../styles/map.module.css';
 import { useState, useEffect } from 'react';
+import { lessonMapButtons } from './lessonMapConfig';
 
 const APP_VERSION = '0.0.14';
 const MAP_ASPECT_RATIO = 1024 / 1536;
 const MAP_IMAGE_CACHE_BUSTER = '20260321-1';
-const TOTAL_LESSONS = 9;
+const TOTAL_LESSONS = lessonMapButtons.length;
 const STATS_KEY = 'englishMazeStats';
 const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
 const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
-
-const lessons = [
-  { num: 1, color: '#4CAF50', cls: 'location1' },
-  { num: 2, color: '#F44336', cls: 'location2' },
-  { num: 3, color: '#FF9800', cls: 'location3' },
-  { num: 4, color: '#2196F3', cls: 'location4' },
-  { num: 5, color: '#9C27B0', cls: 'location5' },
-  { num: 6, color: '#009688', cls: 'location6' },
-  { num: 7, color: '#E91E63', cls: 'location7' },
-  { num: 8, color: '#3F51B5', cls: 'location8' },
-  { num: 9, color: '#795548', cls: 'location9' },
-];
 
 export default function MazeScreenPage() {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -132,15 +121,19 @@ export default function MazeScreenPage() {
               unoptimized
               onLoad={() => setIsMapLoaded(true)}
             />
-            {lessons.map(({ num, color, cls }) =>
+            {lessonMapButtons.map(({ num, color, left, top }) =>
               num <= unlockedLessons ? (
                 <Link
                   key={num}
                   href={`/maze/lesson${num}`}
-                  className={`${styles[cls]} ${styles.locationPin} ${
+                  className={`${styles.locationPin} ${
                     num === highlightedLesson ? styles.newlyUnlocked : ''
                   }`}
-                  style={{ borderColor: color }}
+                  style={{
+                    borderColor: color,
+                    left: `${left}%`,
+                    top: `${top}%`,
+                  }}
                 >
                   {num}
                   {num === highlightedLesson && (
@@ -150,7 +143,8 @@ export default function MazeScreenPage() {
               ) : (
                 <div
                   key={num}
-                  className={`${styles[cls]} ${styles.locationPin} ${styles.locationLocked}`}
+                  className={`${styles.locationPin} ${styles.locationLocked}`}
+                  style={{ left: `${left}%`, top: `${top}%` }}
                 >
                   🔒
                 </div>
