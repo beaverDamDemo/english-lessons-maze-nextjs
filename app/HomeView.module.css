@@ -23,7 +23,7 @@
   min-height: 100dvh;
   padding: 24px;
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto auto;
   gap: 18px;
   overflow: hidden;
   background:
@@ -100,19 +100,76 @@
 
 .progressCard {
   display: grid;
-  gap: 12px;
-  padding: 16px;
+  gap: 14px;
+  padding: 18px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(136, 152, 214, 0.24);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(103, 123, 186, 0.28);
   box-shadow: 0 10px 24px rgba(20, 33, 75, 0.12);
 }
 
 .progressTitle {
   margin: 0;
-  font-size: 1.06rem;
+  font-size: 1.18rem;
   font-weight: 800;
-  color: #1f2a44;
+  color: #182542;
+}
+
+.progressDisplay {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.progressBlock {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 13px;
+  background: rgba(245, 248, 255, 0.95);
+  border: 1px solid rgba(114, 133, 196, 0.28);
+}
+
+.progressBlockTitle {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #42537e;
+}
+
+.progressRows {
+  display: grid;
+  gap: 8px;
+}
+
+.progressRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px dashed rgba(112, 132, 192, 0.34);
+}
+
+.progressRow:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.progressLabel {
+  font-size: 0.92rem;
+  color: #2f4370;
+  font-weight: 700;
+}
+
+.progressValue {
+  font-size: 1rem;
+  color: #162441;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 
 .progressStats {
@@ -124,32 +181,68 @@
 .progressChip {
   display: inline-flex;
   align-items: center;
-  min-height: 26px;
-  padding: 5px 9px;
+  min-height: 24px;
+  padding: 2px 8px;
   border-radius: 999px;
   background: linear-gradient(135deg, #eef3ff 0%, #fff3e6 100%);
   border: 1px solid rgba(136, 152, 214, 0.26);
   color: #24375f;
-  font-size: 0.84rem;
+  font-size: clamp(11px, 0.56vw, 12px);
+  line-height: 1;
   font-weight: 700;
   white-space: nowrap;
 }
 
+.bottomPageActions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.progressActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.progressUnlockButton,
 .progressResetButton {
   justify-self: start;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #ff6a6a 0%, #d93f7a 100%);
-  color: #fff;
-  padding: 8px 14px;
+  padding: 0 14px;
+  min-height: 32px;
   cursor: pointer;
-  font-size: 0.78rem;
+  font-size: clamp(12px, 0.7vw, 13px);
+  line-height: 1;
   font-weight: 800;
-  box-shadow: 0 6px 14px rgba(217, 63, 122, 0.24);
   transition:
     transform 0.15s ease,
     box-shadow 0.18s ease,
     filter 0.18s ease;
+}
+
+.progressUnlockButton {
+  background: linear-gradient(135deg, #ffd166 0%, #ff9f1c 100%);
+  color: #402300;
+  box-shadow: 0 6px 14px rgba(255, 159, 28, 0.34);
+}
+
+.progressResetButton {
+  background: linear-gradient(135deg, #ff6a6a 0%, #d93f7a 100%);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(217, 63, 122, 0.24);
+}
+
+.progressUnlockButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 18px rgba(255, 159, 28, 0.4);
+  filter: brightness(0.98);
 }
 
 .progressResetButton:hover {
@@ -564,6 +657,24 @@
   }
 }
 
+@media (min-width: 1200px) {
+  .progressStats {
+    gap: 6px;
+  }
+
+  .progressChip {
+    min-height: 22px;
+    padding: 2px 7px;
+    font-size: 11px;
+  }
+
+  .progressUnlockButton,
+  .progressResetButton {
+    min-height: 30px;
+    padding: 0 13px;
+  }
+}
+
 @media (max-width: 640px) {
   .homePage {
     padding: 14px;
@@ -603,5 +714,21 @@
     min-height: 28px;
     padding: 5px 10px;
     font-size: 0.78rem;
+  }
+
+  .progressDisplay {
+    grid-template-columns: 1fr;
+  }
+
+  .progressTitle {
+    font-size: 1.06rem;
+  }
+
+  .progressLabel {
+    font-size: 0.86rem;
+  }
+
+  .progressValue {
+    font-size: 0.92rem;
   }
 }

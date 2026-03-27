@@ -4,14 +4,19 @@
 import Link from 'next/link';
 import styles from './HomeView.module.css';
 import { useEffect, useMemo, useState } from 'react';
+import { lessonMapButtons as mazeLessonMapButtons } from './maze/lessonMapConfig';
+import { lessonMapButtons as casinoLessonMapButtons } from './casino/lessonMapConfig';
+import { lessonMapButtons as pattayaLessonMapButtons } from './pattaya-games/lessonMapConfig';
 
 const APP_VERSION = '0.0.14';
-const MAZE_TOTAL_LESSONS = 9;
-const CASINO_TOTAL_LESSONS = 1;
+const MAZE_TOTAL_LESSONS = Math.max(1, mazeLessonMapButtons.length);
+const CASINO_TOTAL_LESSONS = Math.max(1, casinoLessonMapButtons.length);
+const PATTAYA_TOTAL_LESSONS = Math.max(1, pattayaLessonMapButtons.length);
 const MAZE_STATS_KEY = 'englishMazeStats';
 const MAZE_UNLOCKED_KEY = 'englishMazeUnlockedLessons';
 const CASINO_STATS_KEY = 'englishCasinoStats';
 const CASINO_UNLOCKED_KEY = 'englishCasinoUnlockedLessons';
+const PATTAYA_UNLOCKED_KEY = 'englishPattayaUnlockedLessons';
 
 type ProgressStats = {
   correctAnswers: number;
@@ -45,6 +50,7 @@ function parseStats(raw: string | null): ProgressStats {
 export default function HomePage() {
   const [mazeUnlocked, setMazeUnlocked] = useState(1);
   const [casinoUnlocked, setCasinoUnlocked] = useState(1);
+  const [pattayaUnlocked, setPattayaUnlocked] = useState(1);
   const [mazeStats, setMazeStats] = useState<ProgressStats>(EMPTY_STATS);
   const [casinoStats, setCasinoStats] = useState<ProgressStats>(EMPTY_STATS);
 
@@ -67,6 +73,18 @@ export default function HomePage() {
       setCasinoUnlocked(
         Number.isFinite(parsedCasinoUnlocked)
           ? Math.min(CASINO_TOTAL_LESSONS, Math.max(1, parsedCasinoUnlocked))
+          : 1,
+      );
+
+      const rawPattayaUnlocked =
+        window.localStorage.getItem(PATTAYA_UNLOCKED_KEY);
+      const parsedPattayaUnlocked = Number.parseInt(
+        rawPattayaUnlocked ?? '1',
+        10,
+      );
+      setPattayaUnlocked(
+        Number.isFinite(parsedPattayaUnlocked)
+          ? Math.min(PATTAYA_TOTAL_LESSONS, Math.max(1, parsedPattayaUnlocked))
           : 1,
       );
 
@@ -114,8 +132,29 @@ export default function HomePage() {
       window.localStorage.removeItem(CASINO_STATS_KEY);
       window.localStorage.removeItem(CASINO_UNLOCKED_KEY);
       window.localStorage.removeItem('englishCasinoPendingUnlockLesson');
+      window.localStorage.removeItem(PATTAYA_UNLOCKED_KEY);
+      window.localStorage.removeItem('englishPattayaPendingUnlockLesson');
       window.location.reload();
     }
+  };
+
+  const handleUnlockAllLessons = () => {
+    window.localStorage.setItem(MAZE_UNLOCKED_KEY, String(MAZE_TOTAL_LESSONS));
+    window.localStorage.setItem(
+      CASINO_UNLOCKED_KEY,
+      String(CASINO_TOTAL_LESSONS),
+    );
+    window.localStorage.setItem(
+      PATTAYA_UNLOCKED_KEY,
+      String(PATTAYA_TOTAL_LESSONS),
+    );
+    window.localStorage.removeItem('englishMazePendingUnlockLesson');
+    window.localStorage.removeItem('englishCasinoPendingUnlockLesson');
+    window.localStorage.removeItem('englishPattayaPendingUnlockLesson');
+
+    setMazeUnlocked(MAZE_TOTAL_LESSONS);
+    setCasinoUnlocked(CASINO_TOTAL_LESSONS);
+    setPattayaUnlocked(PATTAYA_TOTAL_LESSONS);
   };
 
   return (
@@ -157,24 +196,75 @@ export default function HomePage() {
 
       <section className={styles.progressCard} aria-label="Your progress">
         <h2 className={styles.progressTitle}>Your Progress</h2>
-        <div className={styles.progressStats}>
-          <span className={styles.progressChip}>
-            Maze Unlocked: {mazeUnlocked}/{MAZE_TOTAL_LESSONS}
-          </span>
-          <span className={styles.progressChip}>
-            Casino Unlocked: {casinoUnlocked}/{CASINO_TOTAL_LESSONS}
-          </span>
-          <span className={styles.progressChip}>Correct: {totalCorrect}</span>
-          <span className={styles.progressChip}>Wrong: {totalWrong}</span>
-          <span className={styles.progressChip}>Attempts: {totalAttempts}</span>
-          <span className={styles.progressChip}>Moves: {totalMoves}</span>
+        <div className={styles.progressDisplay}>
+          <article className={styles.progressBlock}>
+            <h3 className={styles.progressBlockTitle}>Lesson Unlocks</h3>
+            <div className={styles.progressRows}>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Maze</span>
+                <strong className={styles.progressValue}>
+                  {mazeUnlocked}/{MAZE_TOTAL_LESSONS}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Casino</span>
+                <strong className={styles.progressValue}>
+                  {casinoUnlocked}/{CASINO_TOTAL_LESSONS}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Pattaya</span>
+                <strong className={styles.progressValue}>
+                  {pattayaUnlocked}/{PATTAYA_TOTAL_LESSONS}
+                </strong>
+              </div>
+            </div>
+          </article>
+
+          <article className={styles.progressBlock}>
+            <h3 className={styles.progressBlockTitle}>Quiz Totals</h3>
+            <div className={styles.progressRows}>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Correct</span>
+                <strong className={styles.progressValue}>{totalCorrect}</strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Wrong</span>
+                <strong className={styles.progressValue}>{totalWrong}</strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Attempts</span>
+                <strong className={styles.progressValue}>
+                  {totalAttempts}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Moves</span>
+                <strong className={styles.progressValue}>{totalMoves}</strong>
+              </div>
+            </div>
+          </article>
         </div>
-        <button
-          className={styles.progressResetButton}
-          onClick={handleResetProgress}
-        >
-          Reset Progress
-        </button>
+      </section>
+
+      <section
+        className={styles.bottomPageActions}
+        aria-label="Progress actions"
+      >
+        <div className={styles.progressActions}>
+          <button
+            className={styles.progressUnlockButton}
+            onClick={handleUnlockAllLessons}
+          >
+            Unlock All Lessons
+          </button>
+          <button
+            className={styles.progressResetButton}
+            onClick={handleResetProgress}
+          >
+            Reset Progress
+          </button>
+        </div>
       </section>
 
       <footer className={`${styles.footerBar} ${styles.rightFooterBar}`}>
