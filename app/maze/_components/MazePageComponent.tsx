@@ -519,11 +519,14 @@ const MazePageComponent: FC<MazePageProps> = ({
                   backgroundColor: 'white',
                   padding: '35px',
                   borderRadius: '16px',
+                  width: '100%',
                   maxWidth: '520px',
+                  minWidth: '0',
                   maxHeight: '85vh',
                   overflowY: 'auto',
                   boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
                   border: `3px solid ${themeColor}`,
+                  boxSizing: 'border-box',
                 }}
               >
                 <Quiz

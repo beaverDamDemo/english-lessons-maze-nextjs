@@ -270,7 +270,7 @@ export default function Quiz({
         <p
           style={{
             margin: '15px 0',
-            fontSize: '16px',
+            fontSize: '18px',
             fontWeight: '500',
             color: '#333',
           }}
@@ -303,6 +303,3 @@ export default function Quiz({
     </div>
   );
 }
-
-
-

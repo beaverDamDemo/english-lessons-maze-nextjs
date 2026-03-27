@@ -90,8 +90,8 @@ export default function MazeScreenPage() {
           <Image
             src="/assets/back.png"
             alt="Home"
-            width={28}
-            height={28}
+            width={34}
+            height={34}
             className={styles.homeLinkImg}
           />
         </Link>

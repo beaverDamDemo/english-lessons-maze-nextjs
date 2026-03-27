@@ -53,8 +53,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 62px;
+  height: 62px;
   border-radius: 999px;
   background: transparent;
   border: 0;
@@ -72,8 +72,8 @@
 
 .homeLinkImg {
   display: block;
-  width: 34px;
-  height: 34px;
+  width: 41px;
+  height: 41px;
   object-fit: contain;
 }
 

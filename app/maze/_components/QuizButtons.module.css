@@ -27,6 +27,22 @@
   outline-offset: 2px;
 }
 
+.englishPrompt {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  line-height: 1.35;
+}
+
+.thaiPrompt {
+  font-size: 15px;
+  color: #555;
+  margin: 0 0 18px 0;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
 .questionSlide {
   animation: questionSlideIn 0.28s ease both;
   font-family: var(--font-fredoka), 'Trebuchet MS', sans-serif;
