@@ -25,32 +25,18 @@ function buildBalancedQuestions(
   count: number,
 ): QuizQuestion[] {
   const selected = shuffleArray(source).slice(0, count);
-  const targetAnswerSlots = shuffleArray(
-    Array.from({ length: count }, (_, i) => i % 4),
-  );
 
-  return selected.map((question, idx) => {
+  return selected.map((question) => {
     const correctText = question.options[question.answer];
     const wrongOptions = shuffleArray(
       question.options.filter((_, optionIdx) => optionIdx !== question.answer),
     );
-    const correctIndex = targetAnswerSlots[idx];
-    const balancedOptions: string[] = [];
-    let wrongPointer = 0;
-
-    for (let optionIdx = 0; optionIdx < question.options.length; optionIdx++) {
-      if (optionIdx === correctIndex) {
-        balancedOptions.push(correctText);
-      } else {
-        balancedOptions.push(wrongOptions[wrongPointer]);
-        wrongPointer += 1;
-      }
-    }
+    const balancedOptions = [correctText, ...wrongOptions];
 
     return {
       ...question,
       options: balancedOptions,
-      answer: correctIndex,
+      answer: 0,
     };
   });
 }
