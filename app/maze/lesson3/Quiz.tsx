@@ -1,4 +1,4 @@
-// app/maze/lesson3/Quiz.tsx
+﻿// app/maze/lesson3/Quiz.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,136 +7,157 @@ import styles from '../_components/QuizButtons.module.css';
 
 const questions = [
   {
-    q: 'Choose the correct phrase for something I own.',
-    options: ['my phone', 'your phone', 'he phone', 'she phone'],
+    q: 'Every weekday, I _______ to school by bike.',
+    options: ['go', 'went', 'will go', 'is going'],
     answer: 0,
   },
   {
-    q: 'Choose the correct phrase for something you own.',
-    options: ['my bag', 'your bag', 'our bags', 'it bag'],
-    answer: 1,
-  },
-  {
-    q: 'Complete: "This is ___ name." (I am speaking about myself)',
-    options: ['my', 'your', 'she', 'their'],
+    q: 'Yesterday, she _______ to the market for fruit.',
+    options: ['went', 'go', 'will go', 'is going'],
     answer: 0,
   },
   {
-    q: 'Complete: "What is ___ name?" (I am asking you)',
-    options: ['my', 'his', 'your', 'our'],
-    answer: 2,
-  },
-  {
-    q: 'Choose the correct sentence.',
-    options: [
-      'This is my book.',
-      'This is your I book.',
-      'This my is book.',
-      'This is book my.',
-    ],
+    q: 'Tomorrow, we _______ to the zoo with our class.',
+    options: ['will go', 'go', 'went', 'is going'],
     answer: 0,
   },
   {
-    q: 'Choose the correct sentence when talking to a friend.',
-    options: [
-      'Is this my bag?',
-      'Is this your bag?',
-      'Is this she bag?',
-      'Is this he bag?',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'Fill in the blank: "This is ___ phone." (I own it)',
-    options: ['my', 'your', 'her', 'their'],
+    q: 'Right now, he _______ to the gym for his workout.',
+    options: ['is going', 'go', 'went', 'will go'],
     answer: 0,
   },
   {
-    q: 'Fill in the blank: "This is ___ chair." (You own it)',
-    options: ['my', 'your', 'its', 'our'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the best answer: "Is this my book or your book?"',
-    options: [
-      'book and book',
-      'my book or your book',
-      'yes book',
-      'book is blue',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'Complete: "___ name is Ali." (I am Ali)',
-    options: ['My', 'Your', 'His', 'Her'],
+    q: 'Last weekend, they _______ to the beach for a picnic.',
+    options: ['went', 'go', 'will go', 'is going'],
     answer: 0,
   },
   {
-    q: 'Complete: "___ name is Ken." (I am talking to Ken)',
-    options: ['My', 'Your', 'Our', 'Its'],
-    answer: 1,
-  },
-  {
-    q: 'Pick the short sentence with my/your used correctly.',
-    options: [
-      'Your are my friend.',
-      'You are my friend.',
-      'You my are friend.',
-      'My are you friend.',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'Choose the phrase for "the bag belongs to you".',
-    options: ['my bag', 'your bag', 'his bag', 'our bag'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the phrase for "the pen belongs to me".',
-    options: ['my pen', 'your pen', 'their pen', 'its pen'],
+    q: 'On Mondays, I _______ to work by train.',
+    options: ['go', 'went', 'will go', 'is going'],
     answer: 0,
   },
   {
-    q: 'Complete: "Is this ___ phone?" (I am asking you)',
-    options: ['my', 'your', 'our', 'its'],
-    answer: 1,
-  },
-  {
-    q: 'Complete: "No, it is ___ phone." (I answer: it belongs to me)',
-    options: ['your', 'my', 'their', 'his'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the best mini-dialogue ending: "What is your name?"',
-    options: [
-      'My name is Lina.',
-      'Your name is Lina.',
-      'Name book chair.',
-      'I yes no.',
-    ],
+    q: 'Every Friday, we _______ to the cinema after dinner.',
+    options: ['go', 'went', 'will go', 'is going'],
     answer: 0,
   },
   {
-    q: 'Choose the correct sentence order.',
-    options: [
-      'my this is bag',
-      'this is bag my',
-      'this is my bag',
-      'is this my bag',
-    ],
-    answer: 2,
+    q: 'Later today, I _______ to the store for groceries.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
   },
   {
-    q: 'Choose the correct question.',
-    options: [
-      'This your book is?',
-      'Is this your book?',
-      'Your is this book?',
-      'Is your this book?',
-    ],
-    answer: 1,
+    q: 'At the moment, she _______ to the library to study.',
+    options: ['is going', 'go', 'went', 'will go'],
+    answer: 0,
+  },
+  {
+    q: 'Last summer, they _______ to the mountains for hiking.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'Next week, I _______ to visit my grandparents.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ to the dentist yesterday.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ to the museum every year.',
+    options: ['go', 'went', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ to the cafe right now.',
+    options: ['is going', 'go', 'went', 'will go'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ to the concert last night.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ to the park every morning.',
+    options: ['go', 'went', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ to the airport tomorrow.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ to the bakery now.',
+    options: ['is going', 'go', 'went', 'will go'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ to the lake last weekend.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ to the gym three times a week.',
+    options: ['go', 'went', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ to the restaurant tonight.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ to the office earlier today.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ to the bookstore every Saturday.',
+    options: ['go', 'went', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ to the party later.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ to the doctor yesterday.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ to the supermarket now.',
+    options: ['is going', 'go', 'went', 'will go'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ to the stadium last Sunday.',
+    options: ['went', 'go', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ to the salon tomorrow.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ to the zoo every summer.',
+    options: ['go', 'went', 'will go', 'is going'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ to the cafe this afternoon.',
+    options: ['will go', 'go', 'went', 'is going'],
+    answer: 0,
   },
 ];
+
 
 export default function Quiz({
   onComplete,
@@ -326,3 +347,5 @@ export default function Quiz({
     </div>
   );
 }
+
+

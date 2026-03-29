@@ -1,4 +1,4 @@
-// app/maze/lesson2/Quiz.tsx
+﻿// app/maze/lesson2/Quiz.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,118 +7,103 @@ import styles from '../_components/QuizButtons.module.css';
 
 const questions = [
   {
-    q: 'Choose the noun for a male adult.',
-    options: ['man', 'run', 'happy', 'read'],
+    q: 'My _______ is older than me and loves video games.',
+    options: ['brother', 'sister', 'siblings', 'boyfriend'],
     answer: 0,
   },
   {
-    q: 'Choose the noun for a female adult.',
-    options: ['woman', 'walk', 'blue', 'sleep'],
+    q: 'Her _______ is coming to visit from college.',
+    options: ['sister', 'brother', 'siblings', 'boyfriend'],
     answer: 0,
   },
   {
-    q: 'Which word is a child male?',
-    options: ['girl', 'boy', 'friend', 'chair'],
-    answer: 1,
-  },
-  {
-    q: 'Which word is a child female?',
-    options: ['book', 'boy', 'girl', 'phone'],
-    answer: 2,
-  },
-  {
-    q: 'Choose a word for someone you like and trust.',
-    options: ['friend', 'bag', 'table', 'store'],
+    q: "They are twins, so they're _______.",
+    options: ['siblings', 'sister', 'brother', 'boyfriend'],
     answer: 0,
   },
   {
-    q: 'Which word names this object: You call people with it.',
-    options: ['book', 'phone', 'chair', 'boy'],
-    answer: 1,
-  },
-  {
-    q: 'Which item do you carry on your shoulder?',
-    options: ['bag', 'book', 'man', 'girl'],
+    q: 'She went to the movies with her _______ last night.',
+    options: ['boyfriend', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Which object is for reading?',
-    options: ['chair', 'book', 'phone', 'friend'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the object you sit on.',
-    options: ['woman', 'bag', 'chair', 'boy'],
-    answer: 2,
-  },
-  {
-    q: 'Complete the sentence: "This is a ___."',
-    options: ['book', 'run', 'quickly', 'happy'],
+    q: "He bought flowers for his _______ on Valentine's Day.",
+    options: ['girlfriend', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Complete: "This is a woman. ___ is my teacher."',
-    options: ['She', 'Book', 'Bag', 'Chair'],
+    q: "My dad's _______ is a great cook.",
+    options: ['wife', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Choose the correct noun: "Tom is my ___."',
-    options: ['friend', 'sleep', 'under', 'blue'],
+    q: 'She introduced me to her _______ at the party.',
+    options: ['husband', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Which sentence is correct?',
-    options: [
-      'This is a book.',
-      'This are a book.',
-      'This is books.',
-      'This is to book.',
-    ],
+    q: 'I have one _______ and two brothers.',
+    options: ['sister', 'brother', 'siblings', 'boyfriend'],
     answer: 0,
   },
   {
-    q: 'Choose the best completion: "This is my ___."',
-    options: ['phone', 'run', 'go', 'eat'],
+    q: "We're not just friends-he's my _______.",
+    options: ['boyfriend', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Pick the people word.',
-    options: ['chair', 'friend', 'book', 'bag'],
-    answer: 1,
-  },
-  {
-    q: 'Pick the objects pair.',
-    options: [
-      'man and woman',
-      'boy and girl',
-      'phone and bag',
-      'friend and teacher',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Complete: "This is a ___. I read it every day."',
-    options: ['book', 'chair', 'phone', 'girl'],
+    q: 'Anna and her _______ are planning their wedding.',
+    options: ['fiance', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Choose the noun in this sentence: "The boy has a bag."',
-    options: ['boy', 'has', 'a', 'The'],
+    q: 'My _______ and I grew up in the same room.',
+    options: ['brother', 'sister', 'siblings', 'boyfriend'],
     answer: 0,
   },
   {
-    q: 'Complete: "This is my friend. ___ is kind."',
-    options: ['He', 'Book', 'Chair', 'Bag'],
+    q: "She's not married, but she has a _______.",
+    options: ['boyfriend', 'sister', 'brother', 'siblings'],
     answer: 0,
   },
   {
-    q: 'Choose the correct simple sentence.',
-    options: [
-      'This is a chair.',
-      'This chair are.',
-      'Is this chair a.',
-      'This is chairs.',
-    ],
+    q: "He's married, and his _______ is a teacher.",
+    options: ['wife', 'sister', 'brother', 'siblings'],
+    answer: 0,
+  },
+  {
+    q: 'My _______ and I are going on a trip together.',
+    options: ['girlfriend', 'sister', 'brother', 'siblings'],
+    answer: 0,
+  },
+  {
+    q: 'Do you have any _______ or are you an only child?',
+    options: ['siblings', 'sister', 'brother', 'boyfriend'],
+    answer: 0,
+  },
+  {
+    q: 'Her _______ is very supportive of her career.',
+    options: ['husband', 'sister', 'brother', 'siblings'],
+    answer: 0,
+  },
+  {
+    q: 'My _______ and I share clothes sometimes.',
+    options: ['sister', 'brother', 'siblings', 'boyfriend'],
+    answer: 0,
+  },
+  {
+    q: "He's not my husband yet, just my _______.",
+    options: ['boyfriend', 'sister', 'brother', 'siblings'],
+    answer: 0,
+  },
+  {
+    q: "She's married to my uncle, so she's my uncle's _______.",
+    options: ['wife', 'sister', 'brother', 'siblings'],
+    answer: 0,
+  },
+  {
+    q: "We're close friends, but not _______-we're just classmates.",
+    options: ['siblings', 'sister', 'brother', 'boyfriend'],
     answer: 0,
   },
 ];

@@ -1,4 +1,4 @@
-// app/maze/lesson5/Quiz.tsx
+﻿// app/maze/lesson5/Quiz.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,136 +7,157 @@ import styles from '../_components/QuizButtons.module.css';
 
 const questions = [
   {
-    q: 'Choose the correct sentence.',
-    options: ['I am Anna.', 'I is Anna.', 'I are Anna.', 'I be Anna.'],
+    q: '_______ you like pizza?',
+    options: ['Do', 'Does', 'Did', 'Are'],
     answer: 0,
   },
   {
-    q: 'Choose the correct sentence.',
-    options: [
-      'You am my friend.',
-      'You are my friend.',
-      'You is my friend.',
-      'You be my friend.',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'Choose the correct sentence.',
-    options: [
-      'He are from Japan.',
-      'He am from Japan.',
-      'He is from Japan.',
-      'He be from Japan.',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Choose the correct sentence.',
-    options: [
-      'She is happy.',
-      'She are happy.',
-      'She am happy.',
-      'She be happy.',
-    ],
+    q: '_______ she live near here with her parents?',
+    options: ['Does', 'Do', 'Did', 'Are'],
     answer: 0,
   },
   {
-    q: 'Fill in: "I ___ a student."',
-    options: ['am', 'is', 'are', 'be'],
+    q: '_______ we going to the park today after lunch?',
+    options: ['Are', 'Do', 'Does', 'Did'],
     answer: 0,
   },
   {
-    q: 'Fill in: "You ___ my friend."',
-    options: ['am', 'is', 'are', 'be'],
-    answer: 2,
-  },
-  {
-    q: 'Fill in: "He ___ tired."',
-    options: ['am', 'are', 'is', 'be'],
-    answer: 2,
-  },
-  {
-    q: 'Fill in: "She ___ from Korea."',
-    options: ['is', 'are', 'am', 'be'],
+    q: '_______ you see that movie last weekend at the cinema?',
+    options: ['Did', 'Do', 'Does', 'Are'],
     answer: 0,
   },
   {
-    q: 'Reorder the words: "am / I / happy"',
-    options: ['I am happy.', 'I happy am.', 'Am I happy.', 'Happy am I.'],
+    q: '_______ your friends coming over later for the game night?',
+    options: ['Are', 'Do', 'Does', 'Did'],
     answer: 0,
   },
   {
-    q: 'Reorder the words: "friend / are / my / You"',
-    options: [
-      'You are my friend.',
-      'You my are friend.',
-      'Are you my friend.',
-      'You are friend my.',
-    ],
+    q: '_______ he play guitar well in his band?',
+    options: ['Does', 'Do', 'Did', 'Are'],
     answer: 0,
   },
   {
-    q: 'Reorder the words: "is / He / tall"',
-    options: ['He is tall.', 'He tall is.', 'Is he tall.', 'Tall he is.'],
+    q: '_______ you remember her name from the meeting yesterday?',
+    options: ['Do', 'Does', 'Did', 'Are'],
     answer: 0,
   },
   {
-    q: 'Reorder the words: "is / She / my / teacher"',
-    options: [
-      'She my is teacher.',
-      'She is teacher my.',
-      'She is my teacher.',
-      'Is she my teacher.',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Choose the incorrect sentence.',
-    options: ['I am ready.', 'You are kind.', 'He are strong.', 'She is nice.'],
-    answer: 2,
-  },
-  {
-    q: 'Choose the correct sentence.',
-    options: [
-      'I am from Brazil.',
-      'I is from Brazil.',
-      'I are from Brazil.',
-      'I be from Brazil.',
-    ],
+    q: '_______ she call you yesterday after the presentation?',
+    options: ['Did', 'Do', 'Does', 'Are'],
     answer: 0,
   },
   {
-    q: 'Choose the correct sentence.',
-    options: [
-      'You are hungry.',
-      'You is hungry.',
-      'You am hungry.',
-      'You be hungry.',
-    ],
+    q: '_______ they usually take the bus to school?',
+    options: ['Do', 'Does', 'Did', 'Are'],
     answer: 0,
   },
   {
-    q: 'Choose the correct sentence.',
-    options: [
-      'He is my brother.',
-      'He are my brother.',
-      'He am my brother.',
-      'He be my brother.',
-    ],
+    q: '_______ your brother enjoy playing chess with you?',
+    options: ['Does', 'Do', 'Did', 'Are'],
     answer: 0,
   },
   {
-    q: 'Choose the correct sentence.',
-    options: [
-      'She is in class.',
-      'She are in class.',
-      'She am in class.',
-      'She be in class.',
-    ],
+    q: '_______ you know how to cook pasta?',
+    options: ['Do', 'Does', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ she work at the hospital?',
+    options: ['Does', 'Do', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ we have homework today?',
+    options: ['Do', 'Does', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ they come to the party last night?',
+    options: ['Did', 'Do', 'Does', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ he like reading novels?',
+    options: ['Does', 'Do', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ you hear that noise?',
+    options: ['Did', 'Do', 'Does', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ she speak French fluently?',
+    options: ['Does', 'Do', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ we need to bring our books?',
+    options: ['Do', 'Does', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ they arrive on time?',
+    options: ['Did', 'Do', 'Does', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ your parents live nearby?',
+    options: ['Do', 'Does', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ he go to the gym every day?',
+    options: ['Does', 'Do', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ you finish your project yesterday?',
+    options: ['Did', 'Do', 'Does', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ she enjoy the concert?',
+    options: ['Did', 'Do', 'Does', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ we meet at the cafe later?',
+    options: ['Are', 'Do', 'Does', 'Did'],
+    answer: 0,
+  },
+  {
+    q: '_______ they play football on weekends?',
+    options: ['Do', 'Does', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ your sister study biology?',
+    options: ['Does', 'Do', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ he come to school yesterday?',
+    options: ['Did', 'Do', 'Does', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ you like this song?',
+    options: ['Do', 'Does', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ she have a pet cat?',
+    options: ['Does', 'Do', 'Did', 'Are'],
+    answer: 0,
+  },
+  {
+    q: '_______ we going to start soon?',
+    options: ['Are', 'Do', 'Does', 'Did'],
     answer: 0,
   },
 ];
+
 
 export default function Quiz({
   onComplete,
@@ -326,3 +347,5 @@ export default function Quiz({
     </div>
   );
 }
+
+

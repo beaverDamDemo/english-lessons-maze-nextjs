@@ -1,4 +1,4 @@
-// app/maze/lesson8/Quiz.tsx
+﻿// app/maze/lesson8/Quiz.tsx
 'use client';
 
 import { useState } from 'react';
@@ -137,7 +137,6 @@ const questions = [
     answer: 1,
   },
 ];
-
 export default function Quiz({
   onComplete,
   primaryColor = '#4CAF50',
@@ -326,3 +325,6 @@ export default function Quiz({
     </div>
   );
 }
+
+
+

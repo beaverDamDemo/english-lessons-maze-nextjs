@@ -1,4 +1,4 @@
-// app/maze/lesson4/Quiz.tsx
+﻿// app/maze/lesson4/Quiz.tsx
 'use client';
 
 import { useState } from 'react';
@@ -7,121 +7,157 @@ import styles from '../_components/QuizButtons.module.css';
 
 const questions = [
   {
-    q: 'Choose the correct pronoun for a boy: Tom is a student. ___ is kind.',
-    options: ['He', 'She', 'It', 'They'],
+    q: 'The dog _______ hungry right now.',
+    options: ['is', 'are', 'was', 'were'],
     answer: 0,
   },
   {
-    q: 'Choose the correct pronoun for a girl: Anna is happy. ___ is smiling.',
-    options: ['He', 'She', 'You', 'We'],
-    answer: 1,
-  },
-  {
-    q: 'Complete: "___ is Tom."',
-    options: ['He', 'She', 'They', 'It'],
+    q: 'They _______ at the park yesterday afternoon.',
+    options: ['were', 'is', 'are', 'was'],
     answer: 0,
   },
   {
-    q: 'Complete: "___ is Anna."',
-    options: ['He', 'She', 'It', 'We'],
-    answer: 1,
-  },
-  {
-    q: 'Identify the correct sentence.',
-    options: ['He is a girl.', 'She is a woman.', 'He is Anna.', 'She is Tom.'],
-    answer: 1,
-  },
-  {
-    q: 'Who is a man? Choose the right pronoun.',
-    options: ['He', 'She', 'It', 'They'],
+    q: 'My friends _______ always very kind and helpful.',
+    options: ['are', 'is', 'was', 'were'],
     answer: 0,
   },
   {
-    q: 'Who is a woman? Choose the right pronoun.',
-    options: ['He', 'She', 'It', 'You'],
-    answer: 1,
-  },
-  {
-    q: 'Read and choose: "This is Jack. ___ is my friend."',
-    options: ['He', 'She', 'We', 'It'],
+    q: 'She _______ a teacher before she retired.',
+    options: ['was', 'is', 'are', 'were'],
     answer: 0,
   },
   {
-    q: 'Read and choose: "This is Lina. ___ is my friend."',
-    options: ['He', 'She', 'It', 'They'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the best question answer pair.',
-    options: [
-      'Who is Anna? He is Anna.',
-      'Who is Tom? She is Tom.',
-      'Who is Tom? He is Tom.',
-      'Who is Mia? He is Mia.',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Which sentence uses he correctly?',
-    options: [
-      'He is my mother.',
-      'He is my brother.',
-      'He is my sister.',
-      'He is Anna.',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'Which sentence uses she correctly?',
-    options: [
-      'She is my father.',
-      'She is my uncle.',
-      'She is my sister.',
-      'She is Tom.',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Choose the correct reading: "Mila is a girl."',
-    options: ['He is Mila.', 'She is Mila.', 'It is Mila.', 'They is Mila.'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the correct reading: "Ben is a boy."',
-    options: ['He is Ben.', 'She is Ben.', 'They are Ben.', 'It are Ben.'],
+    q: 'We _______ excited about the trip tomorrow.',
+    options: ['are', 'is', 'was', 'were'],
     answer: 0,
   },
   {
-    q: 'Complete: "___ is a man. ___ is strong."',
-    options: ['He / He', 'She / She', 'He / She', 'She / He'],
+    q: 'He _______ at home when I called.',
+    options: ['was', 'is', 'are', 'were'],
     answer: 0,
   },
   {
-    q: 'Complete: "___ is a woman. ___ is kind."',
-    options: ['He / He', 'He / She', 'She / She', 'She / He'],
-    answer: 2,
+    q: 'The books _______ on the shelf last week.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
   },
   {
-    q: 'Pick the incorrect sentence.',
-    options: [
-      'He is a boy.',
-      'She is a girl.',
-      'He is a woman.',
-      'She is Anna.',
-    ],
-    answer: 2,
+    q: 'This sandwich _______ delicious at the moment.',
+    options: ['is', 'are', 'was', 'were'],
+    answer: 0,
   },
   {
-    q: 'Choose the correct pair.',
-    options: [
-      'Tom = she, Anna = he',
-      'Tom = he, Anna = she',
-      'Tom = it, Anna = they',
-      'Tom = we, Anna = you',
-    ],
-    answer: 1,
+    q: 'You _______ very tired after the long hike yesterday.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'The children _______ playing outside right now.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ happy to see you yesterday.',
+    options: ['was', 'is', 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ ready for the exam.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ in the kitchen earlier.',
+    options: ['was', 'is', 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'The flowers _______ blooming beautifully.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ sick last week.',
+    options: ['was', 'is', 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ at the concert last night.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'The sky _______ clear today.',
+    options: ['is', 'are', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'You _______ amazing in your performance.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'The students _______ studying in the library.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ nervous before the interview.',
+    options: ['was', 'is', 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'The chairs _______ arranged neatly.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ late to the meeting.',
+    options: ['was', 'is', 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ helpful during the event.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'The cake _______ delicious.',
+    options: ['is', 'are', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ tired after the trip.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ in the office now.',
+    options: ['is', 'are', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'The lights _______ off last night.',
+    options: ['were', 'is', 'are', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'You _______ welcome to join us.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ my best friend in school.',
+    options: ['was', 'is', 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'The birds _______ singing this morning.',
+    options: ['are', 'is', 'was', 'were'],
+    answer: 0,
   },
 ];
+
 
 export default function Quiz({
   onComplete,
@@ -311,3 +347,5 @@ export default function Quiz({
     </div>
   );
 }
+
+

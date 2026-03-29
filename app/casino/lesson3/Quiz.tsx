@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useThaiQuestion } from '../../maze/_components/useThaiQuestion';
@@ -136,7 +136,6 @@ const questions = [
     answer: 0,
   },
 ];
-
 export default function Quiz({
   onComplete,
   primaryColor = '#1D3557',
@@ -310,3 +309,6 @@ export default function Quiz({
     </div>
   );
 }
+
+
+

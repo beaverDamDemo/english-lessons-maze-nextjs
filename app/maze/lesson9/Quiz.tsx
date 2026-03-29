@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useThaiQuestion } from '../_components/useThaiQuestion';
@@ -146,7 +146,6 @@ const questions = [
     answer: 3,
   },
 ];
-
 export default function Quiz({
   onComplete,
   primaryColor = '#795548',
@@ -335,3 +334,6 @@ export default function Quiz({
     </div>
   );
 }
+
+
+

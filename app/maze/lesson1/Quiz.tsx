@@ -1,7 +1,6 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
-import { useThaiQuestion } from '../_components/useThaiQuestion';
 import styles from '../_components/QuizButtons.module.css';
 
 type QuizQuestion = {
@@ -12,154 +11,104 @@ type QuizQuestion = {
 
 const questions: QuizQuestion[] = [
   {
-    q: 'Choose the greeting you say in the morning.',
-    options: ['Good morning', 'Good night', 'Bye', 'Sorry'],
-    answer: 0,
+    q: '7 AM is _______ in 24h format.',
+    options: ['19:00', '7 AM', '7 PM', '7:00'],
+    answer: 3,
   },
   {
-    q: 'Choose the correct response: "How are you?"',
-    options: ['I am fine.', 'Blue.', 'Monday.', 'Ten.'],
-    answer: 0,
+    q: '7 PM is _______ in 24h format.',
+    options: ['7:00', '7 AM', '7 PM', '19:00'],
+    answer: 3,
   },
   {
-    q: 'Choose the correct sentence.',
-    options: [
-      'My name is Ana.',
-      'My name Ana is.',
-      'Name is my Ana.',
-      'Is Ana my name.',
-    ],
-    answer: 0,
-  },
-  {
-    q: 'What is this number: 7?',
-    options: ['seven', 'seventeen', 'seventy', 'six'],
-    answer: 0,
-  },
-  {
-    q: 'What is this number: 15?',
-    options: ['fifty', 'five', 'fifteen', 'fourteen'],
-    answer: 2,
-  },
-  {
-    q: 'Choose the correct color word for the sky on a clear day.',
-    options: ['blue', 'hot', 'run', 'chair'],
-    answer: 0,
-  },
-  {
-    q: 'Choose the opposite of "yes".',
-    options: ['hello', 'no', 'name', 'book'],
+    q: '7:00 in 24h format is _______.',
+    options: ['7:00', '7 AM', '19:00', '7 PM'],
     answer: 1,
   },
   {
-    q: 'Complete the sentence: "I ___ a student."',
-    options: ['am', 'is', 'are', 'be'],
-    answer: 0,
-  },
-  {
-    q: 'Complete the sentence: "She ___ my friend."',
-    options: ['am', 'are', 'is', 'be'],
-    answer: 2,
-  },
-  {
-    q: 'Choose the day that comes after Monday.',
-    options: ['Sunday', 'Tuesday', 'Friday', 'Saturday'],
+    q: '19:00 in 24h format is _______.',
+    options: ['7:00', '7 PM', '19:00', '7 AM'],
     answer: 1,
   },
   {
-    q: 'Choose the correct question.',
-    options: [
-      'What your name is?',
-      'What is your name?',
-      'Your name what is?',
-      'Is what your name?',
-    ],
+    q: 'I eat breakfast at 7 AM, which is _______ in 24h format.',
+    options: ['19:00', '7 AM', '7:00', '7 PM'],
+    answer: 2,
+  },
+  {
+    q: 'Dinner is served at 19:00, which is _______ in AM/PM format.',
+    options: ['7:00', '7 PM', '19:00', '7 AM'],
     answer: 1,
   },
   {
-    q: 'Choose the correct answer: "Where are you from?"',
-    options: [
-      'I am from Thailand.',
-      'I am 10 years old.',
-      'I like pizza.',
-      'It is Monday.',
-    ],
-    answer: 0,
-  },
-  {
-    q: '24-hour time: 14:00 is...',
-    options: ['2:00 AM', '2:00 PM', '4:00 PM', '12:00 PM'],
+    q: "The meeting starts at 7:00 in 24h format. That means it's _______.",
+    options: ['7:00', '7 AM', '19:00', '7 PM'],
     answer: 1,
   },
   {
-    q: '24-hour time: 09:30 is...',
-    options: ['9:30 AM', '9:30 PM', '7:30 AM', '10:30 AM'],
-    answer: 0,
-  },
-  {
-    q: '24-hour time: 19:45 is...',
-    options: ['7:45 AM', '9:45 PM', '7:45 PM', '6:45 PM'],
+    q: "The movie begins at 7 PM. That's _______ in 24h format.",
+    options: ['7:00', '7 AM', '19:00', '7 PM'],
     answer: 2,
   },
   {
-    q: '12-hour time: 8:00 PM in 24-hour format is...',
-    options: ['08:00', '18:00', '20:00', '22:00'],
-    answer: 2,
-  },
-  {
-    q: '12-hour time: 6:15 AM in 24-hour format is...',
-    options: ['06:15', '16:15', '18:15', '12:15'],
-    answer: 0,
-  },
-  {
-    q: 'Which one is noon?',
-    options: ['12:00 AM', '12:00 PM', '00:00', '11:00 PM'],
+    q: "She wakes up at 7:00. That's the same as _______.",
+    options: ['7:00', '7 AM', '19:00', '7 PM'],
     answer: 1,
   },
   {
-    q: 'Which one is midnight?',
-    options: ['12:00 PM', '12:30 PM', '12:00 AM', '11:59 AM'],
-    answer: 2,
+    q: "The concert starts at 19:00. That's the same as _______.",
+    options: ['7:00', '19:00', '7 AM', '7 PM'],
+    answer: 3,
   },
   {
-    q: '24-hour time: 00:20 is...',
-    options: ['12:20 AM', '12:20 PM', '10:20 AM', '2:20 PM'],
-    answer: 0,
+    q: '7 AM is also written as _______.',
+    options: ['19:00', '7 AM', '7 PM', '7:00'],
+    answer: 3,
   },
   {
-    q: '24-hour time: 12:10 is...',
-    options: ['12:10 AM', '10:12 AM', '12:10 PM', '2:10 PM'],
-    answer: 2,
+    q: '7 PM in 24h format is written as _______.',
+    options: ['7:00', '19:00', '7 AM', '7 PM'],
+    answer: 1,
   },
   {
-    q: 'Choose the correct sentence about time.',
-    options: [
-      'I wake up at 7:00 AM.',
-      'I wake up at 7:00 PM morning.',
-      'I wake up in 7:00 AM.',
-      'I wake up 7:00 AM is.',
-    ],
-    answer: 0,
+    q: 'In 24h format, 7:00 means _______.',
+    options: ['7:00', '7 AM', '19:00', '7 PM'],
+    answer: 1,
   },
   {
-    q: 'Choose the polite word.',
-    options: ['please', 'run', 'blue', 'banana'],
-    answer: 0,
+    q: 'In 24h format, 7 PM is written as _______.',
+    options: ['7:00', '19:00', '7 AM', '7 PM'],
+    answer: 1,
   },
   {
-    q: 'Complete: "Thank you." "You are ___."',
-    options: ['welcome', 'yes', 'morning', 'student'],
-    answer: 0,
+    q: "If it's 7 AM now, the 24h format is _______.",
+    options: ['19:00', '7:00', '7 AM', '7 PM'],
+    answer: 1,
   },
   {
-    q: 'Choose the correct sentence.',
-    options: [
-      'He is my brother.',
-      'He are my brother.',
-      'He am my brother.',
-      'He my brother is are.',
-    ],
-    answer: 0,
+    q: "If it's 7 PM now, the 24h format is _______.",
+    options: ['7:00', '19:00', '7 AM', '7 PM'],
+    answer: 1,
+  },
+  {
+    q: 'You see 7:00 on a train ticket. That means _______.',
+    options: ['7:00', '19:00', '7 PM', '7 AM'],
+    answer: 3,
+  },
+  {
+    q: 'You see 19:00 on a concert ticket. That means _______.',
+    options: ['7:00', '7 PM', '19:00', '7 AM'],
+    answer: 1,
+  },
+  {
+    q: "7 AM is early morning. It's written as _______.",
+    options: ['19:00', '7:00', '7 AM', '7 PM'],
+    answer: 1,
+  },
+  {
+    q: "7 PM is evening time. It's written as _______.",
+    options: ['7:00', '7 AM', '7 PM', '19:00'],
+    answer: 3,
   },
 ];
 
@@ -176,21 +125,7 @@ function buildBalancedQuestions(
   source: QuizQuestion[],
   count: number,
 ): QuizQuestion[] {
-  const selected = shuffleArray(source).slice(0, count);
-
-  return selected.map((question) => {
-    const correctText = question.options[question.answer];
-    const wrongOptions = shuffleArray(
-      question.options.filter((_, optionIdx) => optionIdx !== question.answer),
-    );
-    const balancedOptions = [correctText, ...wrongOptions];
-
-    return {
-      ...question,
-      options: balancedOptions,
-      answer: 0,
-    };
-  });
+  return shuffleArray(source).slice(0, count);
 }
 
 export default function Quiz({
@@ -210,7 +145,6 @@ export default function Quiz({
   const [finished, setFinished] = useState(false);
   const [feedbackIcon, setFeedbackIcon] = useState<'✓' | '✗' | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const thaiQuestion = useThaiQuestion(selectedQuestions[current]?.q ?? '');
 
   function handleAnswer(index: number) {
     if (selectedIndex !== null) return;
@@ -343,16 +277,6 @@ export default function Quiz({
           }}
         >
           {selectedQuestions[current].q}
-        </p>
-        <p
-          style={{
-            margin: '0',
-            fontSize: '14px',
-            color: '#666',
-            lineHeight: 1.45,
-          }}
-        >
-          {thaiQuestion}
         </p>
       </div>
       <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
