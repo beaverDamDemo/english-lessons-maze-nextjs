@@ -16,7 +16,7 @@ const PENDING_UNLOCK_KEY = 'englishPattayaPendingUnlockLesson';
 
 export default function PattayaGamesScreenPage() {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const [unlockedLessons, setUnlockedLessons] = useState(0);
+  const [unlockedLessons, setUnlockedLessons] = useState(1);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [quizAttempts, setQuizAttempts] = useState(0);
@@ -28,10 +28,10 @@ export default function PattayaGamesScreenPage() {
   useEffect(() => {
     const loadProgress = () => {
       const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
-      const parsedUnlocked = Number.parseInt(rawUnlocked ?? '0', 10);
+      const parsedUnlocked = Number.parseInt(rawUnlocked ?? '1', 10);
       const safeUnlocked = Number.isFinite(parsedUnlocked)
-        ? Math.min(TOTAL_LESSONS, Math.max(0, parsedUnlocked))
-        : 0;
+        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedUnlocked))
+        : 1;
       setUnlockedLessons(safeUnlocked);
 
       const rawPending = window.localStorage.getItem(PENDING_UNLOCK_KEY);
