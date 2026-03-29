@@ -204,6 +204,8 @@ export default function PattayaLesson1Page() {
   const [playActionText, setPlayActionText] = useState(
     'Match 3+ candies to earn points!',
   );
+  const [animatingTiles, setAnimatingTiles] = useState<Set<string>>(new Set());
+  const [cascadingTiles, setCascadingTiles] = useState<Set<string>>(new Set());
 
   const totalLearningTasks = practiceChallenges.length + applyChallenges.length;
   const progressPercent = useMemo(() => {
@@ -317,17 +319,39 @@ export default function PattayaLesson1Page() {
     const gained = resolved.cleared * 10;
     const nextMoves = movesLeft - 1;
 
-    setBoard(resolved.board);
-    setMovesLeft(nextMoves);
-    setPlayPoints((v) => v + gained);
-    setPlayActionText(`Great! +${gained} points. ${nextMoves} moves left.`);
-    setSelectedTile(null);
+    // Mark matched tiles for animation
+    const matched = detectMatches(draft);
+    setAnimatingTiles(matched);
 
-    if (nextMoves === 0) {
-      window.setTimeout(() => {
-        setPhase('apply');
-      }, 450);
-    }
+    // Animate matched tiles then cascade
+    window.setTimeout(() => {
+      setBoard(resolved.board);
+      // Mark tiles that are falling as cascading
+      const cascading = new Set<string>();
+      for (let c = 0; c < BOARD_SIZE; c += 1) {
+        for (let r = BOARD_SIZE - 1; r >= 0; r -= 1) {
+          if (resolved.board[r][c]) {
+            cascading.add(`${r}-${c}`);
+          }
+        }
+      }
+      setCascadingTiles(cascading);
+      setAnimatingTiles(new Set());
+    }, 400);
+
+    window.setTimeout(() => {
+      setMovesLeft(nextMoves);
+      setPlayPoints((v) => v + gained);
+      setPlayActionText(`Great! +${gained} points. ${nextMoves} moves left.`);
+      setCascadingTiles(new Set());
+      setSelectedTile(null);
+
+      if (nextMoves === 0) {
+        window.setTimeout(() => {
+          setPhase('apply');
+        }, 450);
+      }
+    }, 700);
   }
 
   function onTileClick(r: number, c: number) {
@@ -453,14 +477,20 @@ export default function PattayaLesson1Page() {
                     row.map((tile, c) => {
                       const isSelected =
                         selectedTile?.[0] === r && selectedTile?.[1] === c;
+                      const tileKey = `${r}-${c}`;
+                      const isMatched = animatingTiles.has(tileKey);
+                      const isCascading = cascadingTiles.has(tileKey);
                       return (
                         <button
-                          key={`${r}-${c}`}
+                          key={tileKey}
                           type="button"
                           className={`${styles.tile} ${
                             isSelected ? styles.selectedTile : ''
+                          } ${isMatched ? styles.tileMatched : ''} ${
+                            isCascading ? styles.tileCascade : ''
                           }`}
                           onClick={() => onTileClick(r, c)}
+                          disabled={isMatched || isCascading}
                         >
                           {tile}
                         </button>
