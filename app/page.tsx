@@ -9,7 +9,6 @@ import { lessonMapButtons as casinoLessonMapButtons } from './casino/lessonMapCo
 import { lessonMapButtons as pattayaLessonMapButtons } from './pattaya-games/lessonMapConfig';
 import { trackEvent } from './_lib/analytics';
 
-const APP_VERSION = '0.0.16';
 const MAZE_TOTAL_LESSONS = Math.max(1, mazeLessonMapButtons.length);
 const CASINO_TOTAL_LESSONS = Math.max(1, casinoLessonMapButtons.length);
 const PATTAYA_TOTAL_LESSONS = Math.max(1, pattayaLessonMapButtons.length);
@@ -291,10 +290,6 @@ export default function HomePage() {
           </button>
         </div>
       </section>
-
-      <footer className={`${styles.footerBar} ${styles.rightFooterBar}`}>
-        <span className={styles.footerVersion}>{APP_VERSION}</span>
-      </footer>
     </main>
   );
 }

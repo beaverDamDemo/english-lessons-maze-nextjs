@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import styles from '../../styles/map.module.css';
 import { lessonMapButtons } from './lessonMapConfig';
 
-const APP_VERSION = '0.0.16';
 const MAP_ASPECT_RATIO = 1024 / 1536;
 const PATTAYA_MAP_IMAGE_CACHE_BUSTER = '20260327-1';
 const TOTAL_LESSONS = lessonMapButtons.length;
@@ -218,9 +217,6 @@ export default function PattayaGamesScreenPage() {
             Completions: {lessonCompletions}
           </span>
           <span className={styles.statChip}>Moves: {totalMovesEarned}</span>
-        </div>
-        <div className={styles.footerActions}>
-          <span className={styles.footerVersion}>{APP_VERSION}</span>
         </div>
       </footer>
     </div>
