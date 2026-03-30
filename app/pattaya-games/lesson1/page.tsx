@@ -179,6 +179,7 @@ export default function PattayaLesson1Page() {
   );
   const [animatingTiles, setAnimatingTiles] = useState<Set<string>>(new Set());
   const [cascadingTiles, setCascadingTiles] = useState<Set<string>>(new Set());
+  const [swappingTiles, setSwappingTiles] = useState<Set<string>>(new Set());
 
   const totalLearningTasks = practiceChallenges.length + applyChallenges.length;
   const progressPercent = useMemo(() => {
@@ -276,7 +277,8 @@ export default function PattayaLesson1Page() {
       !areAdjacent(from, to) ||
       movesLeft <= 0 ||
       animatingTiles.size > 0 ||
-      cascadingTiles.size > 0
+      cascadingTiles.size > 0 ||
+      swappingTiles.size > 0
     ) {
       setPlayActionText('Pick neighboring candies only.');
       return;
@@ -296,48 +298,61 @@ export default function PattayaLesson1Page() {
       return;
     }
 
-    const resolved = clearAutoMatches(draft);
-    const gained = resolved.cleared * 10;
-    const nextMoves = movesLeft - 1;
+    // Step 1: commit swap to board and show swap animation
+    setBoard(draft);
+    setSwappingTiles(new Set([`${fr}-${fc}`, `${tr}-${tc}`]));
+    setPlayActionText('Swapping...');
 
-    // Mark matched tiles for animation
-    setAnimatingTiles(found);
-    setPlayActionText(`Matched ${found.size} blocks!`);
-
-    // Animate matched tiles then cascade
     window.setTimeout(() => {
-      setBoard(resolved.board);
-      // Mark tiles that are falling as cascading
-      const cascading = new Set<string>();
-      for (let c = 0; c < BOARD_SIZE; c += 1) {
-        for (let r = BOARD_SIZE - 1; r >= 0; r -= 1) {
-          if (resolved.board[r][c]) {
-            cascading.add(`${r}-${c}`);
+      // Step 2: swap animation done — start match flash
+      setSwappingTiles(new Set());
+
+      const resolved = clearAutoMatches(draft);
+      const gained = resolved.cleared * 10;
+      const nextMoves = movesLeft - 1;
+
+      setAnimatingTiles(found);
+      setPlayActionText(`Matched ${found.size} blocks!`);
+
+      // Animate matched tiles then cascade
+      window.setTimeout(() => {
+        setBoard(resolved.board);
+        const cascading = new Set<string>();
+        for (let c = 0; c < BOARD_SIZE; c += 1) {
+          for (let r = BOARD_SIZE - 1; r >= 0; r -= 1) {
+            if (resolved.board[r][c]) {
+              cascading.add(`${r}-${c}`);
+            }
           }
         }
-      }
-      setCascadingTiles(cascading);
-      setAnimatingTiles(new Set());
-    }, 620);
+        setCascadingTiles(cascading);
+        setAnimatingTiles(new Set());
+      }, 620);
 
-    window.setTimeout(() => {
-      setMovesLeft(nextMoves);
-      setPlayPoints((v) => v + gained);
-      setPlayActionText(`Great! +${gained} points. ${nextMoves} moves left.`);
-      setCascadingTiles(new Set());
-      setSelectedTile(null);
+      window.setTimeout(() => {
+        setMovesLeft(nextMoves);
+        setPlayPoints((v) => v + gained);
+        setPlayActionText(`Great! +${gained} points. ${nextMoves} moves left.`);
+        setCascadingTiles(new Set());
+        setSelectedTile(null);
 
-      if (nextMoves === 0) {
-        window.setTimeout(() => {
-          setPhase('apply');
-        }, 450);
-      }
-    }, 920);
+        if (nextMoves === 0) {
+          window.setTimeout(() => {
+            setPhase('apply');
+          }, 450);
+        }
+      }, 920);
+    }, 280);
   }
 
   function onTileClick(r: number, c: number) {
     if (phase !== 'play') return;
-    if (animatingTiles.size > 0 || cascadingTiles.size > 0) return;
+    if (
+      animatingTiles.size > 0 ||
+      cascadingTiles.size > 0 ||
+      swappingTiles.size > 0
+    )
+      return;
     if (!selectedTile) {
       setSelectedTile([r, c]);
       setPlayActionText('Select a second tile to swap.');
@@ -481,6 +496,7 @@ export default function PattayaLesson1Page() {
                       const tileKey = `${r}-${c}`;
                       const isMatched = animatingTiles.has(tileKey);
                       const isCascading = cascadingTiles.has(tileKey);
+                      const isSwapping = swappingTiles.has(tileKey);
                       return (
                         <button
                           key={tileKey}
@@ -489,9 +505,9 @@ export default function PattayaLesson1Page() {
                             isSelected ? styles.selectedTile : ''
                           } ${isMatched ? styles.tileMatched : ''} ${
                             isCascading ? styles.tileCascade : ''
-                          }`}
+                          } ${isSwapping ? styles.tileSwap : ''}`}
                           onClick={() => onTileClick(r, c)}
-                          disabled={isMatched || isCascading}
+                          disabled={isMatched || isCascading || isSwapping}
                         >
                           {tile}
                         </button>
