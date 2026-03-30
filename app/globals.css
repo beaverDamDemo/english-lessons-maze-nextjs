@@ -6,6 +6,32 @@
   --accent: #ff4d6d; /* vivid pink/red for highlights */
   --secondary: #4da6ff; /* bright blue for buttons/links */
   --tertiary: #ffd54d; /* sunny yellow for maze walls or effects */
+
+  --home-grad-a: rgba(255, 192, 89, 0.45);
+  --home-grad-b: rgba(106, 221, 255, 0.35);
+  --home-grad-base-1: #fff6cf;
+  --home-grad-base-2: #ffe8e1;
+  --home-grad-base-3: #e8f7ff;
+  --home-title: #1f2a44;
+  --home-card-bg: rgba(255, 255, 255, 0.92);
+  --home-card-border: rgba(103, 123, 186, 0.28);
+  --home-card-shadow: rgba(20, 33, 75, 0.12);
+  --home-block-bg: rgba(245, 248, 255, 0.95);
+  --home-block-border: rgba(114, 133, 196, 0.28);
+  --home-subtitle: #42537e;
+  --home-label: #2f4370;
+  --home-value: #162441;
+  --home-hub-text: #24375f;
+  --home-hub-ink: #10203f;
+  --home-hub-border: rgba(255, 255, 255, 0.7);
+  --home-hub-shadow: rgba(20, 33, 75, 0.12);
+  --home-hub-hover-shadow: rgba(20, 33, 75, 0.2);
+  --home-maze-grad-1: #e2f0ff;
+  --home-maze-grad-2: #d2f8ec;
+  --home-casino-grad-1: #ffe1b8;
+  --home-casino-grad-2: #ffd2e3;
+  --home-pattaya-grad-1: #d6f3ff;
+  --home-pattaya-grad-2: #e7e0ff;
 }
 
 @theme inline {
@@ -19,7 +45,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --background: #0d1b2a; /* deep navy */
     --foreground: #e0e1dd; /* light text */
     --accent: #ff6f61; /* coral red */
@@ -28,10 +54,55 @@
   }
 }
 
+:root[data-theme='light'] {
+  --background: #fffbf0;
+  --foreground: #1a1a1a;
+  --accent: #ff4d6d;
+  --secondary: #4da6ff;
+  --tertiary: #ffd54d;
+}
+
+:root[data-theme='dark'] {
+  --background: #0d1b2a;
+  --foreground: #e0e1dd;
+  --accent: #ff6f61;
+  --secondary: #00b4d8;
+  --tertiary: #ffd166;
+
+  --home-grad-a: rgba(35, 137, 199, 0.28);
+  --home-grad-b: rgba(175, 115, 255, 0.2);
+  --home-grad-base-1: #0f172a;
+  --home-grad-base-2: #111b33;
+  --home-grad-base-3: #0b2230;
+  --home-title: #e6eefb;
+  --home-card-bg: rgba(15, 23, 42, 0.82);
+  --home-card-border: rgba(122, 154, 232, 0.26);
+  --home-card-shadow: rgba(1, 6, 20, 0.35);
+  --home-block-bg: rgba(23, 35, 64, 0.78);
+  --home-block-border: rgba(123, 151, 218, 0.24);
+  --home-subtitle: #9fb5e7;
+  --home-label: #c1d0ef;
+  --home-value: #f3f7ff;
+  --home-hub-text: #d5e4ff;
+  --home-hub-ink: #eef4ff;
+  --home-hub-border: rgba(117, 144, 215, 0.34);
+  --home-hub-shadow: rgba(1, 6, 20, 0.34);
+  --home-hub-hover-shadow: rgba(2, 9, 28, 0.5);
+  --home-maze-grad-1: #153152;
+  --home-maze-grad-2: #12483f;
+  --home-casino-grad-1: #503226;
+  --home-casino-grad-2: #4b2246;
+  --home-pattaya-grad-1: #183f53;
+  --home-pattaya-grad-2: #2c2c54;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
 }
 
 /* Reset default page spacing so layout doesn't get squeezed */
@@ -64,4 +135,39 @@ button {
 
 .player {
   background: var(--accent);
+}
+
+.themeToggle {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 9999;
+  border: 1px solid color-mix(in srgb, var(--secondary) 32%, transparent);
+  border-radius: 999px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  min-height: 42px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--background) 64%, var(--secondary) 36%);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 120ms ease,
+    filter 120ms ease;
+}
+
+.themeToggle:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.themeToggleIcon {
+  transform: translateY(-1px);
 }

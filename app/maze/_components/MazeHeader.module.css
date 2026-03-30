@@ -28,3 +28,13 @@
   transform: scale(1.1);
   color: #ffcc00;
 }
+
+:global(:root[data-theme='dark']) .header {
+  background: #0f1b33;
+  color: #edf4ff;
+  border-bottom: 1px solid rgba(120, 151, 233, 0.3);
+}
+
+:global(:root[data-theme='dark']) .backArrow:hover {
+  color: #ffd166;
+}

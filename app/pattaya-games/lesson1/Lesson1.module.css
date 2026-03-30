@@ -231,6 +231,40 @@
   border-radius: 6px;
   font-size: clamp(1.8rem, 5.5vw, 2.4rem);
   background: #fff;
+
+  :global(:root[data-theme='dark']) {
+    --pg-bg-a: #10253f;
+    --pg-bg-b: #173a53;
+    --pg-bg-c: #1b4965;
+    --pg-panel: #13233b;
+    --pg-ink: #e8f1ff;
+    --pg-accent: #f97316;
+    --pg-accent-2: #0284c7;
+    --pg-good: #4ade80;
+    --pg-bad: #f87171;
+  }
+
+  :global(:root[data-theme='dark']) .stat {
+    background: #0f1d31;
+    border-color: rgba(141, 167, 236, 0.25);
+  }
+
+  :global(:root[data-theme='dark']) .card {
+    background: #102038;
+    border-color: rgba(141, 167, 236, 0.25);
+  }
+
+  :global(:root[data-theme='dark']) .progressTrack {
+    background: rgba(205, 224, 255, 0.22);
+  }
+
+  :global(:root[data-theme='dark']) .tile {
+    background: #f6f7fb;
+  }
+
+  :global(:root[data-theme='dark']) .footerLink {
+    background: #1a2d4a;
+  }
   cursor: pointer;
   transition: transform 120ms ease;
   display: flex;

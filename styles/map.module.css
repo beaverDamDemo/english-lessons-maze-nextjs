@@ -359,3 +359,51 @@
     margin-left: auto;
   }
 }
+
+:global(:root[data-theme='dark']) .mazePage {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(60, 130, 180, 0.28),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(133, 114, 255, 0.22),
+      transparent 36%
+    ),
+    linear-gradient(180deg, #0f1a33 0%, #111a2b 100%);
+}
+
+:global(:root[data-theme='dark']) .pageHeader {
+  background: linear-gradient(135deg, #1c2f4f 0%, #2a244f 55%, #17384d 100%);
+  color: #eaf1ff;
+  border-bottom-color: rgba(142, 165, 235, 0.28);
+  box-shadow: 0 6px 18px rgba(3, 7, 18, 0.35);
+}
+
+:global(:root[data-theme='dark']) .mapFooter {
+  background: rgba(16, 24, 44, 0.82);
+  color: #d7e3ff;
+  border-top-color: rgba(142, 165, 235, 0.24);
+  box-shadow: 0 -6px 20px rgba(3, 7, 18, 0.34);
+}
+
+:global(:root[data-theme='dark']) .statChip {
+  background: linear-gradient(135deg, #24365f 0%, #1e4a57 100%);
+  border-color: rgba(133, 161, 235, 0.34);
+  color: #ecf3ff;
+}
+
+:global(:root[data-theme='dark']) .footerVersion {
+  color: #a9bbe7;
+}
+
+:global(:root[data-theme='dark']) .locationPin {
+  background-color: #f2f7ff;
+  color: #121b2f;
+}
+
+:global(:root[data-theme='dark']) .locationPin:hover {
+  background-color: #ffd166;
+}
