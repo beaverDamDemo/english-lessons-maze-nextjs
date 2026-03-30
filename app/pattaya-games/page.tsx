@@ -13,6 +13,22 @@ const TOTAL_LESSONS = lessonMapButtons.length;
 const STATS_KEY = 'englishPattayaStats';
 const UNLOCKED_KEY = 'englishPattayaUnlockedLessons';
 const PENDING_UNLOCK_KEY = 'englishPattayaPendingUnlockLesson';
+const STATS_UPDATED_EVENT = 'pattaya-stats-updated';
+
+type PattayaStats = {
+  correctAnswers?: number;
+  wrongAnswers?: number;
+  quizAttempts?: number;
+  totalMovesEarned?: number;
+  lessonRuns?: Array<{
+    lesson?: number;
+    correct?: number;
+    wrong?: number;
+    playPoints?: number;
+    movesEarned?: number;
+    completedAt?: string;
+  }>;
+};
 
 export default function PattayaGamesScreenPage() {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -21,6 +37,7 @@ export default function PattayaGamesScreenPage() {
   const [wrongAnswers, setWrongAnswers] = useState(0);
   const [quizAttempts, setQuizAttempts] = useState(0);
   const [totalMovesEarned, setTotalMovesEarned] = useState(0);
+  const [lessonCompletions, setLessonCompletions] = useState(0);
   const [highlightedLesson, setHighlightedLesson] = useState<number | null>(
     null,
   );
@@ -45,21 +62,31 @@ export default function PattayaGamesScreenPage() {
       }
 
       const rawStats = window.localStorage.getItem(STATS_KEY);
-      if (!rawStats) return;
+      if (!rawStats) {
+        setCorrectAnswers(0);
+        setWrongAnswers(0);
+        setQuizAttempts(0);
+        setTotalMovesEarned(0);
+        setLessonCompletions(0);
+        return;
+      }
 
       try {
-        const parsed = JSON.parse(rawStats) as {
-          correctAnswers?: number;
-          wrongAnswers?: number;
-          quizAttempts?: number;
-          totalMovesEarned?: number;
-        };
+        const parsed = JSON.parse(rawStats) as PattayaStats;
         setCorrectAnswers(parsed.correctAnswers ?? 0);
         setWrongAnswers(parsed.wrongAnswers ?? 0);
         setQuizAttempts(parsed.quizAttempts ?? 0);
         setTotalMovesEarned(parsed.totalMovesEarned ?? 0);
+        setLessonCompletions(
+          Array.isArray(parsed.lessonRuns) ? parsed.lessonRuns.length : 0,
+        );
       } catch {
         // ignore malformed local storage values
+        setCorrectAnswers(0);
+        setWrongAnswers(0);
+        setQuizAttempts(0);
+        setTotalMovesEarned(0);
+        setLessonCompletions(0);
       }
     };
 
@@ -67,11 +94,13 @@ export default function PattayaGamesScreenPage() {
     window.addEventListener('focus', loadProgress);
     window.addEventListener('storage', loadProgress);
     window.addEventListener('pageshow', loadProgress);
+    window.addEventListener(STATS_UPDATED_EVENT, loadProgress);
     document.addEventListener('visibilitychange', loadProgress);
     return () => {
       window.removeEventListener('focus', loadProgress);
       window.removeEventListener('storage', loadProgress);
       window.removeEventListener('pageshow', loadProgress);
+      window.removeEventListener(STATS_UPDATED_EVENT, loadProgress);
       document.removeEventListener('visibilitychange', loadProgress);
     };
   }, []);
@@ -185,6 +214,9 @@ export default function PattayaGamesScreenPage() {
             Unlocked: {unlockedLessons}/{TOTAL_LESSONS}
           </span>
           <span className={styles.statChip}>Attempts: {quizAttempts}</span>
+          <span className={styles.statChip}>
+            Completions: {lessonCompletions}
+          </span>
           <span className={styles.statChip}>Moves: {totalMovesEarned}</span>
         </div>
         <div className={styles.footerActions}>

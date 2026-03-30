@@ -21,6 +21,7 @@ const LESSONS_TOTAL = 8;
 const STATS_KEY = 'englishPattayaStats';
 const UNLOCKED_KEY = 'englishPattayaUnlockedLessons';
 const PENDING_UNLOCK_KEY = 'englishPattayaPendingUnlockLesson';
+const STATS_UPDATED_EVENT = 'pattaya-stats-updated';
 
 const practiceChallenges: Challenge[] = [
   {
@@ -158,12 +159,28 @@ function clearAutoMatches(input: string[][]) {
   }
 }
 
+type PattayaStats = {
+  correctAnswers: number;
+  wrongAnswers: number;
+  quizAttempts: number;
+  totalMovesEarned: number;
+  lessonRuns?: Array<{
+    lesson: number;
+    correct: number;
+    wrong: number;
+    playPoints: number;
+    movesEarned: number;
+    completedAt: string;
+  }>;
+};
+
 export default function PattayaLesson1Page() {
   const [phase, setPhase] = useState<Phase>('practice');
   const [practiceStep, setPracticeStep] = useState(0);
   const [applyStep, setApplyStep] = useState(0);
   const [feedbackIcon, setFeedbackIcon] = useState<'✓' | '✗' | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [attemptRecorded, setAttemptRecorded] = useState(false);
 
   const [learningCorrect, setLearningCorrect] = useState(0);
   const [learningWrong, setLearningWrong] = useState(0);
@@ -188,34 +205,82 @@ export default function PattayaLesson1Page() {
     return Math.min(100, Math.round((learningUnits / totalUnits) * 100));
   }, [practiceStep, applyStep, phase, totalLearningTasks]);
 
-  function persistProgress() {
-    const attemptsPayload = window.localStorage.getItem(STATS_KEY);
-    let previous = {
+  function readStats(): PattayaStats {
+    const payload = window.localStorage.getItem(STATS_KEY);
+    const fallback: PattayaStats = {
       correctAnswers: 0,
       wrongAnswers: 0,
       quizAttempts: 0,
       totalMovesEarned: 0,
+      lessonRuns: [],
     };
+    if (!payload) return fallback;
 
-    if (attemptsPayload) {
-      try {
-        previous = {
-          ...previous,
-          ...(JSON.parse(attemptsPayload) as Partial<typeof previous>),
-        };
-      } catch {
-        // Ignore malformed local storage values.
-      }
+    try {
+      const parsed = JSON.parse(payload) as Partial<PattayaStats>;
+      return {
+        ...fallback,
+        ...parsed,
+        lessonRuns: Array.isArray(parsed.lessonRuns) ? parsed.lessonRuns : [],
+      };
+    } catch {
+      return fallback;
+    }
+  }
+
+  function writeStats(next: PattayaStats) {
+    window.localStorage.setItem(STATS_KEY, JSON.stringify(next));
+    window.dispatchEvent(new Event(STATS_UPDATED_EVENT));
+  }
+
+  function recordAttemptIfNeeded() {
+    if (attemptRecorded) return;
+    const previous = readStats();
+    writeStats({
+      ...previous,
+      quizAttempts: previous.quizAttempts + 1,
+    });
+    setAttemptRecorded(true);
+  }
+
+  function recordAnswerResult(isCorrect: boolean) {
+    const previous = readStats();
+    writeStats({
+      ...previous,
+      correctAnswers: previous.correctAnswers + (isCorrect ? 1 : 0),
+      wrongAnswers: previous.wrongAnswers + (isCorrect ? 0 : 1),
+    });
+  }
+
+  function persistProgress() {
+    const previous = readStats();
+    if (!attemptRecorded) {
+      // Safety net in case the user reaches completion unexpectedly.
+      previous.quizAttempts += 1;
     }
 
     const earnedMoves = Math.max(1, Math.floor(playPoints / 120));
-    const nextStats = {
-      correctAnswers: previous.correctAnswers + learningCorrect,
-      wrongAnswers: previous.wrongAnswers + learningWrong,
-      quizAttempts: previous.quizAttempts + 1,
+    const lessonRuns = Array.isArray(previous.lessonRuns)
+      ? previous.lessonRuns
+      : [];
+    const nextStats: PattayaStats = {
+      correctAnswers: previous.correctAnswers,
+      wrongAnswers: previous.wrongAnswers,
+      quizAttempts: previous.quizAttempts,
       totalMovesEarned: previous.totalMovesEarned + earnedMoves,
+      lessonRuns: [
+        ...lessonRuns,
+        {
+          lesson: 1,
+          correct: learningCorrect,
+          wrong: learningWrong,
+          playPoints,
+          movesEarned: earnedMoves,
+          completedAt: new Date().toISOString(),
+        },
+      ],
     };
-    window.localStorage.setItem(STATS_KEY, JSON.stringify(nextStats));
+    writeStats(nextStats);
 
     const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
     const unlocked = Number.parseInt(rawUnlocked ?? '1', 10);
@@ -236,6 +301,8 @@ export default function PattayaLesson1Page() {
   function handleChallengeAnswer(challenge: Challenge, pickedIndex: number) {
     if (selectedIndex !== null) return;
     const isCorrect = pickedIndex === challenge.answer;
+    recordAttemptIfNeeded();
+    recordAnswerResult(isCorrect);
     if (isCorrect) {
       setLearningCorrect((v) => v + 1);
     } else {
