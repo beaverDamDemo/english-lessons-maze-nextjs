@@ -11,6 +11,20 @@ type TrackBody = {
   url?: string;
 };
 
+function parseDbTarget(rawUrl: string | undefined) {
+  if (!rawUrl) {
+    return { host: null as string | null, database: null as string | null };
+  }
+
+  try {
+    const parsed = new URL(rawUrl);
+    const database = parsed.pathname.replace(/^\//, '') || null;
+    return { host: parsed.hostname || null, database };
+  } catch {
+    return { host: null as string | null, database: null as string | null };
+  }
+}
+
 let tablesInitialized = false;
 type DbClient = ReturnType<typeof postgres>;
 
@@ -97,8 +111,10 @@ export async function POST(request: Request) {
   const url = typeof body.url === 'string' ? body.url.slice(0, 500) : null;
   const payload = body.payload ?? {};
   const dbConfigured = Boolean(process.env.POSTGRES_URL);
+  const dbTarget = parseDbTarget(process.env.POSTGRES_URL);
   let dbWrite = false;
   let dbError: string | null = null;
+  let dbErrorCode: string | null = null;
 
   if (dbConfigured && db) {
     try {
@@ -165,6 +181,14 @@ export async function POST(request: Request) {
     } catch (error) {
       console.error('Analytics DB write failed:', error);
       dbError = error instanceof Error ? error.message : 'Unknown DB error';
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        typeof (error as { code?: unknown; }).code === 'string'
+      ) {
+        dbErrorCode = (error as { code: string; }).code;
+      }
     }
   } else {
     console.info('Analytics event (no DB configured):', {
@@ -181,8 +205,11 @@ export async function POST(request: Request) {
     ok: true,
     anonymousId,
     dbConfigured,
+    dbHost: dbTarget.host,
+    dbDatabase: dbTarget.database,
     dbWrite,
     dbError,
+    dbErrorCode,
   });
 
   if (isNewId) {
