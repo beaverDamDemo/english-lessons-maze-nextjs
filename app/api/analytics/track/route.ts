@@ -1,6 +1,13 @@
 import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import postgres from 'postgres';
+import {
+  getAnalyticsBackend,
+  getConfiguredTarget,
+  getSupabaseAdminConfig,
+  getSupabaseHeaders,
+  readSupabaseError,
+} from '../_lib/backend';
 
 const ANON_COOKIE_NAME = 'playland_anon_id';
 
@@ -10,20 +17,6 @@ type TrackBody = {
   path?: string;
   url?: string;
 };
-
-function parseDbTarget(rawUrl: string | undefined) {
-  if (!rawUrl) {
-    return { host: null as string | null, database: null as string | null };
-  }
-
-  try {
-    const parsed = new URL(rawUrl);
-    const database = parsed.pathname.replace(/^\//, '') || null;
-    return { host: parsed.hostname || null, database };
-  } catch {
-    return { host: null as string | null, database: null as string | null };
-  }
-}
 
 let tablesInitialized = false;
 type DbClient = ReturnType<typeof postgres>;
@@ -110,13 +103,77 @@ export async function POST(request: Request) {
   const path = typeof body.path === 'string' ? body.path.slice(0, 300) : null;
   const url = typeof body.url === 'string' ? body.url.slice(0, 500) : null;
   const payload = body.payload ?? {};
-  const dbConfigured = Boolean(process.env.POSTGRES_URL);
-  const dbTarget = parseDbTarget(process.env.POSTGRES_URL);
+  const target = getConfiguredTarget();
+  const backend = getAnalyticsBackend();
+  const dbConfigured = target.configured;
   let dbWrite = false;
   let dbError: string | null = null;
   let dbErrorCode: string | null = null;
 
-  if (dbConfigured && db) {
+  if (backend === 'supabase-rest') {
+    const supabase = getSupabaseAdminConfig();
+
+    if (!supabase) {
+      dbError = 'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing';
+    } else {
+      try {
+        const headers = getSupabaseHeaders(supabase.serviceRoleKey);
+
+        const userResponse = await fetch(
+          `${supabase.url}/rest/v1/analytics_users?on_conflict=anonymous_id`,
+          {
+            method: 'POST',
+            headers: {
+              ...headers,
+              Prefer: 'resolution=merge-duplicates,return=minimal',
+            },
+            body: JSON.stringify({
+              anonymous_id: anonymousId,
+              first_seen_at: new Date().toISOString(),
+              last_seen_at: new Date().toISOString(),
+              last_path: path,
+              user_agent: userAgent,
+              country,
+              region,
+              city,
+            }),
+          },
+        );
+
+        if (!userResponse.ok) {
+          throw new Error(await readSupabaseError(userResponse));
+        }
+
+        const eventResponse = await fetch(`${supabase.url}/rest/v1/analytics_events`, {
+          method: 'POST',
+          headers: {
+            ...headers,
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({
+            anonymous_id: anonymousId,
+            event_name: eventName.slice(0, 100),
+            path,
+            url,
+            payload,
+            user_agent: userAgent,
+            country,
+            region,
+            city,
+          }),
+        });
+
+        if (!eventResponse.ok) {
+          throw new Error(await readSupabaseError(eventResponse));
+        }
+
+        dbWrite = true;
+      } catch (error) {
+        console.error('Analytics Supabase write failed:', error);
+        dbError = error instanceof Error ? error.message : 'Unknown Supabase error';
+      }
+    }
+  } else if (backend === 'postgres' && dbConfigured && db) {
     try {
       await ensureTables(db);
 
@@ -204,9 +261,10 @@ export async function POST(request: Request) {
   const response = NextResponse.json({
     ok: true,
     anonymousId,
+    dbBackend: backend,
     dbConfigured,
-    dbHost: dbTarget.host,
-    dbDatabase: dbTarget.database,
+    dbHost: target.host,
+    dbDatabase: target.database,
     dbWrite,
     dbError,
     dbErrorCode,

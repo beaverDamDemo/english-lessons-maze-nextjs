@@ -1,31 +1,103 @@
 import { NextResponse } from 'next/server';
 import postgres from 'postgres';
-
-function parseDbTarget(rawUrl: string | undefined) {
-  if (!rawUrl) {
-    return { host: null as string | null, database: null as string | null };
-  }
-
-  try {
-    const parsed = new URL(rawUrl);
-    const database = parsed.pathname.replace(/^\//, '') || null;
-    return { host: parsed.hostname || null, database };
-  } catch {
-    return { host: null as string | null, database: null as string | null };
-  }
-}
+import {
+  getAnalyticsBackend,
+  getConfiguredTarget,
+  getSupabaseAdminConfig,
+  getSupabaseHeaders,
+  readSupabaseError,
+} from '../_lib/backend';
 
 export async function GET() {
+  const backend = getAnalyticsBackend();
+  const target = getConfiguredTarget();
   const dbUrl = process.env.POSTGRES_URL;
-  const dbConfigured = Boolean(dbUrl);
-  const { host, database } = parseDbTarget(dbUrl);
+  const dbConfigured = target.configured;
 
-  if (!dbConfigured || !dbUrl) {
+  if (!dbConfigured) {
     return NextResponse.json({
       ok: true,
       dbConfigured: false,
-      host,
-      database,
+      dbBackend: backend,
+      host: target.host,
+      database: target.database,
+      canConnect: false,
+      dbError: 'No analytics backend is configured',
+      analyticsTables: [],
+    });
+  }
+
+  if (backend === 'supabase-rest') {
+    const supabase = getSupabaseAdminConfig();
+
+    if (!supabase) {
+      return NextResponse.json({
+        ok: true,
+        dbConfigured: true,
+        dbBackend: backend,
+        host: target.host,
+        database: target.database,
+        canConnect: false,
+        dbError: 'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing',
+        analyticsTables: [],
+      });
+    }
+
+    try {
+      const headers = getSupabaseHeaders(supabase.serviceRoleKey);
+      const [usersResponse, eventsResponse] = await Promise.all([
+        fetch(`${supabase.url}/rest/v1/analytics_users?select=anonymous_id&limit=1`, {
+          headers,
+          cache: 'no-store',
+        }),
+        fetch(`${supabase.url}/rest/v1/analytics_events?select=id&limit=1`, {
+          headers,
+          cache: 'no-store',
+        }),
+      ]);
+
+      if (!usersResponse.ok) {
+        throw new Error(await readSupabaseError(usersResponse));
+      }
+
+      if (!eventsResponse.ok) {
+        throw new Error(await readSupabaseError(eventsResponse));
+      }
+
+      return NextResponse.json({
+        ok: true,
+        dbConfigured: true,
+        dbBackend: backend,
+        host: target.host,
+        database: target.database,
+        canConnect: true,
+        dbError: null,
+        analyticsTables: [
+          { table_schema: 'public', table_name: 'analytics_events' },
+          { table_schema: 'public', table_name: 'analytics_users' },
+        ],
+      });
+    } catch (error) {
+      return NextResponse.json({
+        ok: true,
+        dbConfigured: true,
+        dbBackend: backend,
+        host: target.host,
+        database: target.database,
+        canConnect: false,
+        dbError: error instanceof Error ? error.message : 'Unknown Supabase error',
+        analyticsTables: [],
+      });
+    }
+  }
+
+  if (!dbUrl) {
+    return NextResponse.json({
+      ok: true,
+      dbConfigured: false,
+      dbBackend: backend,
+      host: target.host,
+      database: target.database,
       canConnect: false,
       dbError: 'POSTGRES_URL is not set',
       analyticsTables: [],
@@ -57,8 +129,9 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       dbConfigured: true,
-      host,
-      database,
+      dbBackend: backend,
+      host: target.host,
+      database: target.database,
       canConnect: true,
       dbError: null,
       analyticsTables: tables,
@@ -67,8 +140,9 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       dbConfigured: true,
-      host,
-      database,
+      dbBackend: backend,
+      host: target.host,
+      database: target.database,
       canConnect: false,
       dbError: error instanceof Error ? error.message : 'Unknown DB error',
       analyticsTables: [],
