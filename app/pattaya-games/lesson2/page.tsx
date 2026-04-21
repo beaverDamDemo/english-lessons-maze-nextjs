@@ -19,10 +19,7 @@ type Challenge = {
 const BOARD_SIZE = 7;
 const ICONS = ['🔥', '❄️', '🌬️', '🌞', '🪙', '💎', '🧃'];
 const LESSONS_TOTAL = 8;
-const STATS_KEY = 'englishPattayaStats';
-const UNLOCKED_KEY = 'englishPattayaUnlockedLessons';
-const PENDING_UNLOCK_KEY = 'englishPattayaPendingUnlockLesson';
-const STATS_UPDATED_EVENT = 'pattaya-stats-updated';
+const LESSONS_MIN_PASS = 3;
 
 const practiceChallenges: Challenge[] = [
   {
@@ -193,21 +190,6 @@ function clearAutoMatches(input: string[][]) {
   }
 }
 
-type PattayaStats = {
-  correctAnswers: number;
-  wrongAnswers: number;
-  quizAttempts: number;
-  totalMovesEarned: number;
-  lessonRuns?: Array<{
-    lesson: number;
-    correct: number;
-    wrong: number;
-    playPoints: number;
-    movesEarned: number;
-    completedAt: string;
-  }>;
-};
-
 export default function PattayaLesson2Page() {
   const [phase, setPhase] = useState<Phase>('practice');
   const [practiceStep, setPracticeStep] = useState(0);
@@ -246,115 +228,73 @@ export default function PattayaLesson2Page() {
     });
   }, []);
 
-  function readStats(): PattayaStats {
-    const payload = window.localStorage.getItem(STATS_KEY);
-    const fallback: PattayaStats = {
-      correctAnswers: 0,
-      wrongAnswers: 0,
-      quizAttempts: 0,
-      totalMovesEarned: 0,
-      lessonRuns: [],
-    };
-    if (!payload) return fallback;
-
-    try {
-      const parsed = JSON.parse(payload) as Partial<PattayaStats>;
-      return {
-        ...fallback,
-        ...parsed,
-        lessonRuns: Array.isArray(parsed.lessonRuns) ? parsed.lessonRuns : [],
-      };
-    } catch {
-      return fallback;
-    }
-  }
-
-  function writeStats(next: PattayaStats) {
-    window.localStorage.setItem(STATS_KEY, JSON.stringify(next));
-    window.dispatchEvent(new Event(STATS_UPDATED_EVENT));
-  }
-
   function recordAttemptIfNeeded() {
     if (attemptRecorded) return;
-    const previous = readStats();
-    writeStats({
-      ...previous,
-      quizAttempts: previous.quizAttempts + 1,
-    });
     setAttemptRecorded(true);
   }
 
-  function recordAnswerResult(isCorrect: boolean) {
-    const previous = readStats();
-    writeStats({
-      ...previous,
-      correctAnswers: previous.correctAnswers + (isCorrect ? 1 : 0),
-      wrongAnswers: previous.wrongAnswers + (isCorrect ? 0 : 1),
-    });
-  }
-
   function persistProgress() {
-    const previous = readStats();
-    if (!attemptRecorded) {
-      previous.quizAttempts += 1;
-    }
-
     const earnedMoves = Math.max(1, Math.floor(playPoints / 120));
-    const lessonRuns = Array.isArray(previous.lessonRuns)
-      ? previous.lessonRuns
-      : [];
-    const nextStats: PattayaStats = {
-      correctAnswers: previous.correctAnswers,
-      wrongAnswers: previous.wrongAnswers,
-      quizAttempts: previous.quizAttempts,
-      totalMovesEarned: previous.totalMovesEarned + earnedMoves,
-      lessonRuns: [
-        ...lessonRuns,
-        {
-          lesson: 2,
-          correct: learningCorrect,
-          wrong: learningWrong,
-          playPoints,
-          movesEarned: earnedMoves,
-          completedAt: new Date().toISOString(),
+    const passed = learningCorrect >= LESSONS_MIN_PASS;
+
+    fetch('/api/progress')
+      .then((r) => r.json())
+      .then(
+        (data: {
+          ok?: boolean;
+          progress?: Record<
+            string,
+            {
+              unlocked_lessons: number;
+              correct_answers: number;
+              wrong_answers: number;
+              quiz_attempts: number;
+              total_moves_earned: number;
+            }
+          >;
+        }) => {
+          const p =
+            data.ok && data.progress
+              ? (data.progress['pattaya'] ?? null)
+              : null;
+          const prevUnlocked = p
+            ? Math.min(LESSONS_TOTAL, Math.max(1, p.unlocked_lessons))
+            : 1;
+          const nextUnlocked = passed
+            ? Math.min(LESSONS_TOTAL, Math.max(prevUnlocked, 3))
+            : prevUnlocked;
+
+          return fetch('/api/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              game_mode: 'pattaya',
+              correct_answers: (p?.correct_answers ?? 0) + learningCorrect,
+              wrong_answers: (p?.wrong_answers ?? 0) + learningWrong,
+              quiz_attempts:
+                (p?.quiz_attempts ?? 0) + (attemptRecorded ? 1 : 1),
+              total_moves_earned: (p?.total_moves_earned ?? 0) + earnedMoves,
+              unlocked_lessons: nextUnlocked,
+            }),
+          });
         },
-      ],
-    };
-    writeStats(nextStats);
-
-    void trackEvent('pattaya_lesson_completed', {
-      lessonNumber: 2,
-      learningCorrect,
-      learningWrong,
-      playPoints,
-      earnedMoves,
-      totalMovesEarned: nextStats.totalMovesEarned,
-      totalCorrectAnswers: nextStats.correctAnswers,
-      totalWrongAnswers: nextStats.wrongAnswers,
-      totalQuizAttempts: nextStats.quizAttempts,
-    });
-
-    const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
-    const unlocked = Number.parseInt(rawUnlocked ?? '1', 10);
-    const safeUnlocked = Number.isFinite(unlocked)
-      ? Math.min(LESSONS_TOTAL, Math.max(1, unlocked))
-      : 1;
-
-    const passed = learningCorrect >= 3;
-    if (passed) {
-      const nextUnlocked = Math.min(LESSONS_TOTAL, Math.max(safeUnlocked, 3));
-      if (nextUnlocked > safeUnlocked) {
-        window.localStorage.setItem(PENDING_UNLOCK_KEY, String(nextUnlocked));
-      }
-      window.localStorage.setItem(UNLOCKED_KEY, String(nextUnlocked));
-    }
+      )
+      .then(() => {
+        void trackEvent('pattaya_lesson_completed', {
+          lessonNumber: 2,
+          learningCorrect,
+          learningWrong,
+          playPoints,
+          earnedMoves,
+        });
+      })
+      .catch(() => null);
   }
 
   function handleChallengeAnswer(challenge: Challenge, pickedIndex: number) {
     if (selectedIndex !== null) return;
     const isCorrect = pickedIndex === challenge.answer;
     recordAttemptIfNeeded();
-    recordAnswerResult(isCorrect);
     if (isCorrect) {
       setLearningCorrect((value) => value + 1);
     } else {

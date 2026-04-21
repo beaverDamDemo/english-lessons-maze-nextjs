@@ -33,6 +33,20 @@ CREATE TABLE IF NOT EXISTS public.maze (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+-- User progress table (one row per user per game mode)
+CREATE TABLE IF NOT EXISTS public.user_progress (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES public.app_users(id) ON DELETE CASCADE,
+    game_mode VARCHAR(32) NOT NULL,
+    unlocked_lessons INTEGER NOT NULL DEFAULT 1,
+    correct_answers INTEGER NOT NULL DEFAULT 0,
+    wrong_answers INTEGER NOT NULL DEFAULT 0,
+    quiz_attempts INTEGER NOT NULL DEFAULT 0,
+    total_moves_earned INTEGER NOT NULL DEFAULT 0,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, game_mode)
+);
+
 -- Sessions table
 CREATE TABLE IF NOT EXISTS public.user_sessions (
     id SERIAL PRIMARY KEY,

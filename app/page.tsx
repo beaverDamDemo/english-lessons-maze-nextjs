@@ -13,13 +13,6 @@ import { trackEvent } from './_lib/analytics';
 const MAZE_TOTAL_LESSONS = Math.max(1, mazeLessonMapButtons.length);
 const CASINO_TOTAL_LESSONS = Math.max(1, casinoLessonMapButtons.length);
 const PATTAYA_TOTAL_LESSONS = Math.max(1, pattayaLessonMapButtons.length);
-const MAZE_STATS_KEY = 'englishMazeStats';
-const MAZE_UNLOCKED_KEY = 'englishMazeUnlockedLessons';
-const CASINO_STATS_KEY = 'englishCasinoStats';
-const CASINO_UNLOCKED_KEY = 'englishCasinoUnlockedLessons';
-const PATTAYA_STATS_KEY = 'englishPattayaStats';
-const PATTAYA_UNLOCKED_KEY = 'englishPattayaUnlockedLessons';
-const PATTAYA_STATS_UPDATED_EVENT = 'pattaya-stats-updated';
 
 type ProgressStats = {
   correctAnswers: number;
@@ -34,21 +27,6 @@ const EMPTY_STATS: ProgressStats = {
   quizAttempts: 0,
   totalMovesEarned: 0,
 };
-
-function parseStats(raw: string | null): ProgressStats {
-  if (!raw) return EMPTY_STATS;
-  try {
-    const parsed = JSON.parse(raw) as Partial<ProgressStats>;
-    return {
-      correctAnswers: parsed.correctAnswers ?? 0,
-      wrongAnswers: parsed.wrongAnswers ?? 0,
-      quizAttempts: parsed.quizAttempts ?? 0,
-      totalMovesEarned: parsed.totalMovesEarned ?? 0,
-    };
-  } catch {
-    return EMPTY_STATS;
-  }
-}
 
 export default function HomePage() {
   const router = useRouter();
@@ -77,57 +55,68 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const loadProgress = () => {
-      const rawMazeUnlocked = window.localStorage.getItem(MAZE_UNLOCKED_KEY);
-      const parsedMazeUnlocked = Number.parseInt(rawMazeUnlocked ?? '1', 10);
-      setMazeUnlocked(
-        Number.isFinite(parsedMazeUnlocked)
-          ? Math.min(MAZE_TOTAL_LESSONS, Math.max(1, parsedMazeUnlocked))
-          : 1,
-      );
-
-      const rawCasinoUnlocked =
-        window.localStorage.getItem(CASINO_UNLOCKED_KEY);
-      const parsedCasinoUnlocked = Number.parseInt(
-        rawCasinoUnlocked ?? '1',
-        10,
-      );
-      setCasinoUnlocked(
-        Number.isFinite(parsedCasinoUnlocked)
-          ? Math.min(CASINO_TOTAL_LESSONS, Math.max(1, parsedCasinoUnlocked))
-          : 1,
-      );
-
-      const rawPattayaUnlocked =
-        window.localStorage.getItem(PATTAYA_UNLOCKED_KEY);
-      const parsedPattayaUnlocked = Number.parseInt(
-        rawPattayaUnlocked ?? '1',
-        10,
-      );
-      setPattayaUnlocked(
-        Number.isFinite(parsedPattayaUnlocked)
-          ? Math.min(PATTAYA_TOTAL_LESSONS, Math.max(1, parsedPattayaUnlocked))
-          : 1,
-      );
-
-      setMazeStats(parseStats(window.localStorage.getItem(MAZE_STATS_KEY)));
-      setCasinoStats(parseStats(window.localStorage.getItem(CASINO_STATS_KEY)));
-      setPattayaStats(
-        parseStats(window.localStorage.getItem(PATTAYA_STATS_KEY)),
-      );
-    };
-
-    loadProgress();
-    window.addEventListener('focus', loadProgress);
-    window.addEventListener('storage', loadProgress);
-    window.addEventListener('pageshow', loadProgress);
-    window.addEventListener(PATTAYA_STATS_UPDATED_EVENT, loadProgress);
-    return () => {
-      window.removeEventListener('focus', loadProgress);
-      window.removeEventListener('storage', loadProgress);
-      window.removeEventListener('pageshow', loadProgress);
-      window.removeEventListener(PATTAYA_STATS_UPDATED_EVENT, loadProgress);
-    };
+    fetch('/api/progress')
+      .then((r) => r.json())
+      .then(
+        (data: {
+          ok?: boolean;
+          progress?: Record<
+            string,
+            {
+              unlocked_lessons: number;
+              correct_answers: number;
+              wrong_answers: number;
+              quiz_attempts: number;
+              total_moves_earned: number;
+            }
+          >;
+        }) => {
+          if (!data.ok || !data.progress) return;
+          const maze = data.progress['maze'];
+          const casino = data.progress['casino'];
+          const pattaya = data.progress['pattaya'];
+          if (maze) {
+            setMazeUnlocked(
+              Math.min(MAZE_TOTAL_LESSONS, Math.max(1, maze.unlocked_lessons)),
+            );
+            setMazeStats({
+              correctAnswers: maze.correct_answers,
+              wrongAnswers: maze.wrong_answers,
+              quizAttempts: maze.quiz_attempts,
+              totalMovesEarned: maze.total_moves_earned,
+            });
+          }
+          if (casino) {
+            setCasinoUnlocked(
+              Math.min(
+                CASINO_TOTAL_LESSONS,
+                Math.max(1, casino.unlocked_lessons),
+              ),
+            );
+            setCasinoStats({
+              correctAnswers: casino.correct_answers,
+              wrongAnswers: casino.wrong_answers,
+              quizAttempts: casino.quiz_attempts,
+              totalMovesEarned: casino.total_moves_earned,
+            });
+          }
+          if (pattaya) {
+            setPattayaUnlocked(
+              Math.min(
+                PATTAYA_TOTAL_LESSONS,
+                Math.max(1, pattaya.unlocked_lessons),
+              ),
+            );
+            setPattayaStats({
+              correctAnswers: pattaya.correct_answers,
+              wrongAnswers: pattaya.wrong_answers,
+              quizAttempts: pattaya.quiz_attempts,
+              totalMovesEarned: pattaya.total_moves_earned,
+            });
+          }
+        },
+      )
+      .catch(() => null);
   }, []);
 
   const totalCorrect = useMemo(
@@ -199,41 +188,63 @@ export default function HomePage() {
   ]);
 
   const handleResetProgress = () => {
-    if (
-      window.confirm(
-        'Reset all progress for Maze and Casino? This cannot be undone.',
+    if (window.confirm('Reset all progress? This cannot be undone.')) {
+      const modes = ['maze', 'casino', 'pattaya'];
+      Promise.all(
+        modes.map((mode) =>
+          fetch('/api/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              game_mode: mode,
+              unlocked_lessons: 1,
+              correct_answers: 0,
+              wrong_answers: 0,
+              quiz_attempts: 0,
+              total_moves_earned: 0,
+            }),
+          }),
+        ),
       )
-    ) {
-      window.localStorage.removeItem(MAZE_STATS_KEY);
-      window.localStorage.removeItem(MAZE_UNLOCKED_KEY);
-      window.localStorage.removeItem('englishMazePendingUnlockLesson');
-      window.localStorage.removeItem(CASINO_STATS_KEY);
-      window.localStorage.removeItem(CASINO_UNLOCKED_KEY);
-      window.localStorage.removeItem('englishCasinoPendingUnlockLesson');
-      window.localStorage.removeItem(PATTAYA_STATS_KEY);
-      window.localStorage.removeItem(PATTAYA_UNLOCKED_KEY);
-      window.localStorage.removeItem('englishPattayaPendingUnlockLesson');
-      window.location.reload();
+        .then(() => {
+          setMazeUnlocked(1);
+          setCasinoUnlocked(1);
+          setPattayaUnlocked(1);
+          setMazeStats(EMPTY_STATS);
+          setCasinoStats(EMPTY_STATS);
+          setPattayaStats(EMPTY_STATS);
+        })
+        .catch(() => null);
     }
   };
 
   const handleUnlockAllLessons = () => {
-    window.localStorage.setItem(MAZE_UNLOCKED_KEY, String(MAZE_TOTAL_LESSONS));
-    window.localStorage.setItem(
-      CASINO_UNLOCKED_KEY,
-      String(CASINO_TOTAL_LESSONS),
-    );
-    window.localStorage.setItem(
-      PATTAYA_UNLOCKED_KEY,
-      String(PATTAYA_TOTAL_LESSONS),
-    );
-    window.localStorage.removeItem('englishMazePendingUnlockLesson');
-    window.localStorage.removeItem('englishCasinoPendingUnlockLesson');
-    window.localStorage.removeItem('englishPattayaPendingUnlockLesson');
-
-    setMazeUnlocked(MAZE_TOTAL_LESSONS);
-    setCasinoUnlocked(CASINO_TOTAL_LESSONS);
-    setPattayaUnlocked(PATTAYA_TOTAL_LESSONS);
+    const updates = [
+      { game_mode: 'maze', unlocked_lessons: MAZE_TOTAL_LESSONS },
+      { game_mode: 'casino', unlocked_lessons: CASINO_TOTAL_LESSONS },
+      { game_mode: 'pattaya', unlocked_lessons: PATTAYA_TOTAL_LESSONS },
+    ];
+    Promise.all(
+      updates.map((u) =>
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...u,
+            correct_answers: 0,
+            wrong_answers: 0,
+            quiz_attempts: 0,
+            total_moves_earned: 0,
+          }),
+        }),
+      ),
+    )
+      .then(() => {
+        setMazeUnlocked(MAZE_TOTAL_LESSONS);
+        setCasinoUnlocked(CASINO_TOTAL_LESSONS);
+        setPattayaUnlocked(PATTAYA_TOTAL_LESSONS);
+      })
+      .catch(() => null);
   };
 
   const handleLogout = async () => {

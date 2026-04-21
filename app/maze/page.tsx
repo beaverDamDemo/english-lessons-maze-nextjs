@@ -9,9 +9,6 @@ import { lessonMapButtons } from './lessonMapConfig';
 const MAP_ASPECT_RATIO = 1024 / 1536;
 const MAP_IMAGE_CACHE_BUSTER = '20260321-1';
 const TOTAL_LESSONS = lessonMapButtons.length;
-const STATS_KEY = 'englishMazeStats';
-const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
-const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
 
 export default function MazeScreenPage() {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -25,54 +22,37 @@ export default function MazeScreenPage() {
   );
 
   useEffect(() => {
-    const loadProgress = () => {
-      const rawUnlocked = window.localStorage.getItem(UNLOCKED_KEY);
-      const parsedUnlocked = Number.parseInt(rawUnlocked ?? '1', 10);
-      const safeUnlocked = Number.isFinite(parsedUnlocked)
-        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedUnlocked))
-        : 1;
-      setUnlockedLessons(safeUnlocked);
-
-      const rawPending = window.localStorage.getItem(PENDING_UNLOCK_KEY);
-      const parsedPending = Number.parseInt(rawPending ?? '', 10);
-      const safePending = Number.isFinite(parsedPending)
-        ? Math.min(TOTAL_LESSONS, Math.max(1, parsedPending))
-        : null;
-      if (safePending && safePending <= safeUnlocked) {
-        setHighlightedLesson(safePending);
-        window.localStorage.removeItem(PENDING_UNLOCK_KEY);
-      }
-
-      const rawStats = window.localStorage.getItem(STATS_KEY);
-      if (!rawStats) return;
-
-      try {
-        const parsed = JSON.parse(rawStats) as {
-          correctAnswers?: number;
-          wrongAnswers?: number;
-          quizAttempts?: number;
-          totalMovesEarned?: number;
-        };
-        setCorrectAnswers(parsed.correctAnswers ?? 0);
-        setWrongAnswers(parsed.wrongAnswers ?? 0);
-        setQuizAttempts(parsed.quizAttempts ?? 0);
-        setTotalMovesEarned(parsed.totalMovesEarned ?? 0);
-      } catch {
-        // ignore malformed values
-      }
-    };
-
-    loadProgress();
-    window.addEventListener('focus', loadProgress);
-    window.addEventListener('storage', loadProgress);
-    window.addEventListener('pageshow', loadProgress);
-    document.addEventListener('visibilitychange', loadProgress);
-    return () => {
-      window.removeEventListener('focus', loadProgress);
-      window.removeEventListener('storage', loadProgress);
-      window.removeEventListener('pageshow', loadProgress);
-      document.removeEventListener('visibilitychange', loadProgress);
-    };
+    fetch('/api/progress')
+      .then((r) => r.json())
+      .then(
+        (data: {
+          ok?: boolean;
+          progress?: Record<
+            string,
+            {
+              unlocked_lessons: number;
+              correct_answers: number;
+              wrong_answers: number;
+              quiz_attempts: number;
+              total_moves_earned: number;
+            }
+          >;
+        }) => {
+          if (!data.ok || !data.progress) return;
+          const p = data.progress['maze'];
+          if (!p) return;
+          const safeUnlocked = Math.min(
+            TOTAL_LESSONS,
+            Math.max(1, p.unlocked_lessons),
+          );
+          setUnlockedLessons(safeUnlocked);
+          setCorrectAnswers(p.correct_answers);
+          setWrongAnswers(p.wrong_answers);
+          setQuizAttempts(p.quiz_attempts);
+          setTotalMovesEarned(p.total_moves_earned);
+        },
+      )
+      .catch(() => null);
   }, []);
 
   useEffect(() => {

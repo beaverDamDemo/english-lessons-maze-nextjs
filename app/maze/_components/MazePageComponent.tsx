@@ -9,9 +9,6 @@ import type { FC, MouseEvent } from 'react';
 import { trackEvent } from '../../_lib/analytics';
 
 const TOTAL_LESSONS = 9;
-const STATS_KEY = 'englishMazeStats';
-const UNLOCKED_KEY = 'englishMazeUnlockedLessons';
-const PENDING_UNLOCK_KEY = 'englishMazePendingUnlockLesson';
 
 interface MazePageProps {
   MazeScene: Phaser.Types.Scenes.SceneType;
@@ -40,9 +37,7 @@ const MazePageComponent: FC<MazePageProps> = ({
   backgroundGradient,
   showWinScreen = true,
   totalLessons = TOTAL_LESSONS,
-  statsKey = STATS_KEY,
-  unlockedKey = UNLOCKED_KEY,
-  pendingUnlockKey = PENDING_UNLOCK_KEY,
+  statsKey = 'englishMazeStats',
   backHref = '/maze',
   returnHref = '/maze',
   returnLabel = 'Return to Map',
@@ -69,22 +64,27 @@ const MazePageComponent: FC<MazePageProps> = ({
   const mobileWidth = 504;
   const mobileHeight = 800;
 
+  const gameMode = statsKey === 'englishCasinoStats' ? 'casino' : 'maze';
+
   const saveStats = (next: {
     correctAnswers: number;
     wrongAnswers: number;
     quizAttempts: number;
     totalMovesEarned: number;
+    unlockedLessons?: number;
   }) => {
-    if (typeof window === 'undefined') return;
-    window.localStorage.setItem(
-      statsKey,
-      JSON.stringify({
-        correctAnswers: next.correctAnswers,
-        wrongAnswers: next.wrongAnswers,
-        quizAttempts: next.quizAttempts,
-        totalMovesEarned: next.totalMovesEarned,
+    void fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        game_mode: gameMode,
+        correct_answers: next.correctAnswers,
+        wrong_answers: next.wrongAnswers,
+        quiz_attempts: next.quizAttempts,
+        total_moves_earned: next.totalMovesEarned,
+        unlocked_lessons: next.unlockedLessons ?? unlockedLessons,
       }),
-    );
+    });
   };
 
   const handleQuizComplete = (finalScore: number) => {
@@ -143,29 +143,18 @@ const MazePageComponent: FC<MazePageProps> = ({
   };
 
   const handleWin = () => {
-    const persistedUnlocked =
-      typeof window !== 'undefined'
-        ? Number.parseInt(window.localStorage.getItem(unlockedKey) ?? '1', 10)
-        : 1;
-    const safePersistedUnlocked = Number.isFinite(persistedUnlocked)
-      ? Math.min(totalLessons, Math.max(1, persistedUnlocked))
-      : 1;
     const nextUnlockedLessons = Math.min(
       totalLessons,
-      Math.max(safePersistedUnlocked, lessonNumber + 1),
+      Math.max(unlockedLessons, lessonNumber + 1),
     );
     setUnlockedLessons(nextUnlockedLessons);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(unlockedKey, String(nextUnlockedLessons));
-      if (nextUnlockedLessons > safePersistedUnlocked) {
-        window.localStorage.setItem(
-          pendingUnlockKey,
-          String(nextUnlockedLessons),
-        );
-      } else {
-        window.localStorage.removeItem(pendingUnlockKey);
-      }
-    }
+    saveStats({
+      correctAnswers,
+      wrongAnswers,
+      quizAttempts,
+      totalMovesEarned,
+      unlockedLessons: nextUnlockedLessons,
+    });
 
     void trackEvent('maze_lesson_completed', {
       lessonNumber,
@@ -173,7 +162,6 @@ const MazePageComponent: FC<MazePageProps> = ({
       score,
       maxMoves,
       statsKey,
-      unlockedKey,
     });
 
     setGameWon(true);
@@ -183,42 +171,43 @@ const MazePageComponent: FC<MazePageProps> = ({
     void trackEvent('maze_lesson_opened', {
       lessonNumber,
       statsKey,
-      unlockedKey,
       backHref,
       returnHref,
     });
-  }, [lessonNumber, statsKey, unlockedKey, backHref, returnHref]);
+  }, [lessonNumber, statsKey, backHref, returnHref]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const rawStats = window.localStorage.getItem(statsKey);
-    if (rawStats) {
-      try {
-        const parsed = JSON.parse(rawStats) as {
-          correctAnswers?: number;
-          wrongAnswers?: number;
-          quizAttempts?: number;
-          totalMovesEarned?: number;
-        };
-
-        setCorrectAnswers(parsed.correctAnswers ?? 0);
-        setWrongAnswers(parsed.wrongAnswers ?? 0);
-        setQuizAttempts(parsed.quizAttempts ?? 0);
-        setTotalMovesEarned(parsed.totalMovesEarned ?? 0);
-      } catch {
-        // ignore malformed local storage values
-      }
-    }
-
-    const rawUnlocked = window.localStorage.getItem(unlockedKey);
-    const parsedUnlocked = Number.parseInt(rawUnlocked ?? '1', 10);
-    setUnlockedLessons(
-      Number.isFinite(parsedUnlocked)
-        ? Math.min(totalLessons, Math.max(1, parsedUnlocked))
-        : 1,
-    );
-  }, [statsKey, totalLessons, unlockedKey]);
+    fetch('/api/progress')
+      .then((r) => r.json())
+      .then(
+        (data: {
+          ok?: boolean;
+          progress?: Record<
+            string,
+            {
+              unlocked_lessons: number;
+              correct_answers: number;
+              wrong_answers: number;
+              quiz_attempts: number;
+              total_moves_earned: number;
+            }
+          >;
+        }) => {
+          if (!data.ok || !data.progress) return;
+          const mode = statsKey === 'englishCasinoStats' ? 'casino' : 'maze';
+          const p = data.progress[mode];
+          if (!p) return;
+          setCorrectAnswers(p.correct_answers);
+          setWrongAnswers(p.wrong_answers);
+          setQuizAttempts(p.quiz_attempts);
+          setTotalMovesEarned(p.total_moves_earned);
+          setUnlockedLessons(
+            Math.min(totalLessons, Math.max(1, p.unlocked_lessons)),
+          );
+        },
+      )
+      .catch(() => null);
+  }, [statsKey, totalLessons]);
 
   // Calculate scale to fit content to screen
   useEffect(() => {
