@@ -71,13 +71,62 @@ function buildRound(): QuizQuestion[] {
 
 type Phase = 'quiz' | 'shoot' | 'done';
 
-type Shot = { id: number; x: number; hit: boolean };
+// Ballistics constants
+const MV = 600; // muzzle velocity m/s
+const G = 9.81; // gravity m/s²
+const DRAG = 0.08; // drag coefficient s⁻¹ (intentionally high for visible effect)
+const MIN_DIST = 800; // metres
+const MAX_DIST = 1800; // metres
+
+// Arena layout (% of arena height)
+const HORIZON_PCT = 48; // where the ground meets sky visually
+const GROUND_PCT = 65; // where the tank tracks sit at minimum distance
+
+// Tank apparent width at reference distance (% of arena width)
+const TANK_W_REF = 8; // % at 800 m
+const DIST_REF = 800;
+
+function tankWidthPct(dist: number) {
+  return (TANK_W_REF * DIST_REF) / dist;
+}
+
+// The tank sits on the ground. Further tanks appear closer to the horizon.
+function tankYPct(dist: number) {
+  // linear interpolation: 800m → GROUND_PCT, 1800m → HORIZON_PCT+2
+  const t = (dist - MIN_DIST) / (MAX_DIST - MIN_DIST);
+  return GROUND_PCT - t * (GROUND_PCT - HORIZON_PCT - 2);
+}
+
+// Shell always fires flat — elevation compensation is done visually via the ruler marks.
+// The user places the correct range mark on the target; the crosshair fires horizontally.
+function aimAngle(): number {
+  return 0;
+}
+
+type Shell = {
+  id: number;
+  // world-space launch state
+  dist: number; // range to target in metres
+  v0x: number; // horizontal speed m/s
+  v0y: number; // vertical speed m/s (up = positive)
+  t: number; // elapsed time seconds
+  // screen-space start (for rendering)
+  startXPct: number;
+  startYPct: number;
+  // current screen pos
+  screenX: number;
+  screenY: number;
+  hit: boolean | null; // null = in flight
+  tankXAtFire: number; // tank X% when fired
+  tankDist: number; // tank distance when fired
+};
+
 type HitEffect = { id: number; x: number; y: number };
 
-const TANK_SPEED_MS = 4000;
+const DEV_MODE = true; // TODO: remove before release
 
 export default function PattayaLesson3Page() {
-  const [phase, setPhase] = useState<Phase>('quiz');
+  const [phase, setPhase] = useState<Phase>(DEV_MODE ? 'shoot' : 'quiz');
 
   const [round, setRound] = useState<QuizQuestion[]>(() => buildRound());
   const [qIndex, setQIndex] = useState(0);
@@ -89,21 +138,33 @@ export default function PattayaLesson3Page() {
   const [roundsDone, setRoundsDone] = useState(0);
   const [shotsEarned, setShotsEarned] = useState(0);
 
-  const [shotsLeft, setShotsLeft] = useState(0);
+  const [shotsLeft, setShotsLeft] = useState(DEV_MODE ? Infinity : 0);
   const [mouseX, setMouseX] = useState(50);
   const [mouseY, setMouseY] = useState(50);
-  const [tankX, setTankX] = useState(10);
+  const [tankX, setTankX] = useState(20); // % across arena
   const [tankDir, setTankDir] = useState(1);
+  const [tankDistDisplay, setTankDistDisplay] = useState(MIN_DIST);
   const tankDirRef = useRef(1);
+  const tankXRef = useRef(20);
+  const tankDistRef = useRef(MIN_DIST);
   const [tankHits, setTankHits] = useState(0);
-  const [shots, setShots] = useState<Shot[]>([]);
+  const [shells, setShells] = useState<Shell[]>([]);
+  const shellsRef = useRef<Shell[]>([]);
   const [hitEffects, setHitEffects] = useState<HitEffect[]>([]);
-  const [shotIdCounter, setShotIdCounter] = useState(0);
-  const [hitIdCounter, setHitIdCounter] = useState(0);
+  const [impactFlashes, setImpactFlashes] = useState<
+    { id: number; x: number; y: number; type: 'tank' | 'wall' | 'ground' }[]
+  >([]);
+  const [tankFlash, setTankFlash] = useState(false);
+  const [wallCraters, setWallCraters] = useState<
+    { id: number; sx: number; sy: number }[]
+  >([]);
+  const shellIdRef = useRef(0);
+  const hitIdRef = useRef(0);
   const arenaRef = useRef<HTMLDivElement>(null);
-  const tankXRef = useRef(10);
   const animRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
+  const mouseXRef = useRef(50);
+  const mouseYRef = useRef(50);
 
   const [savedProgress, setSavedProgress] = useState(false);
 
@@ -161,38 +222,166 @@ export default function PattayaLesson3Page() {
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = arenaRef.current?.getBoundingClientRect();
     if (!rect) return;
-    setMouseX(((e.clientX - rect.left) / rect.width) * 100);
-    setMouseY(((e.clientY - rect.top) / rect.height) * 100);
+    const mx = ((e.clientX - rect.left) / rect.width) * 100;
+    const my = ((e.clientY - rect.top) / rect.height) * 100;
+    setMouseX(mx);
+    setMouseY(my);
+    mouseXRef.current = mx;
+    mouseYRef.current = my;
   }, []);
 
+  // Main animation loop: moves tank + advances shells
   useEffect(() => {
     if (phase !== 'shoot') return;
 
-    const ARENA_WIDTH = 80;
-    const speed = ARENA_WIDTH / (TANK_SPEED_MS / 16);
+    // Randomize tank distance once on first shoot session
+    if (tankDistRef.current === MIN_DIST) {
+      tankDistRef.current = MIN_DIST + Math.random() * (MAX_DIST - MIN_DIST);
+      setTankDistDisplay(tankDistRef.current);
+    }
+
+    // Tank lateral speed in % of arena width per second
+    const TANK_PCT_SPEED = 1; // % per second
 
     function tick(time: number) {
       if (lastTimeRef.current === null) lastTimeRef.current = time;
-      const dt = Math.min(time - lastTimeRef.current, 100);
+      const dt = Math.min(time - lastTimeRef.current, 100) / 1000; // seconds
       lastTimeRef.current = time;
 
-      const pixelSpeed = speed * (dt / 16);
-      let nx = tankXRef.current + pixelSpeed * tankDirRef.current;
-
+      // ── Move tank ──
+      let nx = tankXRef.current + TANK_PCT_SPEED * dt * tankDirRef.current;
       let dir = tankDirRef.current;
-      if (nx > 85) {
-        nx = 85;
+      if (nx > 88) {
+        nx = 88;
         dir = -1;
       }
       if (nx < 5) {
         nx = 5;
         dir = 1;
       }
-
       tankXRef.current = nx;
       tankDirRef.current = dir;
       setTankX(nx);
       setTankDir(dir);
+
+      // ── Advance shells ──
+      const nextShells = shellsRef.current
+        .map((s): Shell => {
+          if (s.hit !== null) return s; // already resolved
+          const t2 = s.t + dt;
+
+          // ── World-space ballistics with drag ──
+          // Horizontal: v_x(t) = v0x·e^(-k·t)  →  x(t) = v0x/k · (1 - e^(-k·t))
+          const ekt = Math.exp(-DRAG * t2);
+          const worldX = (s.v0x / DRAG) * (1 - ekt);
+
+          // ── Screen X: shell travels straight — no horizontal drift on screen ──
+          const sx = s.startXPct;
+
+          // ── Screen Y: always falls downward from aim point ──
+          // Treat v0y=0 for screen: shell starts at crosshair and only drops due to gravity+drag.
+          // y(t) = (g/k)/k · (1 - e^(-k·t)) - g·t/k  [with v0y=0, simplifies to pure drop]
+          const M_PER_PCT = 1.5; // 1% screen height = 1.5 m — exaggerated for clear visibility
+          const gravDrop = (G / DRAG / DRAG) * (1 - ekt) - (G * t2) / DRAG; // always negative (downward)
+          const sy = s.startYPct + -gravDrop / M_PER_PCT; // -gravDrop is positive → increases Y → falls down
+
+          // Impact detection: shell reached or passed the target distance
+          if (worldX >= s.dist) {
+            const tankW = tankWidthPct(s.tankDist);
+            // Tank height on screen ≈ tankW * 0.5 (SVG aspect 160×80)
+            const tankHPct = tankW * 0.5;
+
+            // ── Screen-space hit: tank always sits on GROUND_PCT line ──
+            const tankScreenTop = GROUND_PCT - tankHPct;
+            const tankScreenBot = GROUND_PCT + 1;
+
+            // ── Lateral: compare crosshair X at fire time vs tank X at fire time ──
+            const lateralMissPct = Math.abs(s.tankXAtFire - s.startXPct);
+            const isHit =
+              sy >= tankScreenTop &&
+              sy <= tankScreenBot &&
+              lateralMissPct < tankW * 0.8;
+
+            console.log('[HIT?]', {
+              dist: s.dist.toFixed(1),
+              sy: sy.toFixed(2),
+              tankScreenTop: tankScreenTop.toFixed(2),
+              tankScreenBot: tankScreenBot.toFixed(2),
+              tankXAtFire: s.tankXAtFire.toFixed(1),
+              startXPct: s.startXPct.toFixed(1),
+              lateralMissPct: lateralMissPct.toFixed(2),
+              tankW: tankW.toFixed(2),
+              lateralOK: lateralMissPct < tankW * 0.8,
+              heightOK: sy >= tankScreenTop && sy <= tankScreenBot,
+              isHit,
+            });
+
+            const spawnFlash = (
+              x: number,
+              y: number,
+              type: 'tank' | 'wall' | 'ground',
+            ) => {
+              const fid = hitIdRef.current++;
+              setImpactFlashes((prev) => [...prev, { id: fid, x, y, type }]);
+              window.setTimeout(
+                () =>
+                  setImpactFlashes((prev) => prev.filter((f) => f.id !== fid)),
+                800,
+              );
+            };
+
+            if (isHit) {
+              setTankHits((v) => v + 1);
+              const hid = hitIdRef.current++;
+              setHitEffects((prev) => [
+                ...prev,
+                { id: hid, x: tankXRef.current, y: GROUND_PCT - 5 },
+              ]);
+              window.setTimeout(
+                () => setHitEffects((prev) => prev.filter((h) => h.id !== hid)),
+                900,
+              );
+              // Big tank hit flash — spawn multiple explosions around tank
+              spawnFlash(s.tankXAtFire, GROUND_PCT - 3, 'tank');
+              spawnFlash(s.tankXAtFire - 2, GROUND_PCT - 6, 'tank');
+              spawnFlash(s.tankXAtFire + 1.5, GROUND_PCT - 1, 'tank');
+              setTankFlash(true);
+              window.setTimeout(() => setTankFlash(false), 400);
+            } else {
+              // Wall hit: shell screen Y is within the wall's vertical band on screen
+              const wallBottom = tankYPct(MIN_DIST);
+              const wallTop = wallBottom - tankW * 3; // wall is ~3× tank width tall on screen
+              const wallHit = sy >= wallTop && sy <= wallBottom + 1;
+              if (wallHit) {
+                const cid = hitIdRef.current++;
+                const craterSvgX = (s.tankXAtFire / 100) * 1600;
+                const wallTopPct = tankYPct(MIN_DIST) - 14;
+                const craterSvgY = Math.max(
+                  10,
+                  Math.min(130, ((sy - wallTopPct) / 14) * 140),
+                );
+                setWallCraters((prev) => [
+                  ...prev,
+                  { id: cid, sx: craterSvgX, sy: craterSvgY },
+                ]);
+                spawnFlash(sx, sy, 'wall');
+              } else {
+                // Ground hit
+                spawnFlash(sx, sy, 'ground');
+              }
+            }
+            return { ...s, t: t2, screenX: sx, screenY: sy, hit: isHit };
+          }
+
+          return { ...s, t: t2, screenX: sx, screenY: sy };
+        })
+        .filter(
+          (s) =>
+            s.hit === null || (s.hit !== null && s.t < s.dist / s.v0x + 0.5),
+        );
+
+      shellsRef.current = nextShells;
+      setShells([...nextShells]);
 
       animRef.current = requestAnimationFrame(tick);
     }
@@ -205,39 +394,54 @@ export default function PattayaLesson3Page() {
   }, [phase]);
 
   function fireShot() {
-    if (shotsLeft <= 0) return;
-    const sx = mouseX;
-    const sy = mouseY;
-    const tx = tankXRef.current;
-    const TANK_HALF = 7;
-    const isHit = Math.abs(sx - tx) < TANK_HALF && sy > 55 && sy < 90;
+    if (!DEV_MODE && shotsLeft <= 0) return;
+    const arena = arenaRef.current;
+    if (!arena) return;
 
-    const sid = shotIdCounter;
-    setShotIdCounter((v) => v + 1);
-    setShots((prev) => [...prev, { id: sid, x: sx, hit: isHit }]);
-    setShotsLeft((v) => v - 1);
+    const my = mouseYRef.current;
 
-    if (isHit) {
-      setTankHits((v) => v + 1);
-      const hid = hitIdCounter;
-      setHitIdCounter((v) => v + 1);
-      setHitEffects((prev) => [...prev, { id: hid, x: tx, y: 72 }]);
-      window.setTimeout(
-        () => setHitEffects((prev) => prev.filter((h) => h.id !== hid)),
-        800,
-      );
-    }
+    // Elevation angle from aim position
+    const theta = aimAngle();
+    const v0x = MV * Math.cos(theta);
+    const v0y = MV * Math.sin(theta);
 
-    window.setTimeout(
-      () => setShots((prev) => prev.filter((s) => s.id !== sid)),
-      600,
-    );
+    const dist = tankDistRef.current;
+    const id = shellIdRef.current++;
 
-    if (shotsLeft - 1 <= 0) {
+    const mx = mouseXRef.current;
+
+    const newShell: Shell = {
+      id,
+      dist,
+      v0x,
+      v0y,
+      t: 0,
+      startXPct: mx, // fired from crosshair X
+      startYPct: my, // fired from crosshair Y
+      screenX: mx,
+      screenY: my,
+      hit: null,
+      tankXAtFire: tankXRef.current,
+      tankDist: dist,
+    };
+
+    shellsRef.current = [...shellsRef.current, newShell];
+    setShells([...shellsRef.current]);
+
+    if (!DEV_MODE) setShotsLeft((v) => v - 1);
+
+    // Auto-clean shell after it resolves (flight time + buffer)
+    const flightMs = (dist / v0x) * 1000 + 600;
+    window.setTimeout(() => {
+      shellsRef.current = shellsRef.current.filter((s) => s.id !== id);
+      setShells([...shellsRef.current]);
+    }, flightMs);
+
+    if (!DEV_MODE && shotsLeft - 1 <= 0) {
       window.setTimeout(() => {
         setPhase('done');
-        persistProgress(isHit ? tankHits + 1 : tankHits);
-      }, 700);
+        persistProgress(tankHits);
+      }, flightMs + 200);
     }
   }
 
@@ -429,7 +633,8 @@ export default function PattayaLesson3Page() {
             <div>
               <h1 className={styles.title}>Tank Shoot!</h1>
               <p className={styles.subtitle}>
-                Shots: {shotsLeft} left · Hits: {tankHits}
+                Shots: {DEV_MODE ? '∞' : shotsLeft} left · Hits: {tankHits}
+                {DEV_MODE ? ' · DEV MODE' : ''}
               </p>
             </div>
             <Link href="/pattaya-games" className={styles.headerHomeLink}>
@@ -443,21 +648,472 @@ export default function PattayaLesson3Page() {
             onMouseMove={handleMouseMove}
             onClick={fireShot}
           >
-            <div className={styles.sky} />
+            {/* Sky with clouds */}
+            <svg
+              className={styles.skySvg}
+              viewBox="0 0 600 195"
+              preserveAspectRatio="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <defs>
+                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#2a6db5" />
+                  <stop offset="100%" stopColor="#87ceeb" />
+                </linearGradient>
+              </defs>
+              <rect width="600" height="195" fill="url(#skyGrad)" />
+              {/* Cloud 1 */}
+              <g opacity="0.92">
+                <ellipse cx="120" cy="55" rx="48" ry="22" fill="#fff" />
+                <ellipse cx="90" cy="62" rx="32" ry="18" fill="#fff" />
+                <ellipse cx="150" cy="63" rx="30" ry="16" fill="#fff" />
+                <ellipse cx="120" cy="68" rx="50" ry="14" fill="#f5f5f5" />
+              </g>
+              {/* Cloud 2 */}
+              <g opacity="0.88">
+                <ellipse cx="430" cy="38" rx="55" ry="20" fill="#fff" />
+                <ellipse cx="400" cy="46" rx="36" ry="16" fill="#fff" />
+                <ellipse cx="462" cy="47" rx="34" ry="15" fill="#fff" />
+                <ellipse cx="430" cy="51" rx="58" ry="13" fill="#f0f0f0" />
+              </g>
+            </svg>
             <div className={styles.ground} />
+
+            {/* Decorative wall — full width, fixed vertical position */}
+            <div
+              className={styles.wall}
+              style={{
+                left: 0,
+                bottom: `${100 - tankYPct(MIN_DIST)}%`,
+                width: '100%',
+              }}
+            >
+              <svg
+                viewBox="0 0 1600 180"
+                xmlns="http://www.w3.org/2000/svg"
+                width="100%"
+                preserveAspectRatio="none"
+              >
+                {/* Wall background */}
+                <rect x="0" y="0" width="1600" height="180" fill="#b89e7a" />
+                {/* Uniform brick pattern — 18 rows × 80 cols covering full height */}
+                {Array.from({ length: 18 }, (_, row) =>
+                  Array.from({ length: 80 }, (_, col) => (
+                    <rect
+                      key={`${row}-${col}`}
+                      x={col * 20 + (row % 2) * 10}
+                      y={row * 10}
+                      width="19"
+                      height="9"
+                      rx="0.5"
+                      fill={row % 2 === col % 2 ? '#c4aa87' : '#a08860'}
+                      stroke="#7a6848"
+                      strokeWidth="0.4"
+                    />
+                  )),
+                )}
+                {/* Moss/vine accents */}
+                {[80, 200, 380, 560, 740, 900, 1060, 1220, 1400, 1520].map(
+                  (x, i) => (
+                    <rect
+                      key={i}
+                      x={x}
+                      y="62"
+                      width="4"
+                      height={18 + (i % 5) * 8}
+                      rx="2"
+                      fill="#4a6a30"
+                      opacity="0.35"
+                    />
+                  ),
+                )}
+                <rect
+                  x="0"
+                  y="172"
+                  width="1600"
+                  height="8"
+                  fill="#3a2a18"
+                  opacity="0.5"
+                  rx="2"
+                />
+                {/* Persistent crater marks — coords in SVG viewBox space (320×140) */}
+                {wallCraters.map((c) => (
+                  <g key={c.id}>
+                    <circle
+                      cx={c.sx}
+                      cy={c.sy}
+                      r="8"
+                      fill="#0a0804"
+                      opacity="0.9"
+                    />
+                    <circle
+                      cx={c.sx}
+                      cy={c.sy}
+                      r="4"
+                      fill="#1a1008"
+                      opacity="1"
+                    />
+                    {[0, 45, 90, 135, 180, 225, 270, 315].map((a, i) => (
+                      <line
+                        key={i}
+                        x1={c.sx}
+                        y1={c.sy}
+                        x2={c.sx + Math.cos((a * Math.PI) / 180) * 14}
+                        y2={c.sy + Math.sin((a * Math.PI) / 180) * 14}
+                        stroke="#3a2010"
+                        strokeWidth="1.5"
+                        opacity="0.55"
+                      />
+                    ))}
+                  </g>
+                ))}
+              </svg>
+            </div>
 
             <div
               className={styles.tank}
               style={{
                 left: `${tankX}%`,
-                transform: `scaleX(${tankDir === -1 ? -1 : 1})`,
+                // Tank always sits on the visible grass line (35% from bottom).
+                // SVG gap below tracks = 4/80 of SVG height = tankWidthPct*0.5*0.05 = tankWidthPct*0.025
+                bottom: `${100 - GROUND_PCT - tankWidthPct(tankDistDisplay) * 0.025}%`,
+                width: `${tankWidthPct(tankDistDisplay)}%`,
+                transform: `translateX(-50%) scaleX(${tankDir === -1 ? -1 : 1})`,
               }}
             >
-              <div className={styles.tankBody}>
-                <div className={styles.tankTurret} />
-                <div className={styles.tankBarrel} />
-                <div className={styles.tankTrack} />
-              </div>
+              {/* Tiger I SVG */}
+              <svg
+                viewBox="0 0 160 80"
+                xmlns="http://www.w3.org/2000/svg"
+                className={styles.tankSvg}
+              >
+                {/* === TRACKS === */}
+                <rect
+                  x="4"
+                  y="54"
+                  width="152"
+                  height="22"
+                  rx="11"
+                  ry="11"
+                  fill="#2a2a18"
+                  stroke="#444430"
+                  strokeWidth="1.5"
+                />
+                {/* track links */}
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+                  <rect
+                    key={i}
+                    x={8 + i * 12}
+                    y="55"
+                    width="10"
+                    height="20"
+                    rx="3"
+                    fill="none"
+                    stroke="#555540"
+                    strokeWidth="1"
+                  />
+                ))}
+                {/* road wheels */}
+                {[18, 38, 58, 78, 98, 118, 138].map((cx, i) => (
+                  <g key={i}>
+                    <circle
+                      cx={cx}
+                      cy="65"
+                      r="9"
+                      fill="#3a3a22"
+                      stroke="#555540"
+                      strokeWidth="1.5"
+                    />
+                    <circle
+                      cx={cx}
+                      cy="65"
+                      r="4"
+                      fill="#2a2a18"
+                      stroke="#666650"
+                      strokeWidth="1"
+                    />
+                    <circle cx={cx} cy="65" r="1.5" fill="#888870" />
+                  </g>
+                ))}
+                {/* drive sprocket (front) */}
+                <circle
+                  cx="148"
+                  cy="63"
+                  r="8"
+                  fill="#3a3a22"
+                  stroke="#555540"
+                  strokeWidth="1.5"
+                />
+                {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+                  <rect
+                    key={i}
+                    x="145"
+                    y="55"
+                    width="6"
+                    height="4"
+                    rx="1"
+                    fill="#555540"
+                    transform={`rotate(${angle} 148 63)`}
+                  />
+                ))}
+                {/* idler wheel (rear) */}
+                <circle
+                  cx="12"
+                  cy="63"
+                  r="8"
+                  fill="#3a3a22"
+                  stroke="#555540"
+                  strokeWidth="1.5"
+                />
+                <circle
+                  cx="12"
+                  cy="63"
+                  r="3.5"
+                  fill="#2a2a18"
+                  stroke="#666650"
+                  strokeWidth="1"
+                />
+
+                {/* === HULL LOWER === */}
+                <polygon
+                  points="10,54 150,54 155,42 5,42"
+                  fill="#4a4a2e"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+
+                {/* === HULL UPPER === */}
+                {/* front glacis plate */}
+                <polygon
+                  points="130,42 155,42 155,28 132,28"
+                  fill="#565638"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+                {/* rear plate */}
+                <polygon
+                  points="5,42 10,42 10,30 5,30"
+                  fill="#4e4e30"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+                {/* main hull top */}
+                <rect
+                  x="10"
+                  y="28"
+                  width="122"
+                  height="14"
+                  fill="#525234"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+                {/* hull side skirts / Schürzen hints */}
+                <rect
+                  x="8"
+                  y="44"
+                  width="144"
+                  height="8"
+                  rx="1"
+                  fill="#3e3e26"
+                  stroke="#2a2a18"
+                  strokeWidth="0.8"
+                />
+
+                {/* === TURRET === */}
+                {/* turret base ring */}
+                <rect
+                  x="44"
+                  y="24"
+                  width="72"
+                  height="4"
+                  rx="2"
+                  fill="#3a3a22"
+                  stroke="#333322"
+                  strokeWidth="0.8"
+                />
+                {/* turret body — boxy Tiger shape */}
+                <polygon
+                  points="48,6 112,6 118,10 118,28 42,28 42,10"
+                  fill="#4e4e30"
+                  stroke="#333322"
+                  strokeWidth="1.2"
+                />
+                {/* turret front angled plate */}
+                <polygon
+                  points="112,6 118,10 118,28 112,28"
+                  fill="#5a5a38"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+                {/* turret rear */}
+                <polygon
+                  points="48,6 42,10 42,28 48,28"
+                  fill="#464628"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+                {/* commander's cupola */}
+                <ellipse
+                  cx="68"
+                  cy="6"
+                  rx="10"
+                  ry="5"
+                  fill="#424226"
+                  stroke="#333322"
+                  strokeWidth="1"
+                />
+                <ellipse
+                  cx="68"
+                  cy="4"
+                  rx="7"
+                  ry="3"
+                  fill="#3a3a20"
+                  stroke="#444430"
+                  strokeWidth="0.8"
+                />
+                {/* cupola vision ports */}
+                {[-4, -1, 2, 5].map((dx, i) => (
+                  <rect
+                    key={i}
+                    x={65 + dx}
+                    y="2"
+                    width="2"
+                    height="3"
+                    rx="0.5"
+                    fill="#222216"
+                    stroke="#555540"
+                    strokeWidth="0.5"
+                  />
+                ))}
+
+                {/* === GUN (88mm KwK 36) === */}
+                {/* mantlet */}
+                <ellipse
+                  cx="118"
+                  cy="18"
+                  rx="9"
+                  ry="10"
+                  fill="#3e3e26"
+                  stroke="#2e2e1a"
+                  strokeWidth="1.2"
+                />
+                {/* barrel — long and thin, Tiger 88mm */}
+                <rect
+                  x="118"
+                  y="15.5"
+                  width="38"
+                  height="5"
+                  rx="2"
+                  fill="#2e2e1a"
+                  stroke="#222210"
+                  strokeWidth="0.8"
+                />
+                {/* muzzle brake */}
+                <rect
+                  x="154"
+                  y="13"
+                  width="6"
+                  height="10"
+                  rx="2"
+                  fill="#252515"
+                  stroke="#222210"
+                  strokeWidth="0.8"
+                />
+                <line
+                  x1="155"
+                  y1="13"
+                  x2="155"
+                  y2="23"
+                  stroke="#333322"
+                  strokeWidth="0.6"
+                />
+                <line
+                  x1="157"
+                  y1="13"
+                  x2="157"
+                  y2="23"
+                  stroke="#333322"
+                  strokeWidth="0.6"
+                />
+                <line
+                  x1="159"
+                  y1="14"
+                  x2="159"
+                  y2="22"
+                  stroke="#333322"
+                  strokeWidth="0.6"
+                />
+
+                {/* === DETAILS === */}
+                {/* exhaust / engine deck vents */}
+                {[0, 1, 2].map((i) => (
+                  <rect
+                    key={i}
+                    x={14 + i * 8}
+                    y="30"
+                    width="6"
+                    height="3"
+                    rx="1"
+                    fill="#2e2e1a"
+                    stroke="#444430"
+                    strokeWidth="0.6"
+                  />
+                ))}
+                {/* tow cable hooks */}
+                <circle
+                  cx="18"
+                  cy="44"
+                  r="2.5"
+                  fill="none"
+                  stroke="#666650"
+                  strokeWidth="1.2"
+                />
+                <circle
+                  cx="142"
+                  cy="44"
+                  r="2.5"
+                  fill="none"
+                  stroke="#666650"
+                  strokeWidth="1.2"
+                />
+                {/* antenna mount */}
+                <rect
+                  x="22"
+                  y="6"
+                  width="2"
+                  height="18"
+                  rx="1"
+                  fill="#5a5a38"
+                  stroke="#333322"
+                  strokeWidth="0.5"
+                />
+                {/* hull MG port */}
+                <rect
+                  x="128"
+                  y="32"
+                  width="6"
+                  height="4"
+                  rx="1"
+                  fill="#2a2a18"
+                  stroke="#444430"
+                  strokeWidth="0.8"
+                />
+                <circle cx="131" cy="34" r="1.5" fill="#1a1a10" />
+
+                {/* === ZIMMERIT / texture lines === */}
+                {[32, 36, 40].map((y) => (
+                  <line
+                    key={y}
+                    x1="12"
+                    y1={y}
+                    x2="128"
+                    y2={y}
+                    stroke="#3a3a24"
+                    strokeWidth="0.4"
+                    strokeDasharray="4,3"
+                  />
+                ))}
+              </svg>
             </div>
 
             {hitEffects.map((h) => (
@@ -470,29 +1126,173 @@ export default function PattayaLesson3Page() {
               </div>
             ))}
 
-            {shots.map((s) => (
+            {shells.map(
+              (s) =>
+                s.hit === null && (
+                  <div
+                    key={s.id}
+                    className={styles.shellDot}
+                    style={{ left: `${s.screenX}%`, top: `${s.screenY}%` }}
+                  />
+                ),
+            )}
+
+            {/* Tank hit screen flash */}
+            {tankFlash && <div className={styles.tankHitFlash} />}
+
+            {/* Impact flash effects */}
+            {impactFlashes.map((f) => (
               <div
-                key={s.id}
-                className={styles.shotTracer}
-                style={{ left: `${s.x}%`, top: '10%' }}
+                key={f.id}
+                className={styles.impactFlash}
+                data-type={f.type}
+                style={{ left: `${f.x}%`, top: `${f.y}%` }}
               />
             ))}
 
-            <div
-              className={styles.crosshair}
-              style={{ left: `${mouseX}%`, top: `${mouseY}%` }}
+            {/* War Thunder style scope overlay — full arena, vignette + reticle */}
+            <svg
+              className={styles.scope}
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <div className={styles.crosshairH} />
-              <div className={styles.crosshairV} />
-              <div className={styles.crosshairCircle} />
-            </div>
+              <defs>
+                {/* Radial gradient centred on mouse: clear → dark fog → solid black */}
+                <radialGradient
+                  id="scopeVignette"
+                  cx={mouseX}
+                  cy={mouseY}
+                  r="72"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop offset="0%" stopColor="black" stopOpacity="0" />
+                  <stop offset="82%" stopColor="black" stopOpacity="0" />
+                  <stop offset="92%" stopColor="black" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="black" stopOpacity="0.9" />
+                </radialGradient>
+              </defs>
+
+              {/* Vignette fill over whole arena */}
+              <rect
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                fill="url(#scopeVignette)"
+              />
+
+              {/* ── Reticle group — coordinates in viewBox (0–100) units ── */}
+              <g stroke="#000000" strokeWidth="0.5" opacity="0.95">
+                {/* Main horizontal — left */}
+                <line x1="0" y1={mouseY} x2={mouseX - 4} y2={mouseY} />
+                {/* Main horizontal — right */}
+                <line x1={mouseX + 4} y1={mouseY} x2="100" y2={mouseY} />
+                {/* Main vertical — top */}
+                <line x1={mouseX} y1="0" x2={mouseX} y2={mouseY - 4} />
+                {/* Main vertical — bottom */}
+                <line
+                  x1={mouseX}
+                  y1={mouseY + 4}
+                  x2={mouseX}
+                  y2={mouseY + 22}
+                />
+              </g>
+
+              {/*
+                Range ladder — physically calibrated to actual ballistics:
+                MV=600 m/s, DRAG=0.08 s⁻¹, M_PER_PCT=1.5
+                Flat shot drop at each range (screen % below aim point):
+                  800m  → ~5.3%
+                  1000m → ~9.8%
+                  1200m → ~14.5%
+                  1400m → ~20%
+                Each mark shows "aim this far above target to hit at that range"
+              */}
+              <g stroke="#000000" strokeWidth="0.45" opacity="0.9">
+                {/* Vertical connecting bar */}
+                <line
+                  x1={mouseX + 4}
+                  y1={mouseY + 6.26}
+                  x2={mouseX + 4}
+                  y2={mouseY + 55.04}
+                />
+
+                {/* Major ticks — uniform length 4, labels all at same X */}
+                {[
+                  { dy: 6.26, label: '800' },
+                  { dy: 9.98, label: '1000' },
+                  { dy: 14.67, label: '1200' },
+                  { dy: 20.38, label: '1400' },
+                  { dy: 27.2, label: '1600' },
+                  { dy: 35.19, label: '1800' },
+                  { dy: 44.44, label: '2000' },
+                  { dy: 55.04, label: '2200' },
+                ].map(({ dy, label }, i) => (
+                  <g key={i}>
+                    <line
+                      x1={mouseX + 4}
+                      y1={mouseY + dy}
+                      x2={mouseX + 8}
+                      y2={mouseY + dy}
+                    />
+                    <text
+                      x={mouseX + 9}
+                      y={mouseY + dy + 1.0}
+                      fill="#000000"
+                      fontSize="2.2"
+                      fontFamily="monospace"
+                      fontWeight="bold"
+                      strokeWidth="0"
+                    >
+                      {label}
+                    </text>
+                  </g>
+                ))}
+
+                {/* Minor ticks at 900/1100/1300/1500/1700/1900/2100m — no label */}
+                {[8.0, 12.2, 17.39, 23.65, 31.04, 39.65, 49.57].map((dy, i) => (
+                  <line
+                    key={i}
+                    x1={mouseX + 4}
+                    y1={mouseY + dy}
+                    x2={mouseX + 6}
+                    y2={mouseY + dy}
+                  />
+                ))}
+              </g>
+
+              {/* Centre dot */}
+              <circle
+                cx={mouseX}
+                cy={mouseY}
+                r="0.6"
+                fill="#000000"
+                opacity="0.95"
+              />
+
+              {/* Aim circle */}
+              <circle
+                cx={mouseX}
+                cy={mouseY}
+                r="4"
+                fill="none"
+                stroke="#000000"
+                strokeWidth="0.35"
+                opacity="0.6"
+              />
+            </svg>
 
             <div className={styles.shotCounter}>
-              {Array.from({ length: shotsLeft }).map((_, i) => (
-                <span key={i} className={styles.shotDot}>
-                  ●
-                </span>
-              ))}
+              {DEV_MODE ? (
+                <span className={styles.shotDot}>∞</span>
+              ) : (
+                Array.from({ length: shotsLeft }).map((_, i) => (
+                  <span key={i} className={styles.shotDot}>
+                    ●
+                  </span>
+                ))
+              )}
             </div>
           </div>
 
@@ -542,10 +1342,16 @@ export default function PattayaLesson3Page() {
                 setTotalWrong(0);
                 setRoundsDone(0);
                 setShotsEarned(0);
-                setShotsLeft(0);
+                setShotsLeft(DEV_MODE ? Infinity : 0);
                 setTankHits(0);
-                setShots([]);
+                tankDistRef.current = MIN_DIST; // reset so next shoot session re-randomizes
+                setTankDistDisplay(MIN_DIST);
+                setShells([]);
+                shellsRef.current = [];
                 setHitEffects([]);
+                setWallCraters([]);
+                setImpactFlashes([]);
+                setTankFlash(false);
                 setSavedProgress(false);
               }}
             >
