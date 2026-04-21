@@ -8,6 +8,10 @@ import {
   getSupabaseHeaders,
   readSupabaseError,
 } from '../_lib/backend';
+import {
+  getSupabaseSchemaStatus,
+} from '../_lib/schema';
+import { getCurrentSessionUser } from '@/app/_lib/server/auth';
 
 const ANON_COOKIE_NAME = 'playland_anon_id';
 
@@ -23,7 +27,7 @@ type DbClient = ReturnType<typeof postgres>;
 
 const db: DbClient | null = process.env.POSTGRES_URL
   ? postgres(process.env.POSTGRES_URL, {
-    ssl: 'require',
+    ssl: process.env.POSTGRES_URL.includes('sslmode=disable') ? false : 'require',
     max: 1,
     prepare: false,
     connect_timeout: 15,
@@ -34,8 +38,28 @@ async function ensureTables(client: DbClient) {
   if (tablesInitialized) return;
 
   await client`
+    CREATE TABLE IF NOT EXISTS public.app_users (
+      id BIGSERIAL PRIMARY KEY,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `;
+
+  await client`
+    CREATE TABLE IF NOT EXISTS public.user_sessions (
+      id BIGSERIAL PRIMARY KEY,
+      user_id BIGINT NOT NULL REFERENCES public.app_users(id) ON DELETE CASCADE,
+      session_token TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      expires_at TIMESTAMPTZ NOT NULL
+    );
+  `;
+
+  await client`
     CREATE TABLE IF NOT EXISTS public.analytics_users (
       anonymous_id TEXT PRIMARY KEY,
+      user_id BIGINT REFERENCES public.app_users(id) ON DELETE SET NULL,
       first_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       last_path TEXT,
@@ -50,6 +74,7 @@ async function ensureTables(client: DbClient) {
     CREATE TABLE IF NOT EXISTS public.analytics_events (
       id BIGSERIAL PRIMARY KEY,
       anonymous_id TEXT NOT NULL,
+      user_id BIGINT REFERENCES public.app_users(id) ON DELETE SET NULL,
       event_name TEXT NOT NULL,
       path TEXT,
       url TEXT,
@@ -65,6 +90,11 @@ async function ensureTables(client: DbClient) {
   await client`
     CREATE INDEX IF NOT EXISTS idx_analytics_events_anonymous_id
     ON public.analytics_events (anonymous_id);
+  `;
+
+  await client`
+    CREATE INDEX IF NOT EXISTS idx_analytics_events_user_id
+    ON public.analytics_events (user_id);
   `;
 
   await client`
@@ -103,12 +133,18 @@ export async function POST(request: Request) {
   const path = typeof body.path === 'string' ? body.path.slice(0, 300) : null;
   const url = typeof body.url === 'string' ? body.url.slice(0, 500) : null;
   const payload = body.payload ?? {};
+  const sessionUser = await getCurrentSessionUser();
+  const userId = sessionUser?.id ?? null;
   const target = getConfiguredTarget();
   const backend = getAnalyticsBackend();
   const dbConfigured = target.configured;
   let dbWrite = false;
   let dbError: string | null = null;
   let dbErrorCode: string | null = null;
+  let rawDbError: string | null = null;
+  let setupRequired = false;
+  let missingTables: string[] = [];
+  let setupSql: string | null = null;
 
   if (backend === 'supabase-rest') {
     const supabase = getSupabaseAdminConfig();
@@ -129,6 +165,7 @@ export async function POST(request: Request) {
             },
             body: JSON.stringify({
               anonymous_id: anonymousId,
+              user_id: userId,
               first_seen_at: new Date().toISOString(),
               last_seen_at: new Date().toISOString(),
               last_path: path,
@@ -152,6 +189,7 @@ export async function POST(request: Request) {
           },
           body: JSON.stringify({
             anonymous_id: anonymousId,
+            user_id: userId,
             event_name: eventName.slice(0, 100),
             path,
             url,
@@ -170,7 +208,18 @@ export async function POST(request: Request) {
         dbWrite = true;
       } catch (error) {
         console.error('Analytics Supabase write failed:', error);
-        dbError = error instanceof Error ? error.message : 'Unknown Supabase error';
+        rawDbError = error instanceof Error ? error.message : 'Unknown Supabase error';
+        const schemaStatus = getSupabaseSchemaStatus([rawDbError]);
+
+        if (schemaStatus) {
+          dbError = schemaStatus.dbError;
+          dbErrorCode = 'SUPABASE_TABLES_MISSING';
+          setupRequired = schemaStatus.setupRequired;
+          missingTables = schemaStatus.missingTables;
+          setupSql = schemaStatus.setupSql;
+        } else {
+          dbError = rawDbError;
+        }
       }
     }
   } else if (backend === 'postgres' && dbConfigured && db) {
@@ -183,6 +232,7 @@ export async function POST(request: Request) {
           first_seen_at,
           last_seen_at,
           last_path,
+          user_id,
           user_agent,
           country,
           region,
@@ -193,6 +243,7 @@ export async function POST(request: Request) {
           NOW(),
           NOW(),
           ${path},
+          ${userId},
           ${userAgent},
           ${country},
           ${region},
@@ -202,6 +253,7 @@ export async function POST(request: Request) {
         DO UPDATE SET
           last_seen_at = NOW(),
           last_path = EXCLUDED.last_path,
+          user_id = EXCLUDED.user_id,
           user_agent = EXCLUDED.user_agent,
           country = EXCLUDED.country,
           region = EXCLUDED.region,
@@ -211,6 +263,7 @@ export async function POST(request: Request) {
       await db`
         INSERT INTO public.analytics_events (
           anonymous_id,
+          user_id,
           event_name,
           path,
           url,
@@ -223,6 +276,7 @@ export async function POST(request: Request) {
         )
         VALUES (
           ${anonymousId},
+          ${userId},
           ${eventName.slice(0, 100)},
           ${path},
           ${url},
@@ -268,6 +322,10 @@ export async function POST(request: Request) {
     dbWrite,
     dbError,
     dbErrorCode,
+    rawDbError,
+    setupRequired,
+    missingTables,
+    setupSql,
   });
 
   if (isNewId) {

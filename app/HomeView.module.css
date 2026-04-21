@@ -76,6 +76,12 @@
   text-align: center;
 }
 
+.userGreeting {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #4f6390;
+}
+
 .title {
   margin: 0;
   font-size: clamp(1.6rem, 2.6vw, 2.3rem);
@@ -209,11 +215,14 @@
 }
 
 .progressUnlockButton,
-.progressResetButton {
+.progressResetButton,
+.logoutButton,
+.settingsLink {
   justify-self: start;
   align-self: start;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   border: none;
   border-radius: 999px;
   padding: 0 14px;
@@ -240,6 +249,19 @@
   box-shadow: 0 6px 14px rgba(217, 63, 122, 0.24);
 }
 
+.settingsLink {
+  background: linear-gradient(135deg, #71c4ff 0%, #4d8eff 100%);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(77, 142, 255, 0.25);
+}
+
+.logoutButton {
+  background: linear-gradient(135deg, #8f9bb3 0%, #64748b 100%);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(71, 85, 105, 0.28);
+}
+
 .progressUnlockButton:hover {
   transform: translateY(-1px);
   box-shadow: 0 9px 18px rgba(255, 159, 28, 0.4);
@@ -249,6 +271,18 @@
 .progressResetButton:hover {
   transform: translateY(-1px);
   box-shadow: 0 9px 18px rgba(217, 63, 122, 0.3);
+  filter: brightness(0.98);
+}
+
+.settingsLink:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 18px rgba(77, 142, 255, 0.32);
+  filter: brightness(0.98);
+}
+
+.logoutButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 9px 18px rgba(71, 85, 105, 0.34);
   filter: brightness(0.98);
 }
 
@@ -682,7 +716,8 @@
   }
 
   .progressUnlockButton,
-  .progressResetButton {
+  .progressResetButton,
+  .logoutButton {
     min-height: 30px;
     padding: 0 13px;
   }

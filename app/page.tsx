@@ -2,6 +2,7 @@
 
 // app/map/page.tsx
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from './HomeView.module.css';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { lessonMapButtons as mazeLessonMapButtons } from './maze/lessonMapConfig';
@@ -50,13 +51,30 @@ function parseStats(raw: string | null): ProgressStats {
 }
 
 export default function HomePage() {
+  const router = useRouter();
   const [mazeUnlocked, setMazeUnlocked] = useState(1);
   const [casinoUnlocked, setCasinoUnlocked] = useState(1);
   const [pattayaUnlocked, setPattayaUnlocked] = useState(1);
   const [mazeStats, setMazeStats] = useState<ProgressStats>(EMPTY_STATS);
   const [casinoStats, setCasinoStats] = useState<ProgressStats>(EMPTY_STATS);
   const [pattayaStats, setPattayaStats] = useState<ProgressStats>(EMPTY_STATS);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
   const hasTrackedHomeViewRef = useRef(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then(
+        (data: {
+          authenticated?: boolean;
+          user?: { username: string } | null;
+        }) => {
+          if (data.authenticated && data.user) setUsername(data.user.username);
+        },
+      )
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     const loadProgress = () => {
@@ -218,12 +236,28 @@ export default function HomePage() {
     setPattayaUnlocked(PATTAYA_TOTAL_LESSONS);
   };
 
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } finally {
+      router.replace('/register');
+      router.refresh();
+    }
+  };
+
   return (
     <main className={styles.playfulHome}>
       <div className={styles.shapeOne} aria-hidden="true" />
       <div className={styles.shapeTwo} aria-hidden="true" />
       <header className={`${styles.header} ${styles.centeredHeader}`}>
         <h1 className={styles.title}>Thai English Playland</h1>
+        {username ? (
+          <p className={styles.userGreeting}>
+            Logged in as <strong>{username}</strong>
+          </p>
+        ) : null}
       </header>
 
       <section className={styles.hubGrid} aria-label="Game mode links">
@@ -313,6 +347,9 @@ export default function HomePage() {
         aria-label="Progress actions"
       >
         <div className={styles.progressActions}>
+          <Link href="/settings" className={styles.settingsLink}>
+            Settings
+          </Link>
           <button
             className={styles.progressUnlockButton}
             onClick={handleUnlockAllLessons}
@@ -324,6 +361,13 @@ export default function HomePage() {
             onClick={handleResetProgress}
           >
             Reset Progress
+          </button>
+          <button
+            className={styles.logoutButton}
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+          >
+            {isLoggingOut ? 'Logging out...' : 'Log Out'}
           </button>
         </div>
       </section>

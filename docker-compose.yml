@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17.9-alpine
+    container_name: english-lessons-local-container
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-english-lessons-local}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      ADMIN_USER: ${ADMIN_USER:-fjasdojf}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/init/001_schema.sql:/docker-entrypoint-initdb.d/001_schema.sql
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  postgres_data:

@@ -30,12 +30,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log('Build version:', process.env.NEXT_PUBLIC_BUILD_DATE);
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} ${fredoka.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
         <ThemeToggle />
         {children}
         <AppFooter />
