@@ -341,24 +341,30 @@ export default function PattayaLesson3Page() {
                 () => setHitEffects((prev) => prev.filter((h) => h.id !== hid)),
                 900,
               );
-              // Big tank hit flash — spawn multiple explosions around tank
-              spawnFlash(s.tankXAtFire, GROUND_PCT - 3, 'tank');
-              spawnFlash(s.tankXAtFire - 2, GROUND_PCT - 6, 'tank');
-              spawnFlash(s.tankXAtFire + 1.5, GROUND_PCT - 1, 'tank');
+              // Tank hit flashes at shell's screen position (which landed on the tank)
+              spawnFlash(sx, sy, 'tank');
+              spawnFlash(sx - 1.5, sy - 2, 'tank');
+              spawnFlash(sx + 1, sy + 1, 'tank');
               setTankFlash(true);
               window.setTimeout(() => setTankFlash(false), 400);
             } else {
-              // Wall hit: shell screen Y is within the wall's vertical band on screen
-              const wallBottom = tankYPct(MIN_DIST);
-              const wallTop = wallBottom - tankW * 3; // wall is ~3× tank width tall on screen
-              const wallHit = sy >= wallTop && sy <= wallBottom + 1;
+              // Wall hit: wall is always at GROUND_PCT bottom, 11.25% tall on screen
+              const wallHeightPct = (180 / 1600) * 100; // SVG aspect ratio
+              const wallHit =
+                sy >= GROUND_PCT - wallHeightPct && sy <= GROUND_PCT + 1;
               if (wallHit) {
                 const cid = hitIdRef.current++;
-                const craterSvgX = (s.tankXAtFire / 100) * 1600;
-                const wallTopPct = tankYPct(MIN_DIST) - 14;
+                const wallTopScreenPct = GROUND_PCT - wallHeightPct;
+                const craterSvgX = Math.max(
+                  0,
+                  Math.min(1600, (sx / 100) * 1600),
+                );
                 const craterSvgY = Math.max(
-                  10,
-                  Math.min(130, ((sy - wallTopPct) / 14) * 140),
+                  0,
+                  Math.min(
+                    180,
+                    ((sy - wallTopScreenPct) / wallHeightPct) * 180,
+                  ),
                 );
                 setWallCraters((prev) => [
                   ...prev,
@@ -366,8 +372,8 @@ export default function PattayaLesson3Page() {
                 ]);
                 spawnFlash(sx, sy, 'wall');
               } else {
-                // Ground hit
-                spawnFlash(sx, sy, 'ground');
+                // Ground hit — flash at grass line Y
+                spawnFlash(sx, GROUND_PCT, 'ground');
               }
             }
             return { ...s, t: t2, screenX: sx, screenY: sy, hit: isHit };
