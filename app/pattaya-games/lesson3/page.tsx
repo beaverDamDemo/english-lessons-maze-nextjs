@@ -1399,13 +1399,13 @@ export default function PattayaLesson3Page() {
                 ].map(({ dy, label }, i) => (
                   <g key={i}>
                     <line
-                      x1={mouseX + 4}
+                      x1={mouseX + 6}
                       y1={mouseY + dy}
-                      x2={mouseX + 8}
+                      x2={mouseX + 11}
                       y2={mouseY + dy}
                     />
                     <text
-                      x={mouseX + 9}
+                      x={mouseX + 12}
                       y={mouseY + dy + 1.0}
                       fill="#000000"
                       fontSize="2.2"
@@ -1422,9 +1422,9 @@ export default function PattayaLesson3Page() {
                 {[8.0, 12.2, 17.39, 23.65, 31.04, 39.65, 49.57].map((dy, i) => (
                   <line
                     key={i}
-                    x1={mouseX + 4}
+                    x1={mouseX + 6}
                     y1={mouseY + dy}
-                    x2={mouseX + 6}
+                    x2={mouseX + 9}
                     y2={mouseY + dy}
                   />
                 ))}
