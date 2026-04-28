@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './Lesson3.module.css';
-import { trackEvent } from '../../_lib/analytics';
 
 const LESSONS_TOTAL = 8;
 const ROUND_SIZE = 4;
@@ -230,13 +229,6 @@ export default function PattayaLesson3Page() {
   }, []);
 
   const [savedProgress, setSavedProgress] = useState(false);
-
-  useEffect(() => {
-    void trackEvent('pattaya_lesson_opened', {
-      lessonNumber: 3,
-      topic: 'irregular_verbs',
-    });
-  }, []);
 
   function handleAnswer(optionIndex: number) {
     if (selected !== null) return;
@@ -597,15 +589,6 @@ export default function PattayaLesson3Page() {
           });
         },
       )
-      .then(() => {
-        void trackEvent('pattaya_lesson_completed', {
-          lessonNumber: 3,
-          totalCorrect,
-          totalWrong,
-          shotsEarned,
-          tankHits: hits,
-        });
-      })
       .catch(() => null);
   }
 

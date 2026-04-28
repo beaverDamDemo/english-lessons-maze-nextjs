@@ -6,7 +6,6 @@ import * as Phaser from 'phaser';
 import MazeHeader from './MazeHeader';
 import dynamic from 'next/dynamic';
 import type { FC, MouseEvent } from 'react';
-import { trackEvent } from '../../_lib/analytics';
 
 const TOTAL_LESSONS = 9;
 
@@ -108,17 +107,6 @@ const MazePageComponent: FC<MazePageProps> = ({
       totalMovesEarned: nextMovesEarned,
     });
 
-    void trackEvent('maze_quiz_completed', {
-      lessonNumber,
-      finalScore,
-      wasCorrect,
-      correctAnswers: nextCorrect,
-      wrongAnswers: nextWrong,
-      quizAttempts: nextAttempts,
-      totalMovesEarned: nextMovesEarned,
-      statsKey,
-    });
-
     // fade out the overlay, then unmount it
     setOverlayVisible(false);
     setTimeout(() => setShowQuizOverlay(false), 300);
@@ -156,25 +144,8 @@ const MazePageComponent: FC<MazePageProps> = ({
       unlockedLessons: nextUnlockedLessons,
     });
 
-    void trackEvent('maze_lesson_completed', {
-      lessonNumber,
-      unlockedLessons: nextUnlockedLessons,
-      score,
-      maxMoves,
-      statsKey,
-    });
-
     setGameWon(true);
   };
-
-  useEffect(() => {
-    void trackEvent('maze_lesson_opened', {
-      lessonNumber,
-      statsKey,
-      backHref,
-      returnHref,
-    });
-  }, [lessonNumber, statsKey, backHref, returnHref]);
 
   useEffect(() => {
     fetch('/api/progress')

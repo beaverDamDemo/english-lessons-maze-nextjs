@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from 'react';
 import styles from './Lesson2.module.css';
 import quizStyles from '../../maze/_components/QuizButtons.module.css';
 import MazeHeader from '../../maze/_components/MazeHeader';
-import { trackEvent } from '../../_lib/analytics';
 
 type Phase = 'practice' | 'play' | 'apply' | 'done';
 
@@ -221,13 +220,6 @@ export default function PattayaLesson2Page() {
     return Math.min(100, Math.round((learningUnits / totalUnits) * 100));
   }, [practiceStep, applyStep, phase, totalLearningTasks]);
 
-  useEffect(() => {
-    void trackEvent('pattaya_lesson_opened', {
-      lessonNumber: 2,
-      topic: 'basic_describing_words',
-    });
-  }, []);
-
   function recordAttemptIfNeeded() {
     if (attemptRecorded) return;
     setAttemptRecorded(true);
@@ -279,15 +271,6 @@ export default function PattayaLesson2Page() {
           });
         },
       )
-      .then(() => {
-        void trackEvent('pattaya_lesson_completed', {
-          lessonNumber: 2,
-          learningCorrect,
-          learningWrong,
-          playPoints,
-          earnedMoves,
-        });
-      })
       .catch(() => null);
   }
 

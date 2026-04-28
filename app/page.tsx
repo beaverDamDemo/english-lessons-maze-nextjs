@@ -4,11 +4,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './HomeView.module.css';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { lessonMapButtons as mazeLessonMapButtons } from './maze/lessonMapConfig';
 import { lessonMapButtons as casinoLessonMapButtons } from './casino/lessonMapConfig';
 import { lessonMapButtons as pattayaLessonMapButtons } from './pattaya-games/lessonMapConfig';
-import { trackEvent } from './_lib/analytics';
 
 const MAZE_TOTAL_LESSONS = Math.max(1, mazeLessonMapButtons.length);
 const CASINO_TOTAL_LESSONS = Math.max(1, casinoLessonMapButtons.length);
@@ -38,7 +37,6 @@ export default function HomePage() {
   const [pattayaStats, setPattayaStats] = useState<ProgressStats>(EMPTY_STATS);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
-  const hasTrackedHomeViewRef = useRef(false);
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -163,29 +161,6 @@ export default function HomePage() {
       pattayaStats.totalMovesEarned,
     ],
   );
-
-  useEffect(() => {
-    if (hasTrackedHomeViewRef.current) return;
-    hasTrackedHomeViewRef.current = true;
-
-    void trackEvent('home_viewed', {
-      mazeUnlocked,
-      casinoUnlocked,
-      pattayaUnlocked,
-      totalCorrect,
-      totalWrong,
-      totalAttempts,
-      totalMoves,
-    });
-  }, [
-    mazeUnlocked,
-    casinoUnlocked,
-    pattayaUnlocked,
-    totalCorrect,
-    totalWrong,
-    totalAttempts,
-    totalMoves,
-  ]);
 
   const handleResetProgress = () => {
     if (window.confirm('Reset all progress? This cannot be undone.')) {
