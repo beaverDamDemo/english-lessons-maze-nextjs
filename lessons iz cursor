@@ -1,0 +1,821 @@
+export interface Lesson {
+  id: string
+  title: string
+  description: string
+  type: 'vocabulary' | 'grammar' | 'pronunciation' | 'conversation'
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  content: LessonContent
+  thaiHelp?: {
+    title: string
+    description: string
+  }
+}
+
+export interface LessonContent {
+  type: 'multiple-choice' | 'fill-blank' | 'match' | 'listen'
+  questions: Question[] // Question pool
+  questionCount?: number // Number of questions to show per lesson (defaults to questions.length)
+}
+
+export interface Question {
+  id: string
+  question: string
+  options?: string[]
+  correctAnswer: string | number
+  explanation?: string
+  thaiExplanation?: string
+  audioUrl?: string
+}
+
+export const lessons: Lesson[] = [
+  {
+    id: '1',
+    title: 'Basic Greetings',
+    description: 'Learn how to greet people in English',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'การทักทายพื้นฐาน',
+      description: 'เรียนรู้วิธีทักทายคนเป็นภาษาอังกฤษ'
+    },
+    content: {
+      type: 'multiple-choice',
+      questions: [
+        {
+          id: '1-1',
+          question: 'How do you say "Hello" in the morning?',
+          options: ['Good morning', 'Good night', 'Goodbye', 'Thank you'],
+          correctAnswer: 0,
+          explanation: '"Good morning" is used to greet someone in the morning.',
+          thaiExplanation: '"Good morning" ใช้ทักทายในตอนเช้า'
+        },
+        {
+          id: '1-2',
+          question: 'What do you say when you meet someone?',
+          options: ['Goodbye', 'Hello', 'Sorry', 'Please'],
+          correctAnswer: 1,
+          explanation: '"Hello" is a common greeting when meeting someone.',
+          thaiExplanation: '"Hello" เป็นการทักทายที่ใช้บ่อยเมื่อพบใครสักคน'
+        },
+        {
+          id: '1-3',
+          question: 'How do you say goodbye?',
+          options: ['Hello', 'Goodbye', 'Thank you', 'Please'],
+          correctAnswer: 1,
+          explanation: '"Goodbye" is used when leaving or ending a conversation.',
+          thaiExplanation: '"Goodbye" ใช้เมื่อลาจากหรือจบการสนทนา'
+        }
+      ]
+    }
+  },
+  {
+    id: '2',
+    title: 'Numbers 1-10 & Ordinals',
+    description: 'Learn numbers 1-10 and ordinal numbers (first, second, third...)',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'ตัวเลข 1-10 และลำดับ',
+      description: 'เรียนรู้ตัวเลข 1-10 และลำดับ (ที่หนึ่ง, ที่สอง, ที่สาม...)'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 6,
+      questions: [
+        {
+          id: '2-1',
+          question: 'What is the word for the number 5?',
+          options: ['Four', 'Five', 'Six', 'Seven'],
+          correctAnswer: 1,
+          explanation: 'Five is the word for the number 5.',
+          thaiExplanation: 'Five คือคำสำหรับตัวเลข 5'
+        },
+        {
+          id: '2-2',
+          question: 'What is the ordinal number for "1st"?',
+          options: ['One', 'First', 'Oneth', 'Once'],
+          correctAnswer: 1,
+          explanation: '"First" is the ordinal number for 1st position.',
+          thaiExplanation: '"First" คือลำดับที่หนึ่ง'
+        },
+        {
+          id: '2-3',
+          question: 'What is the ordinal number for "2nd"?',
+          options: ['Two', 'Second', 'Twoth', 'Twice'],
+          correctAnswer: 1,
+          explanation: '"Second" is the ordinal number for 2nd position.',
+          thaiExplanation: '"Second" คือลำดับที่สอง'
+        },
+        {
+          id: '2-4',
+          question: 'What is the ordinal number for "3rd"?',
+          options: ['Three', 'Third', 'Threeth', 'Thrice'],
+          correctAnswer: 1,
+          explanation: '"Third" is the ordinal number for 3rd position.',
+          thaiExplanation: '"Third" คือลำดับที่สาม'
+        },
+        {
+          id: '2-5',
+          question: 'What is the ordinal number for "4th"?',
+          options: ['Four', 'Fourth', 'Forth', 'Fourty'],
+          correctAnswer: 1,
+          explanation: '"Fourth" is the ordinal number for 4th position.',
+          thaiExplanation: '"Fourth" คือลำดับที่สี่'
+        },
+        {
+          id: '2-6',
+          question: 'What is the word for the number 10?',
+          options: ['Nine', 'Ten', 'Eleven', 'Twelve'],
+          correctAnswer: 1,
+          explanation: 'Ten is the word for the number 10.',
+          thaiExplanation: 'Ten คือคำสำหรับตัวเลข 10'
+        },
+        {
+          id: '2-7',
+          question: 'What is the word for the number 1?',
+          options: ['Zero', 'One', 'Two', 'Three'],
+          correctAnswer: 1,
+          explanation: 'One is the word for the number 1.',
+          thaiExplanation: 'One คือคำสำหรับตัวเลข 1'
+        },
+        {
+          id: '2-8',
+          question: 'What is the ordinal number for "5th"?',
+          options: ['Five', 'Fifth', 'Fiveth', 'Fiftieth'],
+          correctAnswer: 1,
+          explanation: '"Fifth" is the ordinal number for 5th position.',
+          thaiExplanation: '"Fifth" คือลำดับที่ห้า'
+        },
+        {
+          id: '2-9',
+          question: 'What is the word for the number 7?',
+          options: ['Six', 'Seven', 'Eight', 'Nine'],
+          correctAnswer: 1,
+          explanation: 'Seven is the word for the number 7.',
+          thaiExplanation: 'Seven คือคำสำหรับตัวเลข 7'
+        },
+        {
+          id: '2-10',
+          question: 'What is the ordinal number for "10th"?',
+          options: ['Ten', 'Tenth', 'Tent', 'Tenthly'],
+          correctAnswer: 1,
+          explanation: '"Tenth" is the ordinal number for 10th position.',
+          thaiExplanation: '"Tenth" คือลำดับที่สิบ'
+        }
+      ]
+    }
+  },
+  {
+    id: '3',
+    title: 'Simple Present Tense',
+    description: 'Learn to use "I am", "You are", "He/She is"',
+    type: 'grammar',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'Present Tense แบบง่าย',
+      description: 'เรียนรู้การใช้ "I am", "You are", "He/She is"'
+    },
+    content: {
+      type: 'fill-blank',
+      questionCount: 5,
+      questions: [
+        {
+          id: '3-1',
+          question: 'I ___ a student.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 0,
+          explanation: 'Use "am" with "I".',
+          thaiExplanation: 'ใช้ "am" กับ "I"'
+        },
+        {
+          id: '3-2',
+          question: 'You ___ my friend.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 2,
+          explanation: 'Use "are" with "You".',
+          thaiExplanation: 'ใช้ "are" กับ "You"'
+        },
+        {
+          id: '3-3',
+          question: 'She ___ a teacher.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 1,
+          explanation: 'Use "is" with "He", "She", or "It".',
+          thaiExplanation: 'ใช้ "is" กับ "He", "She" หรือ "It"'
+        },
+        {
+          id: '3-4',
+          question: 'He ___ a doctor.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 1,
+          explanation: 'Use "is" with "He".',
+          thaiExplanation: 'ใช้ "is" กับ "He"'
+        },
+        {
+          id: '3-5',
+          question: 'We ___ students.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 2,
+          explanation: 'Use "are" with "We".',
+          thaiExplanation: 'ใช้ "are" กับ "We"'
+        },
+        {
+          id: '3-6',
+          question: 'They ___ friends.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 2,
+          explanation: 'Use "are" with "They".',
+          thaiExplanation: 'ใช้ "are" กับ "They"'
+        },
+        {
+          id: '3-7',
+          question: 'It ___ a book.',
+          options: ['am', 'is', 'are', 'be'],
+          correctAnswer: 1,
+          explanation: 'Use "is" with "It".',
+          thaiExplanation: 'ใช้ "is" กับ "It"'
+        }
+      ]
+    }
+  },
+  {
+    id: '4',
+    title: 'Common Words',
+    description: 'Learn everyday words: colors, family, food',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'คำศัพท์ทั่วไป',
+      description: 'เรียนรู้คำศัพท์ประจำวัน: สี, ครอบครัว, อาหาร'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 5,
+      questions: [
+        {
+          id: '4-1',
+          question: 'What color is the sky?',
+          options: ['Red', 'Blue', 'Green', 'Yellow'],
+          correctAnswer: 1,
+          explanation: 'The sky is usually blue.',
+          thaiExplanation: 'ท้องฟ้ามักจะเป็นสีน้ำเงิน'
+        },
+        {
+          id: '4-2',
+          question: 'Your mother\'s sister is your...',
+          options: ['Brother', 'Aunt', 'Uncle', 'Cousin'],
+          correctAnswer: 1,
+          explanation: 'Your mother\'s sister is your aunt.',
+          thaiExplanation: 'น้องสาวหรือพี่สาวของแม่คือป้า'
+        },
+        {
+          id: '4-3',
+          question: 'What do you eat in the morning?',
+          options: ['Dinner', 'Lunch', 'Breakfast', 'Snack'],
+          correctAnswer: 2,
+          explanation: 'Breakfast is the meal you eat in the morning.',
+          thaiExplanation: 'Breakfast คืออาหารที่กินในตอนเช้า'
+        },
+        {
+          id: '4-4',
+          question: 'What color is grass?',
+          options: ['Red', 'Blue', 'Green', 'Yellow'],
+          correctAnswer: 2,
+          explanation: 'Grass is usually green.',
+          thaiExplanation: 'หญ้ามักจะเป็นสีเขียว'
+        },
+        {
+          id: '4-5',
+          question: 'What do you eat at noon?',
+          options: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+          correctAnswer: 1,
+          explanation: 'Lunch is the meal you eat at noon.',
+          thaiExplanation: 'Lunch คืออาหารที่กินตอนเที่ยง'
+        },
+        {
+          id: '4-6',
+          question: 'What color is the sun?',
+          options: ['Blue', 'Green', 'Yellow', 'Purple'],
+          correctAnswer: 2,
+          explanation: 'The sun is usually yellow or orange.',
+          thaiExplanation: 'ดวงอาทิตย์มักจะเป็นสีเหลืองหรือส้ม'
+        },
+        {
+          id: '4-7',
+          question: 'Your father\'s brother is your...',
+          options: ['Uncle', 'Aunt', 'Cousin', 'Brother'],
+          correctAnswer: 0,
+          explanation: 'Your father\'s brother is your uncle.',
+          thaiExplanation: 'พี่ชายหรือน้องชายของพ่อคือลุง'
+        },
+        {
+          id: '4-8',
+          question: 'What do you eat in the evening?',
+          options: ['Breakfast', 'Lunch', 'Dinner', 'Snack'],
+          correctAnswer: 2,
+          explanation: 'Dinner is the meal you eat in the evening.',
+          thaiExplanation: 'Dinner คืออาหารที่กินในตอนเย็น'
+        }
+      ]
+    }
+  },
+  {
+    id: '5',
+    title: 'Asking Questions',
+    description: 'Learn to ask "What", "Where", "Who", "How"',
+    type: 'conversation',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'การถามคำถาม',
+      description: 'เรียนรู้การถาม "What", "Where", "Who", "How"'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 5,
+      questions: [
+        {
+          id: '5-1',
+          question: 'Which word asks about a place?',
+          options: ['What', 'Where', 'Who', 'How'],
+          correctAnswer: 1,
+          explanation: '"Where" is used to ask about a place or location.',
+          thaiExplanation: '"Where" ใช้ถามเกี่ยวกับสถานที่หรือตำแหน่ง'
+        },
+        {
+          id: '5-2',
+          question: 'Which word asks about a person?',
+          options: ['What', 'Where', 'Who', 'How'],
+          correctAnswer: 2,
+          explanation: '"Who" is used to ask about a person.',
+          thaiExplanation: '"Who" ใช้ถามเกี่ยวกับบุคคล'
+        },
+        {
+          id: '5-3',
+          question: 'Which word asks about a thing?',
+          options: ['What', 'Where', 'Who', 'How'],
+          correctAnswer: 0,
+          explanation: '"What" is used to ask about a thing or object.',
+          thaiExplanation: '"What" ใช้ถามเกี่ยวกับสิ่งของหรือวัตถุ'
+        },
+        {
+          id: '5-4',
+          question: 'Which word asks about a way or method?',
+          options: ['What', 'Where', 'Who', 'How'],
+          correctAnswer: 3,
+          explanation: '"How" is used to ask about a way or method.',
+          thaiExplanation: '"How" ใช้ถามเกี่ยวกับวิธีหรือวิธีการ'
+        },
+        {
+          id: '5-5',
+          question: 'Which word asks about time?',
+          options: ['What', 'When', 'Where', 'Who'],
+          correctAnswer: 1,
+          explanation: '"When" is used to ask about time.',
+          thaiExplanation: '"When" ใช้ถามเกี่ยวกับเวลา'
+        },
+        {
+          id: '5-6',
+          question: 'Which word asks about reason?',
+          options: ['What', 'Where', 'Why', 'Who'],
+          correctAnswer: 2,
+          explanation: '"Why" is used to ask about reason.',
+          thaiExplanation: '"Why" ใช้ถามเกี่ยวกับเหตุผล'
+        },
+        {
+          id: '5-7',
+          question: 'Which word asks about quantity?',
+          options: ['What', 'How many', 'Where', 'Who'],
+          correctAnswer: 1,
+          explanation: '"How many" is used to ask about quantity.',
+          thaiExplanation: '"How many" ใช้ถามเกี่ยวกับจำนวน'
+        }
+      ]
+    }
+  },
+  {
+    id: '6',
+    title: 'Days of the Week',
+    description: 'Learn the seven days of the week',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'วันในสัปดาห์',
+      description: 'เรียนรู้เจ็ดวันในสัปดาห์'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 6,
+      questions: [
+        {
+          id: '6-1',
+          question: 'What is the first day of the week?',
+          options: ['Monday', 'Sunday', 'Saturday', 'Friday'],
+          correctAnswer: 1,
+          explanation: 'Sunday is the first day of the week.',
+          thaiExplanation: 'วันอาทิตย์คือวันแรกของสัปดาห์'
+        },
+        {
+          id: '6-2',
+          question: 'What day comes after Monday?',
+          options: ['Sunday', 'Tuesday', 'Wednesday', 'Thursday'],
+          correctAnswer: 1,
+          explanation: 'Tuesday comes after Monday.',
+          thaiExplanation: 'วันอังคารมาหลังวันจันทร์'
+        },
+        {
+          id: '6-3',
+          question: 'What is the middle day of the week?',
+          options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+          correctAnswer: 2,
+          explanation: 'Wednesday is the middle day of the week.',
+          thaiExplanation: 'วันพุธคือวันกลางสัปดาห์'
+        },
+        {
+          id: '6-4',
+          question: 'What day comes before Friday?',
+          options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+          correctAnswer: 3,
+          explanation: 'Thursday comes before Friday.',
+          thaiExplanation: 'วันพฤหัสบดีมาก่อนวันศุกร์'
+        },
+        {
+          id: '6-5',
+          question: 'What is the last day of the week?',
+          options: ['Thursday', 'Friday', 'Saturday', 'Sunday'],
+          correctAnswer: 2,
+          explanation: 'Saturday is the last day of the week.',
+          thaiExplanation: 'วันเสาร์คือวันสุดท้ายของสัปดาห์'
+        },
+        {
+          id: '6-6',
+          question: 'What day is between Tuesday and Thursday?',
+          options: ['Monday', 'Wednesday', 'Friday', 'Saturday'],
+          correctAnswer: 1,
+          explanation: 'Wednesday is between Tuesday and Thursday.',
+          thaiExplanation: 'วันพุธอยู่ระหว่างวันอังคารและวันพฤหัสบดี'
+        },
+        {
+          id: '6-7',
+          question: 'What day comes after Wednesday?',
+          options: ['Tuesday', 'Thursday', 'Friday', 'Saturday'],
+          correctAnswer: 1,
+          explanation: 'Thursday comes after Wednesday.',
+          thaiExplanation: 'วันพฤหัสบดีมาหลังวันพุธ'
+        },
+        {
+          id: '6-8',
+          question: 'What day comes before Sunday?',
+          options: ['Friday', 'Saturday', 'Monday', 'Tuesday'],
+          correctAnswer: 1,
+          explanation: 'Saturday comes before Sunday.',
+          thaiExplanation: 'วันเสาร์มาก่อนวันอาทิตย์'
+        },
+        {
+          id: '6-9',
+          question: 'What day is between Monday and Wednesday?',
+          options: ['Sunday', 'Tuesday', 'Thursday', 'Friday'],
+          correctAnswer: 1,
+          explanation: 'Tuesday is between Monday and Wednesday.',
+          thaiExplanation: 'วันอังคารอยู่ระหว่างวันจันทร์และวันพุธ'
+        }
+      ]
+    }
+  },
+  {
+    id: '7',
+    title: 'Family & Relationships',
+    description: 'Learn about family members and relationships',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'ครอบครัวและความสัมพันธ์',
+      description: 'เรียนรู้เกี่ยวกับสมาชิกในครอบครัวและความสัมพันธ์'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 6,
+      questions: [
+        {
+          id: '7-1',
+          question: 'Your female sibling is your...',
+          options: ['Brother', 'Sister', 'Cousin', 'Aunt'],
+          correctAnswer: 1,
+          explanation: 'A sister is your female sibling.',
+          thaiExplanation: 'Sister คือพี่สาวหรือน้องสาว'
+        },
+        {
+          id: '7-2',
+          question: 'Your male sibling is your...',
+          options: ['Sister', 'Brother', 'Uncle', 'Cousin'],
+          correctAnswer: 1,
+          explanation: 'A brother is your male sibling.',
+          thaiExplanation: 'Brother คือพี่ชายหรือน้องชาย'
+        },
+        {
+          id: '7-3',
+          question: 'A woman you are dating is your...',
+          options: ['Wife', 'Girlfriend', 'Sister', 'Friend'],
+          correctAnswer: 1,
+          explanation: 'A girlfriend is a woman you are in a romantic relationship with.',
+          thaiExplanation: 'Girlfriend คือผู้หญิงที่คุณกำลังคบหา'
+        },
+        {
+          id: '7-4',
+          question: 'A man you are dating is your...',
+          options: ['Husband', 'Boyfriend', 'Brother', 'Friend'],
+          correctAnswer: 1,
+          explanation: 'A boyfriend is a man you are in a romantic relationship with.',
+          thaiExplanation: 'Boyfriend คือผู้ชายที่คุณกำลังคบหา'
+        },
+        {
+          id: '7-5',
+          question: 'A woman you are married to is your...',
+          options: ['Girlfriend', 'Wife', 'Sister', 'Mother'],
+          correctAnswer: 1,
+          explanation: 'A wife is a woman you are married to.',
+          thaiExplanation: 'Wife คือภรรยาของคุณ'
+        },
+        {
+          id: '7-6',
+          question: 'A man you are married to is your...',
+          options: ['Boyfriend', 'Husband', 'Brother', 'Father'],
+          correctAnswer: 1,
+          explanation: 'A husband is a man you are married to.',
+          thaiExplanation: 'Husband คือสามีของคุณ'
+        },
+        {
+          id: '7-7',
+          question: 'Your mother and father are your...',
+          options: ['Siblings', 'Parents', 'Children', 'Cousins'],
+          correctAnswer: 1,
+          explanation: 'Parents are your mother and father.',
+          thaiExplanation: 'Parents คือพ่อและแม่ของคุณ'
+        },
+        {
+          id: '7-8',
+          question: 'Your brother\'s or sister\'s child is your...',
+          options: ['Cousin', 'Niece or Nephew', 'Uncle', 'Aunt'],
+          correctAnswer: 1,
+          explanation: 'Your sibling\'s child is your niece (if female) or nephew (if male).',
+          thaiExplanation: 'ลูกของพี่น้องคือหลาน (niece/nephew)'
+        }
+      ]
+    }
+  },
+  {
+    id: '8',
+    title: 'Yesterday & Tomorrow',
+    description: 'Learn to talk about past and future days',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'เมื่อวานและพรุ่งนี้',
+      description: 'เรียนรู้การพูดถึงวันในอดีตและอนาคต'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 6,
+      questions: [
+        {
+          id: '8-1',
+          question: 'What day was yesterday if today is Monday?',
+          options: ['Sunday', 'Tuesday', 'Wednesday', 'Saturday'],
+          correctAnswer: 0,
+          explanation: 'If today is Monday, yesterday was Sunday.',
+          thaiExplanation: 'ถ้าวันนี้คือวันจันทร์ เมื่อวานคือวันอาทิตย์'
+        },
+        {
+          id: '8-2',
+          question: 'What day is tomorrow if today is Friday?',
+          options: ['Thursday', 'Saturday', 'Sunday', 'Monday'],
+          correctAnswer: 1,
+          explanation: 'If today is Friday, tomorrow is Saturday.',
+          thaiExplanation: 'ถ้าวันนี้คือวันศุกร์ พรุ่งนี้คือวันเสาร์'
+        },
+        {
+          id: '8-3',
+          question: 'Which word means "the day before today"?',
+          options: ['Today', 'Tomorrow', 'Yesterday', 'Now'],
+          correctAnswer: 2,
+          explanation: '"Yesterday" means the day before today.',
+          thaiExplanation: '"Yesterday" หมายถึงเมื่อวาน'
+        },
+        {
+          id: '8-4',
+          question: 'Which word means "the day after today"?',
+          options: ['Today', 'Tomorrow', 'Yesterday', 'Later'],
+          correctAnswer: 1,
+          explanation: '"Tomorrow" means the day after today.',
+          thaiExplanation: '"Tomorrow" หมายถึงพรุ่งนี้'
+        },
+        {
+          id: '8-5',
+          question: 'If today is Wednesday, what day was the day before yesterday?',
+          options: ['Monday', 'Tuesday', 'Thursday', 'Friday'],
+          correctAnswer: 0,
+          explanation: 'If today is Wednesday, yesterday was Tuesday, and the day before yesterday was Monday.',
+          thaiExplanation: 'ถ้าวันนี้คือวันพุธ เมื่อวานคือวันอังคาร และเมื่อวานซืนคือวันจันทร์'
+        },
+        {
+          id: '8-6',
+          question: 'If today is Thursday, what day is the day after tomorrow?',
+          options: ['Friday', 'Saturday', 'Sunday', 'Monday'],
+          correctAnswer: 1,
+          explanation: 'If today is Thursday, tomorrow is Friday, and the day after tomorrow is Saturday.',
+          thaiExplanation: 'ถ้าวันนี้คือวันพฤหัสบดี พรุ่งนี้คือวันศุกร์ และมะรืนคือวันเสาร์'
+        },
+        {
+          id: '8-7',
+          question: 'What day was yesterday if today is Sunday?',
+          options: ['Saturday', 'Monday', 'Friday', 'Tuesday'],
+          correctAnswer: 0,
+          explanation: 'If today is Sunday, yesterday was Saturday.',
+          thaiExplanation: 'ถ้าวันนี้คือวันอาทิตย์ เมื่อวานคือวันเสาร์'
+        },
+        {
+          id: '8-8',
+          question: 'What day is tomorrow if today is Tuesday?',
+          options: ['Monday', 'Wednesday', 'Thursday', 'Friday'],
+          correctAnswer: 1,
+          explanation: 'If today is Tuesday, tomorrow is Wednesday.',
+          thaiExplanation: 'ถ้าวันนี้คือวันอังคาร พรุ่งนี้คือวันพุธ'
+        }
+      ]
+    }
+  },
+  {
+    id: '9',
+    title: 'Time: AM, PM & 24-Hour',
+    description: 'Learn to tell time in different formats',
+    type: 'vocabulary',
+    difficulty: 'intermediate',
+    thaiHelp: {
+      title: 'เวลา: AM, PM และรูปแบบ 24 ชั่วโมง',
+      description: 'เรียนรู้การบอกเวลาในรูปแบบต่างๆ'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 6,
+      questions: [
+        {
+          id: '9-1',
+          question: 'What does AM mean?',
+          options: ['After Midnight', 'After Morning', 'Ante Meridiem (before noon)', 'At Morning'],
+          correctAnswer: 2,
+          explanation: 'AM stands for "Ante Meridiem" which means before noon (12:00 PM).',
+          thaiExplanation: 'AM หมายถึงก่อนเที่ยง (ก่อน 12:00 น.)'
+        },
+        {
+          id: '9-2',
+          question: 'What does PM mean?',
+          options: ['Past Midnight', 'Past Morning', 'Post Meridiem (after noon)', 'Pre Midnight'],
+          correctAnswer: 2,
+          explanation: 'PM stands for "Post Meridiem" which means after noon (after 12:00 PM).',
+          thaiExplanation: 'PM หมายถึงหลังเที่ยง (หลัง 12:00 น.)'
+        },
+        {
+          id: '9-3',
+          question: 'What time is 2:00 PM in 24-hour format?',
+          options: ['02:00', '12:00', '14:00', '16:00'],
+          correctAnswer: 2,
+          explanation: '2:00 PM is 14:00 in 24-hour format (add 12 to PM hours).',
+          thaiExplanation: '2:00 PM คือ 14:00 ในรูปแบบ 24 ชั่วโมง'
+        },
+        {
+          id: '9-4',
+          question: 'What time is 10:30 AM in 24-hour format?',
+          options: ['10:30', '20:30', '22:30', '00:30'],
+          correctAnswer: 0,
+          explanation: '10:30 AM stays the same in 24-hour format (AM hours don\'t change).',
+          thaiExplanation: '10:30 AM ยังคงเป็น 10:30 ในรูปแบบ 24 ชั่วโมง'
+        },
+        {
+          id: '9-5',
+          question: 'What is 15:00 in AM/PM format?',
+          options: ['3:00 AM', '3:00 PM', '5:00 PM', '1:00 PM'],
+          correctAnswer: 1,
+          explanation: '15:00 is 3:00 PM in 12-hour format (subtract 12 from hours after 12:00).',
+          thaiExplanation: '15:00 คือ 3:00 PM ในรูปแบบ 12 ชั่วโมง'
+        },
+        {
+          id: '9-6',
+          question: 'What is midnight (00:00) in AM/PM format?',
+          options: ['12:00 AM', '12:00 PM', '0:00 AM', '24:00 PM'],
+          correctAnswer: 0,
+          explanation: 'Midnight (00:00) is 12:00 AM in 12-hour format.',
+          thaiExplanation: 'เที่ยงคืน (00:00) คือ 12:00 AM ในรูปแบบ 12 ชั่วโมง'
+        },
+        {
+          id: '9-7',
+          question: 'What time is 8:00 PM in 24-hour format?',
+          options: ['08:00', '18:00', '20:00', '22:00'],
+          correctAnswer: 2,
+          explanation: '8:00 PM is 20:00 in 24-hour format (8 + 12 = 20).',
+          thaiExplanation: '8:00 PM คือ 20:00 ในรูปแบบ 24 ชั่วโมง'
+        },
+        {
+          id: '9-8',
+          question: 'What is 12:00 PM (noon) in 24-hour format?',
+          options: ['00:00', '12:00', '24:00', '00:12'],
+          correctAnswer: 1,
+          explanation: '12:00 PM (noon) is 12:00 in 24-hour format.',
+          thaiExplanation: '12:00 PM (เที่ยงวัน) คือ 12:00 ในรูปแบบ 24 ชั่วโมง'
+        },
+        {
+          id: '9-9',
+          question: 'What is 18:30 in AM/PM format?',
+          options: ['6:30 AM', '6:30 PM', '8:30 PM', '4:30 PM'],
+          correctAnswer: 1,
+          explanation: '18:30 is 6:30 PM in 12-hour format (18 - 12 = 6).',
+          thaiExplanation: '18:30 คือ 6:30 PM ในรูปแบบ 12 ชั่วโมง'
+        }
+      ]
+    }
+  },
+  {
+    id: '10',
+    title: 'Happy & Sad Emotions',
+    description: 'Learn words to express feelings and emotions',
+    type: 'vocabulary',
+    difficulty: 'beginner',
+    thaiHelp: {
+      title: 'ความสุขและความเศร้า',
+      description: 'เรียนรู้คำศัพท์แสดงความรู้สึกและอารมณ์'
+    },
+    content: {
+      type: 'multiple-choice',
+      questionCount: 6,
+      questions: [
+        {
+          id: '10-1',
+          question: 'What word means feeling good and joyful?',
+          options: ['Sad', 'Happy', 'Angry', 'Tired'],
+          correctAnswer: 1,
+          explanation: '"Happy" means feeling good, joyful, or pleased.',
+          thaiExplanation: '"Happy" หมายถึงรู้สึกดี มีความสุข หรือพอใจ'
+        },
+        {
+          id: '10-2',
+          question: 'What word means feeling unhappy or down?',
+          options: ['Happy', 'Sad', 'Excited', 'Calm'],
+          correctAnswer: 1,
+          explanation: '"Sad" means feeling unhappy, sorrowful, or down.',
+          thaiExplanation: '"Sad" หมายถึงรู้สึกไม่มีความสุข เศร้า หรือหดหู่'
+        },
+        {
+          id: '10-3',
+          question: 'If someone is smiling, they are probably...',
+          options: ['Sad', 'Angry', 'Happy', 'Scared'],
+          correctAnswer: 2,
+          explanation: 'People usually smile when they are happy.',
+          thaiExplanation: 'คนมักจะยิ้มเมื่อมีความสุข'
+        },
+        {
+          id: '10-4',
+          question: 'If someone is crying, they might be...',
+          options: ['Happy', 'Excited', 'Sad', 'Calm'],
+          correctAnswer: 2,
+          explanation: 'People often cry when they are sad.',
+          thaiExplanation: 'คนมักจะร้องไห้เมื่อเศร้า'
+        },
+        {
+          id: '10-5',
+          question: 'Which word is the opposite of "happy"?',
+          options: ['Excited', 'Sad', 'Angry', 'Tired'],
+          correctAnswer: 1,
+          explanation: '"Sad" is the opposite of "happy".',
+          thaiExplanation: '"Sad" เป็นคำตรงข้ามของ "happy"'
+        },
+        {
+          id: '10-6',
+          question: 'If you win a game, you feel...',
+          options: ['Sad', 'Happy', 'Angry', 'Confused'],
+          correctAnswer: 1,
+          explanation: 'Winning usually makes people feel happy.',
+          thaiExplanation: 'การชนะมักทำให้คนรู้สึกมีความสุข'
+        },
+        {
+          id: '10-7',
+          question: 'If you lose something important, you feel...',
+          options: ['Happy', 'Sad', 'Excited', 'Calm'],
+          correctAnswer: 1,
+          explanation: 'Losing something important usually makes people feel sad.',
+          thaiExplanation: 'การสูญเสียสิ่งสำคัญมักทำให้คนรู้สึกเศร้า'
+        },
+        {
+          id: '10-8',
+          question: 'When you receive a gift, you feel...',
+          options: ['Sad', 'Happy', 'Angry', 'Tired'],
+          correctAnswer: 1,
+          explanation: 'Receiving a gift usually makes people feel happy.',
+          thaiExplanation: 'การได้รับของขวัญมักทำให้คนรู้สึกมีความสุข'
+        }
+      ]
+    }
+  }
+]
+
+export function getLessonById(id: string): Lesson | undefined {
+  return lessons.find(lesson => lesson.id === id)
+}
+
