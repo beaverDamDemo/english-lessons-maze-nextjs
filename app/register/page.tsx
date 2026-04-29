@@ -6,6 +6,25 @@ import styles from './register.module.css';
 
 type Mode = 'register' | 'login';
 
+const MODE_CONFIG = {
+  register: {
+    bannerText: 'New Player',
+    bannerIcon: '🌟',
+    titleEmoji: '🎮',
+    buttonText: 'Create Account',
+    switchText: 'Already have an account?',
+    switchAction: 'Log in here!',
+  },
+  login: {
+    bannerText: 'Welcome Back',
+    bannerIcon: '🚀',
+    titleEmoji: '🏠',
+    buttonText: 'Log In',
+    switchText: "Don't have an account?",
+    switchAction: 'Join the fun!',
+  },
+};
+
 export default function RegisterPage() {
   const [mode, setMode] = useState<Mode>('register');
   const [username, setUsername] = useState('');
@@ -14,6 +33,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const config = MODE_CONFIG[mode];
   const endpoint =
     mode === 'register' ? '/api/auth/register' : '/api/auth/login';
 
@@ -47,63 +67,103 @@ export default function RegisterPage() {
     }
   }
 
+  function toggleMode() {
+    setMode(mode === 'register' ? 'login' : 'register');
+    setError(null);
+  }
+
   return (
     <main className={styles.container}>
       <section className={styles.card}>
-        <h1 className={styles.title}>Thai English Playland</h1>
+        {/* Mode Indicator Banner */}
+        <div className={`${styles.modeBanner} ${styles[mode]}`}>
+          <span className={styles.modeIcon}>{config.bannerIcon}</span>
+          <span>{config.bannerText}</span>
+        </div>
+
+        {/* Title with Emoji */}
+        <h1 className={styles.title}>
+          <span className={styles.titleEmoji}>{config.titleEmoji}</span>
+          Thai English Playland
+        </h1>
         <p className={styles.subtitle}>
           {mode === 'register'
-            ? 'Create your account to start.'
-            : 'Log in to continue.'}
+            ? 'Create your account and start the adventure!'
+            : 'Ready to continue your journey?'}
         </p>
 
         <form className={styles.form} onSubmit={onSubmit}>
-          <label className={styles.label} htmlFor="username">
-            Username
-          </label>
-          <input
-            id="username"
-            className={styles.input}
-            autoComplete="username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            required
-          />
+          {/* Username Field */}
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="username">
+              <span className={styles.labelEmoji}>👤</span>
+              Username
+            </label>
+            <input
+              id="username"
+              className={styles.input}
+              autoComplete="username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              placeholder="Enter your name"
+              required
+            />
+          </div>
 
-          <label className={styles.label} htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            className={styles.input}
-            type="password"
-            autoComplete={
-              mode === 'register' ? 'new-password' : 'current-password'
-            }
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
+          {/* Password Field */}
+          <div className={styles.inputGroup}>
+            <label className={styles.label} htmlFor="password">
+              <span className={styles.labelEmoji}>🔐</span>
+              Password
+            </label>
+            <input
+              id="password"
+              className={styles.input}
+              type="password"
+              autoComplete={
+                mode === 'register' ? 'new-password' : 'current-password'
+              }
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder={
+                mode === 'register'
+                  ? 'Create a password'
+                  : 'Enter your password'
+              }
+              required
+            />
+          </div>
 
-          {error ? <p className={styles.error}>{error}</p> : null}
+          {/* Error Message */}
+          {error ? (
+            <p className={styles.error}>
+              <span>⚠️</span>
+              {error}
+            </p>
+          ) : null}
 
-          <button className={styles.submit} type="submit" disabled={loading}>
-            {loading
-              ? 'Please wait...'
-              : mode === 'register'
-                ? 'Create Account'
-                : 'Log In'}
+          {/* Submit Button */}
+          <button
+            className={`${styles.submit} ${styles[mode]}`}
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? '⏳ Please wait...' : `🚀 ${config.buttonText}`}
           </button>
         </form>
 
+        {/* Divider */}
+        <div className={styles.divider}>
+          <span>or</span>
+        </div>
+
+        {/* Mode Switch Button */}
         <button
           className={styles.switchMode}
           type="button"
-          onClick={() => setMode(mode === 'register' ? 'login' : 'register')}
+          onClick={toggleMode}
         >
-          {mode === 'register'
-            ? 'Already have an account? Log in'
-            : "Don't have an account? Register"}
+          {config.switchText} <strong>{config.switchAction}</strong>
         </button>
       </section>
     </main>
