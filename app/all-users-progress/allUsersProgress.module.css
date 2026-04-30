@@ -198,6 +198,70 @@
   color: #9ca3af;
 }
 
+.activityCell {
+  text-align: center;
+}
+
+.activityValue {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.activityLabel {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.activityBarContainer {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+/* Dark theme */
+[data-theme='dark'] .activityBarContainer {
+  background: #3a3a4a;
+}
+
+.activityBar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.successRateCell {
+  text-align: center;
+}
+
+.successRateValue {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.successRateBarContainer {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+/* Dark theme */
+[data-theme='dark'] .successRateBarContainer {
+  background: #3a3a4a;
+}
+
+.successRateBar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
 .backButton {
   margin-top: 2rem;
   padding: 0.75rem 1.5rem;
