@@ -118,37 +118,6 @@ export default function HomePage() {
       .catch(() => null);
   }, []);
 
-  const handleResetProgress = () => {
-    if (window.confirm('Reset all progress? This cannot be undone.')) {
-      const modes = ['maze', 'casino', 'pattaya'];
-      Promise.all(
-        modes.map((mode) =>
-          fetch('/api/progress', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              game_mode: mode,
-              unlocked_lessons: 1,
-              correct_answers: 0,
-              wrong_answers: 0,
-              quiz_attempts: 0,
-              total_moves_earned: 0,
-            }),
-          }),
-        ),
-      )
-        .then(() => {
-          setMazeUnlocked(1);
-          setCasinoUnlocked(1);
-          setPattayaUnlocked(1);
-          setMazeStats(EMPTY_STATS);
-          setCasinoStats(EMPTY_STATS);
-          setPattayaStats(EMPTY_STATS);
-        })
-        .catch(() => null);
-    }
-  };
-
   const handleUnlockAllLessons = () => {
     const updates = [
       { game_mode: 'maze', unlocked_lessons: MAZE_TOTAL_LESSONS },
@@ -406,12 +375,6 @@ export default function HomePage() {
             onClick={handleUnlockAllLessons}
           >
             Unlock All Lessons
-          </button>
-          <button
-            className={styles.progressResetButton}
-            onClick={handleResetProgress}
-          >
-            Reset Progress
           </button>
           <button
             className={styles.logoutButton}

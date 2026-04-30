@@ -14,6 +14,10 @@ export default function SettingsPage() {
   const [data, setData] = useState<SettingsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: 'all' | 'maze' | 'casino' | 'pattaya';
+    label: string;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,6 +51,72 @@ export default function SettingsPage() {
     };
   }, []);
 
+  const handleResetProgress = () => {
+    setConfirmAction({ type: 'all', label: 'Reset All Progress' });
+  };
+
+  const handleResetGameMode = (mode: string) => {
+    const label = `Reset ${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+    setConfirmAction({ type: mode as 'maze' | 'casino' | 'pattaya', label });
+  };
+
+  const handleConfirmReset = () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === 'all') {
+      const modes = ['maze', 'casino', 'pattaya'];
+      Promise.all(
+        modes.map((mode) =>
+          fetch('/api/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              game_mode: mode,
+              unlocked_lessons: 1,
+              correct_answers: 0,
+              wrong_answers: 0,
+              quiz_attempts: 0,
+              total_moves_earned: 0,
+            }),
+          }),
+        ),
+      )
+        .then(() => {
+          alert('Progress reset successfully!');
+          setConfirmAction(null);
+        })
+        .catch(() => {
+          alert('Failed to reset progress. Please try again.');
+          setConfirmAction(null);
+        });
+    } else {
+      fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          game_mode: confirmAction.type,
+          unlocked_lessons: 1,
+          correct_answers: 0,
+          wrong_answers: 0,
+          quiz_attempts: 0,
+          total_moves_earned: 0,
+        }),
+      })
+        .then(() => {
+          alert(`${confirmAction.label} progress reset successfully!`);
+          setConfirmAction(null);
+        })
+        .catch(() => {
+          alert('Failed to reset progress. Please try again.');
+          setConfirmAction(null);
+        });
+    }
+  };
+
+  const handleCancelReset = () => {
+    setConfirmAction(null);
+  };
+
   return (
     <main className={styles.container}>
       <div className={styles.headerRow}>
@@ -60,11 +130,79 @@ export default function SettingsPage() {
       {error ? <p className={styles.error}>{error}</p> : null}
 
       {data ? (
-        <section className={styles.card}>
-          <h2 className={styles.cardTitle}>Database Overview</h2>
-          <p className={styles.metric}>Total users: {data.totalUsers}</p>
-        </section>
+        <>
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Database Overview</h2>
+            <p className={styles.metric}>Total users: {data.totalUsers}</p>
+          </section>
+
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Progress Management</h2>
+            <p className={styles.note}>
+              Reset all your game progress. This action cannot be undone.
+            </p>
+            <button
+              onClick={handleResetProgress}
+              className={styles.resetButton}
+            >
+              Reset All Progress
+            </button>
+          </section>
+
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Reset Specific Game Mode</h2>
+            <p className={styles.note}>
+              Reset progress for individual game modes.
+            </p>
+            <div className={styles.buttonGroup}>
+              <button
+                onClick={() => handleResetGameMode('maze')}
+                className={styles.gameModeButton}
+              >
+                🌀 Reset Maze
+              </button>
+              <button
+                onClick={() => handleResetGameMode('casino')}
+                className={styles.gameModeButton}
+              >
+                🎰 Reset Casino
+              </button>
+              <button
+                onClick={() => handleResetGameMode('pattaya')}
+                className={styles.gameModeButton}
+              >
+                🏖️ Reset Pattaya
+              </button>
+            </div>
+          </section>
+        </>
       ) : null}
+
+      {confirmAction && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3 className={styles.modalTitle}>Confirm Reset</h3>
+            <p className={styles.modalMessage}>
+              Are you sure you want to {confirmAction.label.toLowerCase()}? This
+              action cannot be undone.
+            </p>
+            <div className={styles.modalActions}>
+              <button
+                onClick={handleCancelReset}
+                className={styles.modalCancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmReset}
+                className={styles.modalConfirmButton}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
