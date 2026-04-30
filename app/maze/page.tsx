@@ -67,7 +67,7 @@ export default function MazeScreenPage() {
         <span className={styles.appTitle}>Maze Game Lessons</span>
         <Link href="/" className={styles.headerHomeLink}>
           <Image
-            src="/assets/back.png"
+            src="/assets/tinified/back.png"
             alt="Home"
             width={34}
             height={34}

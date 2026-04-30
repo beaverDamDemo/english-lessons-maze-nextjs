@@ -67,7 +67,7 @@ export default function CasinoScreenPage() {
         <span className={styles.appTitle}>Casino Game Lessons</span>
         <Link href="/" className={styles.headerHomeLink}>
           <Image
-            src="/assets/back.png"
+            src="/assets/tinified/back.png"
             alt="Home"
             width={34}
             height={34}
@@ -93,7 +93,7 @@ export default function CasinoScreenPage() {
               </div>
             )}
             <Image
-              src={`/assets/casino-map-with-5-clickable-locations.png?v=${CASINO_MAP_IMAGE_CACHE_BUSTER}`}
+              src={`/assets/tinified/casino-map-with-5-clickable-locations.png?v=${CASINO_MAP_IMAGE_CACHE_BUSTER}`}
               alt="Casino Lesson Map"
               fill
               priority

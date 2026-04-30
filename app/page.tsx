@@ -1,6 +1,7 @@
 'use client';
 
 // app/map/page.tsx
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './HomeView.module.css';
@@ -262,41 +263,57 @@ export default function HomePage() {
       <p className={styles.chooseGameText}>Choose a game to play</p>
 
       <section className={styles.hubGrid} aria-label="Game mode links">
-        <Link href="/maze" className={`${styles.hubCard} ${styles.mazeCard}`}>
+        <Link
+          href="/maze"
+          className={`${styles.hubCard} ${styles.mazeCard} ${styles.mazeCardWithMap}`}
+        >
           <span className={styles.hubIcon}>🌀</span>
-          <div className={styles.hubContent}>
+          <div className={styles.mazeCardBody}>
             <span className={styles.hubTitle}>Maze Adventures</span>
-            <span className={styles.hubText}>
-              Navigate through fun English lessons!
-            </span>
+            <Image
+              src="/assets/tinified/map-with-9-clickable-locations.png"
+              alt="Map with 9 clickable lesson locations"
+              width={320}
+              height={200}
+              className={styles.mazeCardMap}
+              priority
+            />
           </div>
           <span className={styles.hubArrow}>→</span>
         </Link>
 
         <Link
           href="/casino"
-          className={`${styles.hubCard} ${styles.casinoCard}`}
+          className={`${styles.hubCard} ${styles.casinoCard} ${styles.mazeCardWithMap}`}
         >
           <span className={styles.hubIcon}>🎰</span>
-          <div className={styles.hubContent}>
+          <div className={styles.mazeCardBody}>
             <span className={styles.hubTitle}>Casino Games</span>
-            <span className={styles.hubText}>
-              Spin, play, and learn English words!
-            </span>
+            <Image
+              src="/assets/tinified/casino-map-with-5-clickable-locations.png"
+              alt="Casino map with 5 clickable lesson locations"
+              width={320}
+              height={200}
+              className={styles.mazeCardMap}
+            />
           </div>
           <span className={styles.hubArrow}>→</span>
         </Link>
 
         <Link
           href="/pattaya-games"
-          className={`${styles.hubCard} ${styles.pattayaCard}`}
+          className={`${styles.hubCard} ${styles.pattayaCard} ${styles.mazeCardWithMap}`}
         >
           <span className={styles.hubIcon}>🏖️</span>
-          <div className={styles.hubContent}>
+          <div className={styles.mazeCardBody}>
             <span className={styles.hubTitle}>Pattaya Fun</span>
-            <span className={styles.hubText}>
-              Beach games and exciting activities!
-            </span>
+            <Image
+              src="/assets/tinified/pattaya%20Copilot_20260325_132439.png"
+              alt="Pattaya map with clickable lesson locations"
+              width={320}
+              height={200}
+              className={styles.mazeCardMap}
+            />
           </div>
           <span className={styles.hubArrow}>→</span>
         </Link>

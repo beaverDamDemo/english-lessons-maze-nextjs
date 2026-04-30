@@ -69,7 +69,7 @@ export default function PattayaGamesScreenPage() {
         <span className={styles.appTitle}>Pattaya Games Lessons</span>
         <Link href="/" className={styles.headerHomeLink}>
           <Image
-            src="/assets/back.png"
+            src="/assets/tinified/back.png"
             alt="Home"
             width={34}
             height={34}
@@ -95,7 +95,7 @@ export default function PattayaGamesScreenPage() {
               </div>
             )}
             <Image
-              src={`/assets/pattaya%20Copilot_20260325_132439.png?v=${PATTAYA_MAP_IMAGE_CACHE_BUSTER}`}
+              src={`/assets/tinified/pattaya%20Copilot_20260325_132439.png?v=${PATTAYA_MAP_IMAGE_CACHE_BUSTER}`}
               alt="Pattaya Lesson Map"
               fill
               priority

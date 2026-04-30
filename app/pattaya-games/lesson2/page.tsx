@@ -517,7 +517,7 @@ export default function PattayaLesson2Page() {
               <div className={styles.footerButtons}>
                 <Link href="/pattaya-games" className={styles.footerLink}>
                   <Image
-                    src="/assets/back.png"
+                    src="/assets/tinified/back.png"
                     alt="Return to Map"
                     width={28}
                     height={28}

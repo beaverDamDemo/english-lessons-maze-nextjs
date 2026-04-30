@@ -523,6 +523,37 @@
   background: linear-gradient(135deg, #a8e6cf 0%, #88d8b0 100%);
 }
 
+/* Maze card variant: inline map image next to title */
+.mazeCardWithMap {
+  flex-direction: row;
+  align-items: center;
+}
+
+.mazeCardBody {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.mazeCardMap {
+  height: auto;
+  width: clamp(48px, 11vw, 96px);
+  max-width: 100%;
+  border-radius: 12px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .mazeCardBody {
+    gap: 10px;
+  }
+}
+
 .casinoCard {
   background: linear-gradient(135deg, #ffd3b6 0%, #ffaaa5 100%);
 }
@@ -945,20 +976,44 @@
   }
 
   .hubGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 180px));
+    justify-content: center;
+    gap: 12px;
   }
 
   .hubCard {
-    min-height: 120px;
-    padding: 20px;
+    min-height: 160px;
+    padding: 16px;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
   }
 
   .hubIcon {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
 
   .hubTitle {
-    font-size: 1.15rem;
+    font-size: 1rem;
+  }
+
+  .hubText {
+    font-size: 0.85rem;
+  }
+
+  .mazeCardWithMap {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mazeCardBody {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mazeCardMap {
+    width: clamp(56px, 22vw, 96px);
   }
 
   .progressCard {

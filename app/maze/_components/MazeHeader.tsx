@@ -17,7 +17,7 @@ export default function MazeHeader({
     <header className={styles.header}>
       <Link href={backHref} className={styles.backArrow}>
         <Image
-          src="/assets/back.png"
+          src="/assets/tinified/back.png"
           alt="Home"
           width={34}
           height={34}
