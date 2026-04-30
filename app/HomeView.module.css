@@ -259,10 +259,10 @@
   gap: 10px;
 }
 
-.progressTitle::before {
+/* .progressTitle::before {
   content: '📊';
   font-size: 1.6rem;
-}
+} */
 
 .progressDisplay {
   display: grid;
@@ -370,7 +370,8 @@
 .progressUnlockButton,
 .progressResetButton,
 .logoutButton,
-.settingsLink {
+.settingsLink,
+.allUsersProgressLink {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -407,6 +408,13 @@
   box-shadow: 0 8px 20px rgba(108, 92, 231, 0.35);
 }
 
+.allUsersProgressLink {
+  background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 8px 20px rgba(0, 206, 201, 0.35);
+}
+
 .logoutButton {
   background: linear-gradient(135deg, #a0a0a0 0%, #808080 100%);
   color: #fff;
@@ -416,7 +424,8 @@
 .progressUnlockButton:hover,
 .progressResetButton:hover,
 .settingsLink:hover,
-.logoutButton:hover {
+.logoutButton:hover,
+.allUsersProgressLink:hover {
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
@@ -429,6 +438,9 @@
 }
 .settingsLink::before {
   content: '⚙️';
+}
+.allUsersProgressLink::before {
+  content: '📊';
 }
 .logoutButton::before {
   content: '👋';

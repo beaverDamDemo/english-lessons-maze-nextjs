@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './HomeView.module.css';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { lessonMapButtons as mazeLessonMapButtons } from './maze/lessonMapConfig';
 import { lessonMapButtons as casinoLessonMapButtons } from './casino/lessonMapConfig';
 import { lessonMapButtons as pattayaLessonMapButtons } from './pattaya-games/lessonMapConfig';
@@ -117,51 +117,6 @@ export default function HomePage() {
       )
       .catch(() => null);
   }, []);
-
-  const totalCorrect = useMemo(
-    () =>
-      mazeStats.correctAnswers +
-      casinoStats.correctAnswers +
-      pattayaStats.correctAnswers,
-    [
-      mazeStats.correctAnswers,
-      casinoStats.correctAnswers,
-      pattayaStats.correctAnswers,
-    ],
-  );
-  const totalWrong = useMemo(
-    () =>
-      mazeStats.wrongAnswers +
-      casinoStats.wrongAnswers +
-      pattayaStats.wrongAnswers,
-    [
-      mazeStats.wrongAnswers,
-      casinoStats.wrongAnswers,
-      pattayaStats.wrongAnswers,
-    ],
-  );
-  const totalAttempts = useMemo(
-    () =>
-      mazeStats.quizAttempts +
-      casinoStats.quizAttempts +
-      pattayaStats.quizAttempts,
-    [
-      mazeStats.quizAttempts,
-      casinoStats.quizAttempts,
-      pattayaStats.quizAttempts,
-    ],
-  );
-  const totalMoves = useMemo(
-    () =>
-      mazeStats.totalMovesEarned +
-      casinoStats.totalMovesEarned +
-      pattayaStats.totalMovesEarned,
-    [
-      mazeStats.totalMovesEarned,
-      casinoStats.totalMovesEarned,
-      pattayaStats.totalMovesEarned,
-    ],
-  );
 
   const handleResetProgress = () => {
     if (window.confirm('Reset all progress? This cannot be undone.')) {
@@ -323,49 +278,109 @@ export default function HomePage() {
         <h2 className={styles.progressTitle}>Your Progress</h2>
         <div className={styles.progressDisplay}>
           <article className={styles.progressBlock}>
-            <h3 className={styles.progressBlockTitle}>🏆 Levels Unlocked</h3>
+            <h3 className={styles.progressBlockTitle}>🌀 Maze</h3>
             <div className={styles.progressRows}>
               <div className={styles.progressRow}>
-                <span className={styles.progressLabel}>🌀 Maze</span>
+                <span className={styles.progressLabel}>Unlocked</span>
                 <strong className={styles.progressValue}>
                   {mazeUnlocked}/{MAZE_TOTAL_LESSONS}
                 </strong>
               </div>
               <div className={styles.progressRow}>
-                <span className={styles.progressLabel}>🎰 Casino</span>
+                <span className={styles.progressLabel}>✅ Correct</span>
                 <strong className={styles.progressValue}>
-                  {casinoUnlocked}/{CASINO_TOTAL_LESSONS}
+                  {mazeStats.correctAnswers}
                 </strong>
               </div>
               <div className={styles.progressRow}>
-                <span className={styles.progressLabel}>🏖️ Pattaya</span>
+                <span className={styles.progressLabel}>❌ Wrong</span>
                 <strong className={styles.progressValue}>
-                  {pattayaUnlocked}/{PATTAYA_TOTAL_LESSONS}
+                  {mazeStats.wrongAnswers}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>🎯 Attempts</span>
+                <strong className={styles.progressValue}>
+                  {mazeStats.quizAttempts}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>👣 Moves</span>
+                <strong className={styles.progressValue}>
+                  {mazeStats.totalMovesEarned}
                 </strong>
               </div>
             </div>
           </article>
 
           <article className={styles.progressBlock}>
-            <h3 className={styles.progressBlockTitle}>📈 Quiz Stats</h3>
+            <h3 className={styles.progressBlockTitle}>� Casino</h3>
             <div className={styles.progressRows}>
               <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Unlocked</span>
+                <strong className={styles.progressValue}>
+                  {casinoUnlocked}/{CASINO_TOTAL_LESSONS}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
                 <span className={styles.progressLabel}>✅ Correct</span>
-                <strong className={styles.progressValue}>{totalCorrect}</strong>
+                <strong className={styles.progressValue}>
+                  {casinoStats.correctAnswers}
+                </strong>
               </div>
               <div className={styles.progressRow}>
                 <span className={styles.progressLabel}>❌ Wrong</span>
-                <strong className={styles.progressValue}>{totalWrong}</strong>
+                <strong className={styles.progressValue}>
+                  {casinoStats.wrongAnswers}
+                </strong>
               </div>
               <div className={styles.progressRow}>
-                <span className={styles.progressLabel}>🎯 Attempts</span>
+                <span className={styles.progressLabel}>� Attempts</span>
                 <strong className={styles.progressValue}>
-                  {totalAttempts}
+                  {casinoStats.quizAttempts}
                 </strong>
               </div>
               <div className={styles.progressRow}>
                 <span className={styles.progressLabel}>👣 Moves</span>
-                <strong className={styles.progressValue}>{totalMoves}</strong>
+                <strong className={styles.progressValue}>
+                  {casinoStats.totalMovesEarned}
+                </strong>
+              </div>
+            </div>
+          </article>
+
+          <article className={styles.progressBlock}>
+            <h3 className={styles.progressBlockTitle}>🏖️ Pattaya</h3>
+            <div className={styles.progressRows}>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>Unlocked</span>
+                <strong className={styles.progressValue}>
+                  {pattayaUnlocked}/{PATTAYA_TOTAL_LESSONS}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>✅ Correct</span>
+                <strong className={styles.progressValue}>
+                  {pattayaStats.correctAnswers}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>❌ Wrong</span>
+                <strong className={styles.progressValue}>
+                  {pattayaStats.wrongAnswers}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>🎯 Attempts</span>
+                <strong className={styles.progressValue}>
+                  {pattayaStats.quizAttempts}
+                </strong>
+              </div>
+              <div className={styles.progressRow}>
+                <span className={styles.progressLabel}>👣 Moves</span>
+                <strong className={styles.progressValue}>
+                  {pattayaStats.totalMovesEarned}
+                </strong>
               </div>
             </div>
           </article>
@@ -379,6 +394,12 @@ export default function HomePage() {
         <div className={styles.progressActions}>
           <Link href="/settings" className={styles.settingsLink}>
             Settings
+          </Link>
+          <Link
+            href="/all-users-progress"
+            className={styles.allUsersProgressLink}
+          >
+            All Users Progress
           </Link>
           <button
             className={styles.progressUnlockButton}

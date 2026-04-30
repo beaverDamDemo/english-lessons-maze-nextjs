@@ -1,0 +1,266 @@
+.container {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* Light theme */
+[data-theme='light'] .container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Dark theme */
+[data-theme='dark'] .container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.header {
+  max-width: 7xl;
+  margin: 0 auto 2rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Light theme */
+[data-theme='light'] .title {
+  color: white;
+}
+
+/* Dark theme */
+[data-theme='dark'] .title {
+  color: #e0e0e0;
+}
+
+.tableContainer {
+  max-width: 7xl;
+  margin: 0 auto;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Light theme */
+[data-theme='light'] .tableContainer {
+  background: white;
+}
+
+/* Dark theme */
+[data-theme='dark'] .tableContainer {
+  background: #1e1e2e;
+  border: 1px solid #3a3a4a;
+}
+
+.table {
+  min-width: 100%;
+}
+
+/* Light theme */
+[data-theme='light'] .thead {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Dark theme */
+[data-theme='dark'] .thead {
+  background: linear-gradient(90deg, #4a4a6a 0%, #5a5a7a 100%);
+}
+
+.headerCell {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Light theme */
+[data-theme='light'] .headerCell {
+  color: white;
+}
+
+/* Dark theme */
+[data-theme='dark'] .headerCell {
+  color: #e0e0e0;
+}
+
+/* Light theme */
+[data-theme='light'] .tbody {
+  background: white;
+}
+
+/* Dark theme */
+[data-theme='dark'] .tbody {
+  background: #1e1e2e;
+}
+
+.row {
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+}
+
+/* Light theme */
+[data-theme='light'] .row {
+  border-bottom-color: #e5e7eb;
+}
+
+[data-theme='light'] .row:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+[data-theme='light'] .row:nth-child(odd) {
+  background-color: white;
+}
+
+/* Dark theme */
+[data-theme='dark'] .row {
+  border-bottom-color: #3a3a4a;
+}
+
+[data-theme='dark'] .row:nth-child(even) {
+  background-color: #252535;
+}
+
+[data-theme='dark'] .row:nth-child(odd) {
+  background-color: #1e1e2e;
+}
+
+.row:hover {
+  background-color: #f3f4f6;
+}
+
+/* Dark theme hover override */
+[data-theme='dark'] .row:hover {
+  background-color: #2a2a3a;
+}
+
+.cell {
+  padding: 1rem 1.5rem;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.usernameCell {
+  font-weight: 600;
+}
+
+/* Light theme */
+[data-theme='light'] .usernameCell {
+  color: #1f2937;
+}
+
+/* Dark theme */
+[data-theme='dark'] .usernameCell {
+  color: #e0e0e0;
+}
+
+.gameStats {
+  font-size: 0.75rem;
+}
+
+.level {
+  font-weight: 500;
+}
+
+/* Light theme */
+[data-theme='light'] .level {
+  color: #374151;
+}
+
+/* Dark theme */
+[data-theme='dark'] .level {
+  color: #b0b0c0;
+}
+
+.correct {
+  color: #10b981;
+}
+
+.wrong {
+  color: #ef4444;
+}
+
+.totalCorrect {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #10b981;
+}
+
+/* Light theme */
+[data-theme='light'] .joinedDate {
+  color: #6b7280;
+}
+
+/* Dark theme */
+[data-theme='dark'] .joinedDate {
+  color: #9ca3af;
+}
+
+.backButton {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Light theme */
+[data-theme='light'] .backButton {
+  background: white;
+  color: #667eea;
+}
+
+/* Dark theme */
+[data-theme='dark'] .backButton {
+  background: #3a3a4a;
+  color: #a0a0c0;
+  border: 1px solid #5a5a6a;
+}
+
+.backButton:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark theme hover override */
+[data-theme='dark'] .backButton:hover {
+  background: #4a4a5a;
+}
+
+.loading {
+  padding: 2rem;
+  text-align: center;
+  font-size: 1.25rem;
+}
+
+/* Light theme */
+[data-theme='light'] .loading {
+  color: white;
+}
+
+/* Dark theme */
+[data-theme='dark'] .loading {
+  color: #e0e0e0;
+}
+
+.error {
+  padding: 2rem;
+  text-align: center;
+  font-size: 1.25rem;
+}
+
+/* Light theme */
+[data-theme='light'] .error {
+  color: #fecaca;
+}
+
+/* Dark theme */
+[data-theme='dark'] .error {
+  color: #fca5a5;
+}
