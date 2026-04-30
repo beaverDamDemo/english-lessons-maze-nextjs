@@ -36,7 +36,7 @@ npm run start
 
 ---
 
-# English Lessons Maze - Development Setup
+# Thai English Playland - Development Setup
 
 ## Database Setup
 

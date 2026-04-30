@@ -1,4 +1,4 @@
--- Database schema for English Lessons Maze
+-- Database schema for Thai English Playland
 
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
