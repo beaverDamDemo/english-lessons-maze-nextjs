@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import styles from './allUsersProgress.module.css';
 
 type UserProgress = {
@@ -32,7 +32,6 @@ type UserProgress = {
 };
 
 export default function AllUsersProgressPage() {
-  const router = useRouter();
   const [users, setUsers] = useState<UserProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,9 +60,9 @@ export default function AllUsersProgressPage() {
     <main className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>🏆 All Users Progress</h1>
-        <button onClick={() => router.back()} className={styles.backButton}>
-          ← Back to Home
-        </button>
+        <Link href="/" className={styles.backLink}>
+          Back to Home
+        </Link>
       </div>
 
       <div className={styles.tableContainer}>
