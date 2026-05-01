@@ -118,35 +118,6 @@ export default function HomePage() {
       .catch(() => null);
   }, []);
 
-  const handleUnlockAllLessons = () => {
-    const updates = [
-      { game_mode: 'maze', unlocked_lessons: MAZE_TOTAL_LESSONS },
-      { game_mode: 'casino', unlocked_lessons: CASINO_TOTAL_LESSONS },
-      { game_mode: 'pattaya', unlocked_lessons: PATTAYA_TOTAL_LESSONS },
-    ];
-    Promise.all(
-      updates.map((u) =>
-        fetch('/api/progress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...u,
-            correct_answers: 0,
-            wrong_answers: 0,
-            quiz_attempts: 0,
-            total_moves_earned: 0,
-          }),
-        }),
-      ),
-    )
-      .then(() => {
-        setMazeUnlocked(MAZE_TOTAL_LESSONS);
-        setCasinoUnlocked(CASINO_TOTAL_LESSONS);
-        setPattayaUnlocked(PATTAYA_TOTAL_LESSONS);
-      })
-      .catch(() => null);
-  };
-
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
@@ -370,12 +341,6 @@ export default function HomePage() {
           >
             All Users Progress
           </Link>
-          <button
-            className={styles.progressUnlockButton}
-            onClick={handleUnlockAllLessons}
-          >
-            Unlock All Lessons
-          </button>
           <button
             className={styles.logoutButton}
             onClick={handleLogout}

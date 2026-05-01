@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './settings.module.css';
+import { lessonMapButtons as mazeLessonMapButtons } from '../maze/lessonMapConfig';
+import { lessonMapButtons as casinoLessonMapButtons } from '../casino/lessonMapConfig';
+import { lessonMapButtons as pattayaLessonMapButtons } from '../pattaya-games/lessonMapConfig';
+
+const MAZE_TOTAL_LESSONS = Math.max(1, mazeLessonMapButtons.length);
+const CASINO_TOTAL_LESSONS = Math.max(1, casinoLessonMapButtons.length);
+const PATTAYA_TOTAL_LESSONS = Math.max(1, pattayaLessonMapButtons.length);
 
 type SettingsResponse = {
   ok: boolean;
@@ -117,6 +124,35 @@ export default function SettingsPage() {
     setConfirmAction(null);
   };
 
+  const handleUnlockAllLessons = () => {
+    const updates = [
+      { game_mode: 'maze', unlocked_lessons: MAZE_TOTAL_LESSONS },
+      { game_mode: 'casino', unlocked_lessons: CASINO_TOTAL_LESSONS },
+      { game_mode: 'pattaya', unlocked_lessons: PATTAYA_TOTAL_LESSONS },
+    ];
+    Promise.all(
+      updates.map((u) =>
+        fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...u,
+            correct_answers: 0,
+            wrong_answers: 0,
+            quiz_attempts: 0,
+            total_moves_earned: 0,
+          }),
+        }),
+      ),
+    )
+      .then(() => {
+        alert('All lessons unlocked successfully!');
+      })
+      .catch(() => {
+        alert('Failed to unlock lessons. Please try again.');
+      });
+  };
+
   return (
     <main className={styles.container}>
       <div className={styles.headerRow}>
@@ -139,8 +175,14 @@ export default function SettingsPage() {
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Progress Management</h2>
             <p className={styles.note}>
-              Reset all your game progress. This action cannot be undone.
+              Unlock all lessons or reset all your game progress.
             </p>
+            <button
+              onClick={handleUnlockAllLessons}
+              className={styles.unlockButton}
+            >
+              Unlock All Lessons
+            </button>
             <button
               onClick={handleResetProgress}
               className={styles.resetButton}

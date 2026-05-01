@@ -217,6 +217,7 @@
 }
 
 .switchMode {
+  width: 100%;
   min-height: 48px;
   border: 3px dashed #b2bec3;
   border-radius: 16px;

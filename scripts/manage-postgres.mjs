@@ -9,12 +9,12 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CONTAINER_NAME = 'english-lessons-local-container';
-const DB_NAME = 'english-lessons-local';
+const CONTAINER_NAME = 'pg_db_local';
+const DB_NAME = 'english_lessons';
 const DB_USER = 'postgres';
 const DB_PASSWORD = 'password';
-const DB_PORT = 5434;
-const POSTGRES_VERSION = '16-alpine3.23';
+const DB_PORT = 5432;
+const POSTGRES_VERSION = '17.9';
 
 function log(message) {
   console.log(`[PostgreSQL Manager] ${message}`);
@@ -98,22 +98,33 @@ function pullImage() {
 }
 
 function createContainer() {
-  log('Creating PostgreSQL container...');
+  log('Checking for existing PostgreSQL container...');
 
-  // Ensure the init directory exists
-  const initDir = path.join(process.cwd(), 'db', 'init');
-  if (!fs.existsSync(initDir)) {
-    fs.mkdirSync(initDir, { recursive: true });
-  }
-
+  // Check if the existing container is available
   try {
-    const dockerComposeCmd = `docker compose up -d`;
-    execCommand(dockerComposeCmd);
-    log('PostgreSQL container created successfully');
+    const result = execCommand(
+      `docker ps -a --filter "name=${CONTAINER_NAME}" --format "{{.Names}}"`,
+      { silent: true },
+    );
+    if (result.trim() === CONTAINER_NAME) {
+      log('Found existing container, starting it...');
+      execCommand(`docker start ${CONTAINER_NAME}`);
+      log('PostgreSQL container started successfully');
+      return;
+    }
   } catch (error) {
-    logError('Failed to create PostgreSQL container');
-    throw error;
+    // Container doesn't exist, continue to creation
   }
+
+  log(
+    'Existing container not found. This script requires the container "' +
+      CONTAINER_NAME +
+      '" to be running.',
+  );
+  logError(
+    'Please start the existing container manually or ensure it is available.',
+  );
+  throw new Error('Required container not found');
 }
 
 function startContainer() {
@@ -229,11 +240,6 @@ async function startDatabase() {
     process.exit(1);
   }
 
-  if (!checkImageExists()) {
-    log('PostgreSQL image not found, downloading...');
-    pullImage();
-  }
-
   if (!checkContainerExists()) {
     log('Container not found, creating...');
     createContainer();
@@ -244,15 +250,9 @@ async function startDatabase() {
     log('Container is already running');
   }
 
-  try {
-    await waitForDatabase();
-    log(`PostgreSQL is running on localhost:${DB_PORT}`);
-    log(`Database: ${DB_NAME}`);
-    log(`User: ${DB_USER}`);
-  } catch (error) {
-    logError('Failed to connect to database after startup');
-    process.exit(1);
-  }
+  log(`PostgreSQL is running on localhost:${DB_PORT}`);
+  log(`Database: ${DB_NAME}`);
+  log(`User: ${DB_USER}`);
 }
 
 function stopDatabase() {
