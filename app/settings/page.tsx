@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import styles from './settings.module.css';
+import ThemeToggle from '../_components/ThemeToggle';
+import FontToggle from '../_components/FontToggle';
+import FontSizeToggle from '../_components/FontSizeToggle';
 import { lessonMapButtons as mazeLessonMapButtons } from '../maze/lessonMapConfig';
 import { lessonMapButtons as casinoLessonMapButtons } from '../casino/lessonMapConfig';
 import { lessonMapButtons as pattayaLessonMapButtons } from '../pattaya-games/lessonMapConfig';
@@ -258,6 +261,25 @@ export default function SettingsPage() {
               >
                 🏖️ Reset Pattaya
               </button>
+            </div>
+          </section>
+
+          <section className={styles.card}>
+            <h2 className={styles.cardTitle}>Preferences</h2>
+            <p className={styles.note}>Customize your viewing experience.</p>
+            <div className={styles.preferencesGroup}>
+              <div className={styles.preferenceItem}>
+                <span className={styles.preferenceLabel}>Theme</span>
+                <ThemeToggle />
+              </div>
+              <div className={styles.preferenceItem}>
+                <span className={styles.preferenceLabel}>Font Style</span>
+                <FontToggle />
+              </div>
+              <div className={styles.preferenceItem}>
+                <span className={styles.preferenceLabel}>Font Size</span>
+                <FontSizeToggle />
+              </div>
             </div>
           </section>
 

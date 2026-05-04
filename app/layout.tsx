@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Fredoka, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import ThemeToggle from './_components/ThemeToggle';
-import FontToggle from './_components/FontToggle';
 import AppFooter from './_components/AppFooter';
 
 const geistSans = Geist({
@@ -38,8 +36,6 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased">
-        <ThemeToggle />
-        <FontToggle />
         {children}
         <AppFooter />
       </body>

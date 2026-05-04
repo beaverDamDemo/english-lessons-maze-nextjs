@@ -246,6 +246,47 @@
   margin-top: 16px;
 }
 
+.preferencesGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.preferenceItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+}
+
+/* Light theme */
+[data-theme='light'] .preferenceItem {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Dark theme */
+[data-theme='dark'] .preferenceItem {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.preferenceLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Light theme */
+[data-theme='light'] .preferenceLabel {
+  color: #1f2a44;
+}
+
+/* Dark theme */
+[data-theme='dark'] .preferenceLabel {
+  color: #e0e0e0;
+}
+
 .gameModeButton {
   padding: 14px 28px;
   background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);

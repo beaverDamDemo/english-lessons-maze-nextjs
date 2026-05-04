@@ -208,6 +208,24 @@ canvas {
   font-family: Arial, Helvetica, sans-serif !important;
 }
 
+/* Apply font size based on data attribute */
+:root[data-font-size='normal'] {
+  font-size: 100%;
+}
+
+:root[data-font-size='large'] {
+  font-size: 125%;
+}
+
+:root[data-font-size='extra-large'] {
+  font-size: 150%;
+}
+
+/* Exclude canvas elements from font size scaling */
+canvas {
+  font-size: 100% !important;
+}
+
 /* Reset default page spacing so layout doesn't get squeezed */
 html,
 body,
@@ -240,11 +258,9 @@ button {
   background: var(--accent);
 }
 
-.themeToggle {
-  position: fixed;
-  right: 14px;
-  bottom: 14px;
-  z-index: 9999;
+.themeToggle,
+.fontToggle,
+.fontSizeToggle {
   border: 1px solid color-mix(in srgb, var(--secondary) 32%, transparent);
   border-radius: 999px;
   width: 42px;
@@ -266,46 +282,15 @@ button {
     filter 120ms ease;
 }
 
-.themeToggle:hover {
+.themeToggle:hover,
+.fontToggle:hover,
+.fontSizeToggle:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
 }
 
-.themeToggleIcon {
-  transform: translateY(-1px);
-}
-
-.fontToggle {
-  position: fixed;
-  right: 14px;
-  bottom: 64px;
-  z-index: 9999;
-  border: 1px solid color-mix(in srgb, var(--secondary) 32%, transparent);
-  border-radius: 999px;
-  width: 42px;
-  height: 42px;
-  padding: 0;
-  min-height: 42px;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--foreground);
-  background: color-mix(in srgb, var(--background) 64%, var(--secondary) 36%);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    transform 120ms ease,
-    filter 120ms ease;
-}
-
-.fontToggle:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-}
-
-.fontToggleIcon {
+.themeToggleIcon,
+.fontToggleIcon,
+.fontSizeToggleIcon {
   transform: translateY(-1px);
 }
