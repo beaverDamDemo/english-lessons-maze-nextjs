@@ -10,105 +10,159 @@ type QuizQuestion = {
 };
 
 const questions: QuizQuestion[] = [
+  // Keep some hour 7 questions (reduced from 18 to 4)
   {
     q: '7 AM is _______ in 24h format.',
-    options: ['19:00', '7 AM', '7 PM', '7:00'],
-    answer: 3,
+    options: ['19:00', '7 PM', '7:00'],
+    answer: 2,
   },
   {
     q: '7 PM is _______ in 24h format.',
-    options: ['7:00', '7 AM', '7 PM', '19:00'],
-    answer: 3,
-  },
-  {
-    q: '7:00 in 24h format is _______.',
-    options: ['7:00', '7 AM', '19:00', '7 PM'],
-    answer: 1,
+    options: ['7:00', '7 AM', '19:00'],
+    answer: 2,
   },
   {
     q: '19:00 in 24h format is _______.',
-    options: ['7:00', '7 PM', '19:00', '7 AM'],
-    answer: 1,
+    options: ['7:00', '19:00', '7 AM'],
+    answer: 0,
   },
   {
     q: 'I eat breakfast at 7 AM, which is _______ in 24h format.',
-    options: ['19:00', '7 AM', '7:00', '7 PM'],
+    options: ['19:00', '7:00', '7 PM'],
+    answer: 1,
+  },
+  // Different hours
+  {
+    q: '3 PM is _______ in 24h format.',
+    options: ['15:00', '3:00', '21:00'],
+    answer: 0,
+  },
+  {
+    q: '9 AM is _______ in 24h format.',
+    options: ['9:00', '21:00', '9 PM'],
+    answer: 0,
+  },
+  {
+    q: '15:00 in 24h format is _______.',
+    options: ['3:00', '15:00', '3 AM'],
+    answer: 1,
+  },
+  {
+    q: '21:00 in 24h format is _______.',
+    options: ['9:00', '21:00', '9 AM'],
+    answer: 1,
+  },
+  {
+    q: "The train leaves at 9:00. That means it's _______.",
+    options: ['9 AM', '21:00', '9 PM'],
+    answer: 0,
+  },
+  {
+    q: "The flight arrives at 15:00. That's the same as _______.",
+    options: ['3:00', '15:00', '3 AM'],
+    answer: 2,
+  },
+  // Noon and midnight
+  {
+    q: 'Noon (12 PM) is _______ in 24h format.',
+    options: ['00:00', '12:00', '24:00'],
+    answer: 1,
+  },
+  {
+    q: 'Midnight (12 AM) is _______ in 24h format.',
+    options: ['12:00', '24:00', '00:00'],
     answer: 2,
   },
   {
-    q: 'Dinner is served at 19:00, which is _______ in AM/PM format.',
-    options: ['7:00', '7 PM', '19:00', '7 AM'],
-    answer: 1,
-  },
-  {
-    q: "The meeting starts at 7:00 in 24h format. That means it's _______.",
-    options: ['7:00', '7 AM', '19:00', '7 PM'],
-    answer: 1,
-  },
-  {
-    q: "The movie begins at 7 PM. That's _______ in 24h format.",
-    options: ['7:00', '7 AM', '19:00', '7 PM'],
+    q: '12:00 in 24h format is _______.',
+    options: ['12 AM', '12 PM', 'Noon'],
     answer: 2,
   },
   {
-    q: "She wakes up at 7:00. That's the same as _______.",
-    options: ['7:00', '7 AM', '19:00', '7 PM'],
+    q: '00:00 in 24h format is _______.',
+    options: ['12 PM', '12:00', 'Noon'],
     answer: 1,
   },
   {
-    q: "The concert starts at 19:00. That's the same as _______.",
-    options: ['7:00', '19:00', '7 AM', '7 PM'],
+    q: 'The sun is highest at noon, which is _______ in 24h format.',
+    options: ['00:00', '24:00', '12:00'],
+    answer: 2,
+  },
+  {
+    q: 'The day starts at midnight, which is _______ in 24h format.',
+    options: ['12:00', '00:00', '24:00'],
+    answer: 1,
+  },
+  // Parts of the day
+  {
+    q: 'Morning is the time _______.',
+    options: ['before noon', 'after noon', 'at noon', 'at midnight'],
+    answer: 0,
+  },
+  {
+    q: 'Afternoon is the time _______.',
+    options: ['before noon', 'after noon', 'at night', 'in the morning'],
+    answer: 1,
+  },
+  {
+    q: 'Evening comes before _______.',
+    options: ['morning', 'afternoon', 'night', 'noon'],
+    answer: 2,
+  },
+  {
+    q: 'Night is the time when it is _______.',
+    options: ['bright', 'dark', 'noon', 'before noon'],
+    answer: 1,
+  },
+  {
+    q: 'We usually eat breakfast in the _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
+    answer: 0,
+  },
+  {
+    q: 'Lunch is typically eaten in the _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
+    answer: 1,
+  },
+  {
+    q: 'Dinner is usually eaten in the _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
+    answer: 2,
+  },
+  {
+    q: 'The sun rises in the _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
+    answer: 0,
+  },
+  {
+    q: 'The sun sets in the _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
+    answer: 2,
+  },
+  {
+    q: 'We sleep at _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
     answer: 3,
   },
   {
-    q: '7 AM is also written as _______.',
-    options: ['19:00', '7 AM', '7 PM', '7:00'],
+    q: 'School usually starts in the _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
+    answer: 0,
+  },
+  {
+    q: 'Stars are visible at _______.',
+    options: ['morning', 'afternoon', 'evening', 'night'],
     answer: 3,
   },
   {
-    q: '7 PM in 24h format is written as _______.',
-    options: ['7:00', '19:00', '7 AM', '7 PM'],
+    q: 'Before noon means _______.',
+    options: ['AM', 'PM', '24h', 'Noon'],
+    answer: 0,
+  },
+  {
+    q: 'After noon means _______.',
+    options: ['AM', 'PM', '24h', 'Midnight'],
     answer: 1,
-  },
-  {
-    q: 'In 24h format, 7:00 means _______.',
-    options: ['7:00', '7 AM', '19:00', '7 PM'],
-    answer: 1,
-  },
-  {
-    q: 'In 24h format, 7 PM is written as _______.',
-    options: ['7:00', '19:00', '7 AM', '7 PM'],
-    answer: 1,
-  },
-  {
-    q: "If it's 7 AM now, the 24h format is _______.",
-    options: ['19:00', '7:00', '7 AM', '7 PM'],
-    answer: 1,
-  },
-  {
-    q: "If it's 7 PM now, the 24h format is _______.",
-    options: ['7:00', '19:00', '7 AM', '7 PM'],
-    answer: 1,
-  },
-  {
-    q: 'You see 7:00 on a train ticket. That means _______.',
-    options: ['7:00', '19:00', '7 PM', '7 AM'],
-    answer: 3,
-  },
-  {
-    q: 'You see 19:00 on a concert ticket. That means _______.',
-    options: ['7:00', '7 PM', '19:00', '7 AM'],
-    answer: 1,
-  },
-  {
-    q: "7 AM is early morning. It's written as _______.",
-    options: ['19:00', '7:00', '7 AM', '7 PM'],
-    answer: 1,
-  },
-  {
-    q: "7 PM is evening time. It's written as _______.",
-    options: ['7:00', '7 AM', '7 PM', '19:00'],
-    answer: 3,
   },
 ];
 
@@ -121,26 +175,11 @@ function shuffleArray<T>(items: T[]): T[] {
   return copy;
 }
 
-// Removes any option whose text already appears in the question prompt
-// (e.g. drops "7 AM" from the choices when the question is "7 AM is ___ in 24h format.").
-// The correct answer is always preserved, and its index is recomputed.
-function pruneSelfReferentialOptions(q: QuizQuestion): QuizQuestion {
-  const correctText = q.options[q.answer];
-  const filteredOptions = q.options.filter(
-    (opt) => opt === correctText || !q.q.includes(opt),
-  );
-  return {
-    ...q,
-    options: filteredOptions,
-    answer: filteredOptions.indexOf(correctText),
-  };
-}
-
 function buildBalancedQuestions(
   source: QuizQuestion[],
   count: number,
 ): QuizQuestion[] {
-  return shuffleArray(source).slice(0, count).map(pruneSelfReferentialOptions);
+  return shuffleArray(source).slice(0, count);
 }
 
 export default function Quiz({
