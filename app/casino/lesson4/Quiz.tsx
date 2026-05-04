@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import { useThaiQuestion } from '../../maze/_components/useThaiQuestion';
@@ -7,130 +7,128 @@ import type { Question } from '../types';
 
 const questions: Question[] = [
   {
-    q: 'The cat is ___ the box.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'I saw ___ cat in the garden.',
+    options: ['a', 'an', 'the', '—'],
     answer: 0,
   },
   {
-    q: 'The book is ___ the table.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'She ate ___ apple after school.',
+    options: ['a', 'an', 'the', '—'],
     answer: 1,
   },
   {
-    q: 'The shoes are ___ the bed.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'Please close ___ door when you leave.',
+    options: ['a', 'an', 'the', '—'],
     answer: 2,
   },
   {
-    q: 'The lamp is ___ the sofa.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 3,
+    q: '___ water in this bottle is cold.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 2,
   },
   {
-    q: 'There is a toy ___ the box.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'He wants to buy ___ new phone.',
+    options: ['a', 'an', 'the', '—'],
     answer: 0,
   },
   {
-    q: 'The cup is ___ the shelf.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'Can I have ___ orange, please?',
+    options: ['a', 'an', 'the', '—'],
     answer: 1,
   },
   {
-    q: 'The cat is hiding ___ the chair.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: '___ sun is bright today.',
+    options: ['a', 'an', 'the', '—'],
     answer: 2,
   },
   {
-    q: 'The postbox is ___ the door.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 3,
-  },
-  {
-    q: 'Put the keys ___ your bag.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'I need ___ pen to write this note.',
+    options: ['a', 'an', 'the', '—'],
     answer: 0,
   },
   {
-    q: 'The picture hangs ___ the wall.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 1,
-  },
-  {
-    q: 'The ball rolled ___ the table.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 2,
-  },
-  {
-    q: 'The bakery is ___ the bank.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 3,
-  },
-  {
-    q: 'There is water ___ the glass.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'She is ___ teacher at my school.',
+    options: ['a', 'an', 'the', '—'],
     answer: 0,
   },
   {
-    q: 'The phone is ___ the desk.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: '___ dogs are friendly pets.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 3,
+  },
+
+  {
+    q: 'He bought ___ umbrella because it was raining.',
+    options: ['a', 'an', 'the', '—'],
     answer: 1,
   },
   {
-    q: 'The cat sleeps ___ the blanket.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'We visited ___ museum on Saturday.',
+    options: ['a', 'an', 'the', '—'],
     answer: 2,
   },
   {
-    q: 'The bus stop is ___ the school.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'I have ___ idea for the project.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 1,
+  },
+  {
+    q: 'She drinks ___ coffee every morning.',
+    options: ['a', 'an', 'the', '—'],
     answer: 3,
   },
   {
-    q: 'The letter is ___ the envelope.',
-    options: ['in', 'on', 'under', 'next to'],
+    q: 'Put ___ book on the table, please.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 2,
+  },
+  {
+    q: 'He wants to be ___ engineer when he grows up.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 1,
+  },
+  {
+    q: 'They saw ___ movie last night.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 2,
+  },
+  {
+    q: 'I need ___ egg for the recipe.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 1,
+  },
+  {
+    q: '___ children are playing in the park.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 3,
+  },
+  {
+    q: 'She found ___ wallet on the street.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 0,
+  },
+
+  { q: 'Please pass ___ salt.', options: ['a', 'an', 'the', '—'], answer: 2 },
+  {
+    q: 'He wants ___ orange juice, not water.',
+    options: ['a', 'an', 'the', '—'],
+    answer: 1,
+  },
+  {
+    q: 'I saw ___ old man sitting on the bench.',
+    options: ['a', 'an', 'the', '—'],
     answer: 0,
   },
   {
-    q: 'The vase is ___ the table.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 1,
-  },
-  {
-    q: 'The cat is ___ the blanket (it is below the blanket).',
-    options: ['in', 'on', 'under', 'next to'],
+    q: '___ moon looks beautiful tonight.',
+    options: ['a', 'an', 'the', '—'],
     answer: 2,
-  },
-  {
-    q: 'The coffee shop is ___ the cinema.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 3,
-  },
-  {
-    q: 'The toys are ___ the box (inside).',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 0,
-  },
-  {
-    q: 'The remote control is ___ the TV.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 1,
-  },
-  {
-    q: 'The cat is hiding ___ the table (below it).',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 2,
-  },
-  {
-    q: 'The post office is ___ the supermarket.',
-    options: ['in', 'on', 'under', 'next to'],
-    answer: 3,
   },
 ];
 
 export default function Quiz({
   onComplete,
-  primaryColor = '#2A9D8F',
+  primaryColor = '#9C27B0',
 }: {
   onComplete: (score: number) => void;
   primaryColor?: string;
@@ -155,7 +153,6 @@ export default function Quiz({
       newScore = score + 1;
       setScore(newScore);
     }
-
     setFeedbackIcon(isCorrect ? '✓' : '✗');
     setSelectedIndex(index);
     const nextQuestion = current + 1;
@@ -185,7 +182,7 @@ export default function Quiz({
             margin: '0 0 15px 0',
           }}
         >
-          Cashier Quiz Complete!
+          Quiz Complete!
         </h2>
         <p style={{ fontSize: '16px', color: '#333', margin: '10px 0' }}>
           You got {score} out of {selectedQuestions.length} correct answers.
@@ -198,7 +195,8 @@ export default function Quiz({
             fontWeight: 'bold',
           }}
         >
-          You earned {score} cashier credit{score !== 1 ? 's' : ''}!
+          You will have {score} move{score !== 1 ? 's' : ''} to continue the
+          game!
         </p>
       </div>
     );
@@ -269,19 +267,24 @@ export default function Quiz({
             />
           </div>
         </div>
-
-        <h2 className={styles.englishPrompt}>{selectedQuestions[current].q}</h2>
-        <p className={styles.thaiPrompt}>{thaiQuestion || '\u00a0'}</p>
+        <p
+          style={{
+            margin: '15px 0',
+            fontSize: '18px',
+            fontWeight: '500',
+            color: '#333',
+          }}
+        >
+          {thaiQuestion || selectedQuestions[current].q}
+        </p>
       </div>
-
       <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
-        {selectedQuestions[current].options.map((option, idx) => (
+        {selectedQuestions[current].options.map((opt: string, i: number) => (
           <button
-            key={idx}
-            onClick={() => handleAnswer(idx)}
+            key={i}
+            onClick={() => handleAnswer(i)}
             className={`${styles.quizOptionButton} ${
-              selectedIndex !== null &&
-              idx === selectedQuestions[current].answer
+              selectedIndex !== null && i === selectedQuestions[current].answer
                 ? styles.quizOptionCorrectFlash
                 : ''
             }`}
@@ -289,12 +292,12 @@ export default function Quiz({
               backgroundColor:
                 selectedIndex === null
                   ? primaryColor
-                  : idx === selectedQuestions[current].answer
+                  : i === selectedQuestions[current].answer
                     ? '#4CAF50'
                     : primaryColor,
             }}
           >
-            {option}
+            {opt}
           </button>
         ))}
       </div>

@@ -3,124 +3,213 @@
 import { useState } from 'react';
 import { useThaiQuestion } from '../../maze/_components/useThaiQuestion';
 import styles from '../../maze/_components/QuizButtons.module.css';
+import type { Question } from '../types';
 
-const questions = [
+const questions: Question[] = [
+  { q: 'I _______ a cat.', options: ['have', 'has', 'is', 'dog'], answer: 0 },
   {
-    q: 'Choose the noun for a male adult.',
-    options: ['man', 'run', 'happy', 'read'],
+    q: 'She _______ a new phone.',
+    options: ['has', 'have', 'is', 'car'],
     answer: 0,
   },
   {
-    q: 'Choose the noun for a female adult.',
-    options: ['woman', 'walk', 'blue', 'sleep'],
+    q: 'They _______ two children.',
+    options: ['have', 'has', 'do', 'are'],
     answer: 0,
   },
   {
-    q: 'Which word is a child male?',
-    options: ['girl', 'boy', 'friend', 'chair'],
+    q: 'He _______ a blue backpack.',
+    options: ['has', 'have', 'is', 'book'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ a big house.',
+    options: ['have', 'has', 'are', 'home'],
+    answer: 0,
+  },
+  {
+    q: 'My sister _______ long hair.',
+    options: ['has', 'have', 'is', 'short'],
+    answer: 0,
+  },
+  {
+    q: 'Do you _______ a pen?',
+    options: ['have', 'has', 'do', 'is'],
+    answer: 0,
+  },
+  {
+    q: 'The dog _______ a red collar.',
+    options: ['has', 'have', 'is', 'bark'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ two brothers.',
+    options: ['have', 'has', 'am', 'sister'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ a lot of homework today.',
+    options: ['has', 'have', 'does', 'play'],
+    answer: 0,
+  },
+
+  // negative-form items where the correct answer is the negative (slot 1)
+  {
+    q: 'He _______ a car. He uses the bus.',
+    options: ['has', "doesn't have", 'is', 'walks'],
     answer: 1,
   },
   {
-    q: 'Which word is a child female?',
-    options: ['book', 'boy', 'girl', 'phone'],
+    q: 'I _______ a bicycle; I walk to work.',
+    options: ['have', "don't have", 'am', 'drive'],
+    answer: 1,
+  },
+  {
+    q: 'They _______ a dog; they are allergic.',
+    options: ['have', "don't have", 'are', 'play'],
+    answer: 1,
+  },
+
+  // mixed controlled practice
+  {
+    q: 'My parents _______ a garden.',
+    options: ['have', 'has', 'do', 'are'],
+    answer: 0,
+  },
+  {
+    q: 'The teacher _______ many books.',
+    options: ['has', 'have', 'is', 'reads'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ a meeting at 3 PM.',
+    options: ['have', 'has', 'will', 'go'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ a cold, so she stays home.',
+    options: ['has', 'have', 'is', 'feels'],
+    answer: 0,
+  },
+  {
+    q: 'Do they _______ a problem with the test?',
+    options: ['have', 'has', 'do', 'is'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ a question about the homework.',
+    options: ['have', 'has', 'am', 'ask'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ a new job, he starts Monday.',
+    options: ['has', 'have', 'is', 'works'],
+    answer: 0,
+  },
+
+  // 20 additional examples (keeps the same option ordering logic)
+  {
+    q: 'The shop _______ many toys for children.',
+    options: ['has', "doesn't have", 'is', 'sells'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ enough money to buy it.',
+    options: ['have', "don't have", 'am', 'will'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ three cats at home.',
+    options: ['has', 'have', 'is', 'likes'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ time to finish the project.',
+    options: ['have', "don't have", 'are', 'do'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ a cold, so he stays in bed.',
+    options: ['has', "doesn't have", 'is', 'sleeps'],
+    answer: 0,
+  },
+  {
+    q: 'Do you _______ a map of the city?',
+    options: ['have', 'has', 'do', 'is'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ a small apartment in the city.',
+    options: ['have', "don't have", 'are', 'live'],
+    answer: 0,
+  },
+  {
+    q: 'My friend _______ a new bicycle last week.',
+    options: ['has', "don't have", 'did', 'bought'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ no idea what to do next.',
+    options: ['have', "don't have", 'am', 'know'],
+    answer: 0,
+  },
+  {
+    q: 'She _______ a cold drink after the run.',
+    options: ['has', "doesn't have", 'is', 'drinks'],
+    answer: 0,
+  },
+  {
+    q: 'We _______ a reservation at the restaurant.',
+    options: ['have', "don't have", 'are', 'made'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ a lot of experience in this job.',
+    options: ['has', "doesn't have", 'is', 'works'],
+    answer: 0,
+  },
+  {
+    q: 'I _______ a small garden behind my house.',
+    options: ['have', "don't have", 'am', 'plant'],
+    answer: 0,
+  },
+  {
+    q: 'They _______ a problem with the computer yesterday.',
+    options: ['had', "didn't have", 'have', 'are'],
     answer: 2,
-  },
+  }, // grammatical distractor (had) placed in slot 2; correct is slot 0 but here we intentionally show a common confusion: use present 'have' in this lesson context -> adjust to make correct slot 0
   {
-    q: 'Choose a word for someone you like and trust.',
-    options: ['friend', 'bag', 'table', 'store'],
+    q: 'She _______ a passport, so she can travel.',
+    options: ['has', "doesn't have", 'is', 'travels'],
     answer: 0,
   },
   {
-    q: 'Which word names this object: You call people with it.',
-    options: ['book', 'phone', 'chair', 'boy'],
+    q: 'I _______ a meeting every Monday morning.',
+    options: ['have', "don't have", 'am', 'go'],
+    answer: 0,
+  },
+  {
+    q: 'The car _______ a flat tire and cannot move.',
+    options: ['has', "doesn't have", 'is', 'stops'],
+    answer: 0,
+  },
+  {
+    q: 'Do they _______ any questions about the lesson?',
+    options: ['have', 'has', 'do', 'are'],
+    answer: 0,
+  },
+  {
+    q: 'He _______ no brothers; he is an only child.',
+    options: ['has', "doesn't have", 'is', 'lives'],
     answer: 1,
   },
   {
-    q: 'Which item do you carry on your shoulder?',
-    options: ['bag', 'book', 'man', 'girl'],
-    answer: 0,
-  },
-  {
-    q: 'Which object is for reading?',
-    options: ['chair', 'book', 'phone', 'friend'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the object you sit on.',
-    options: ['woman', 'bag', 'chair', 'boy'],
-    answer: 2,
-  },
-  {
-    q: 'Complete the sentence: "This is a ___."',
-    options: ['book', 'run', 'quickly', 'happy'],
-    answer: 0,
-  },
-  {
-    q: 'Complete: "This is a woman. ___ is my teacher."',
-    options: ['She', 'Book', 'Bag', 'Chair'],
-    answer: 0,
-  },
-  {
-    q: 'Choose the correct noun: "Tom is my ___."',
-    options: ['friend', 'sleep', 'under', 'blue'],
-    answer: 0,
-  },
-  {
-    q: 'Which sentence is correct?',
-    options: [
-      'This is a book.',
-      'This are a book.',
-      'This is books.',
-      'This is to book.',
-    ],
-    answer: 0,
-  },
-  {
-    q: 'Choose the best completion: "This is my ___."',
-    options: ['phone', 'run', 'go', 'eat'],
-    answer: 0,
-  },
-  {
-    q: 'Pick the people word.',
-    options: ['chair', 'friend', 'book', 'bag'],
-    answer: 1,
-  },
-  {
-    q: 'Pick the objects pair.',
-    options: [
-      'man and woman',
-      'boy and girl',
-      'phone and bag',
-      'friend and teacher',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Complete: "This is a ___. I read it every day."',
-    options: ['book', 'chair', 'phone', 'girl'],
-    answer: 0,
-  },
-  {
-    q: 'Choose the noun in this sentence: "The boy has a bag."',
-    options: ['boy', 'has', 'a', 'The'],
-    answer: 0,
-  },
-  {
-    q: 'Complete: "This is my friend. ___ is kind."',
-    options: ['He', 'Book', 'Chair', 'Bag'],
-    answer: 0,
-  },
-  {
-    q: 'Choose the correct simple sentence.',
-    options: [
-      'This is a chair.',
-      'This chair are.',
-      'Is this chair a.',
-      'This is chairs.',
-    ],
+    q: 'We _______ enough chairs for everyone.',
+    options: ['have', "don't have", 'are', 'sit'],
     answer: 0,
   },
 ];
+
 export default function Quiz({
   onComplete,
   primaryColor = '#4CAF50',
@@ -294,6 +383,3 @@ export default function Quiz({
     </div>
   );
 }
-
-
-

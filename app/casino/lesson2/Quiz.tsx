@@ -3,144 +3,137 @@
 import { useState } from 'react';
 import { useThaiQuestion } from '../../maze/_components/useThaiQuestion';
 import styles from '../../maze/_components/QuizButtons.module.css';
+import type { Question } from '../types';
 
-const questions = [
+const questions: Question[] = [
   {
-    q: 'In roulette, where do you place your chips to make a bet?',
-    options: ['on the wheel', 'on the table', 'on the card', 'in your pocket'],
-    answer: 1,
-  },
-  {
-    q: 'What does the dealer do before the result in roulette?',
-    options: ['deals cards', 'spins the wheel', 'rolls dice', 'shuffles chips'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the opposite pair used in roulette betting.',
-    options: ['high and low', 'red and black', 'hot and cold', 'east and west'],
-    answer: 1,
-  },
-  {
-    q: 'If your number appears, your bet is...',
-    options: ['lost', 'void', 'won', 'frozen'],
-    answer: 2,
-  },
-  {
-    q: 'A roulette "round" means one complete...',
-    options: ['spin', 'meal', 'lesson', 'ticket'],
+    q: 'There _______ a cat on the sofa.',
+    options: ['is', "isn't", 'are', 'have'],
     answer: 0,
   },
   {
-    q: 'What does "odd" mean?',
-    options: [
-      'divisible by 2',
-      'not divisible by 2',
-      'bigger than 20',
-      'green only',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'What does "even" mean?',
-    options: [
-      'not divisible by 2',
-      'always red',
-      'divisible by 2',
-      'higher than 30',
-    ],
-    answer: 2,
-  },
-  {
-    q: 'Choose the best sentence: "I ____ on black."',
-    options: ['bet', 'spin', 'deal', 'draw'],
+    q: 'There _______ two apples in the bowl.',
+    options: ['are', "aren't", 'is', 'was'],
     answer: 0,
   },
   {
-    q: 'The amount of money/chips you use is called your...',
-    options: ['weather', 'stake', 'wheel', 'sound'],
-    answer: 1,
-  },
-  {
-    q: 'If you lose the round, your chips are...',
-    options: ['returned', 'kept by the house', 'multiplied', 'hidden'],
-    answer: 1,
-  },
-  {
-    q: 'Choose the best phrase: "Place your bets" means...',
-    options: [
-      'start dancing',
-      'put chips on choices',
-      'leave the table',
-      'count cards',
-    ],
-    answer: 1,
-  },
-  {
-    q: 'In roulette, 0 is usually colored...',
-    options: ['green', 'red', 'black', 'blue'],
+    q: 'There _______ a book on the table.',
+    options: ['is', "isn't", 'are', 'do'],
     answer: 0,
   },
   {
-    q: 'Pick the correct sentence.',
-    options: [
-      'The wheel spin every round.',
-      'The wheel spins every round.',
-      'The wheel spinning every round.',
-      'The wheel spuning every round.',
-    ],
+    q: 'There _______ any milk in the fridge.',
+    options: ["isn't", 'is', 'are', 'has'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ three chairs in the room.',
+    options: ['are', 'is', 'have', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ a dog in the garden.',
+    options: ['is', "isn't", 'are', 'does'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ many students in class today.',
+    options: ['are', 'is', 'was', 'has'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ a red car outside the house.',
+    options: ['is', "isn't", 'are', 'were'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ two windows in my bedroom.',
+    options: ['are', 'is', 'do', 'has'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ a problem with the computer.',
+    options: ['is', "isn't", 'are', 'did'],
+    answer: 0,
+  },
+
+  // negative‑focus items (correct answer is the negative in slot 1)
+  {
+    q: 'There _______ any sugar left.',
+    options: ['is', "isn't", 'are', 'do'],
     answer: 1,
   },
   {
-    q: 'What is a "payout"?',
-    options: [
-      'a break time',
-      'money won from a bet',
-      'a type of wheel',
-      'a table color',
-    ],
+    q: 'There _______ no chairs in the hall.',
+    options: ['is', "isn't", 'are', 'have'],
     answer: 1,
   },
   {
-    q: 'Choose the best completion: "She won because her bet was ____."',
-    options: ['correct', 'heavy', 'quiet', 'open'],
+    q: 'There _______ not many buses today.',
+    options: ['are', "aren't", 'is', 'was'],
+    answer: 1,
+  },
+
+  // mixed practice
+  {
+    q: 'There _______ a phone on the desk.',
+    options: ['is', "isn't", 'are', 'have'],
     answer: 0,
   },
   {
-    q: 'Which is a roulette vocabulary word?',
-    options: ['wheel', 'backpack', 'kitchen', 'village'],
+    q: 'There _______ five books in the bag.',
+    options: ['are', "aren't", 'is', 'was'],
     answer: 0,
   },
   {
-    q: 'What does "house edge" refer to?',
-    options: ['casino advantage', 'table height', 'wheel speed', 'chip color'],
+    q: 'There _______ a letter for you.',
+    options: ['is', "isn't", 'are', 'do'],
     answer: 0,
   },
   {
-    q: 'Choose the natural sentence.',
+    q: 'There _______ two eggs in the box.',
+    options: ['are', 'is', 'have', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ a light in the kitchen.',
+    options: ['is', "isn't", 'are', 'do'],
+    answer: 0,
+  },
+  {
+    q: 'There _______ many trees in the park.',
+    options: ['are', 'is', 'was', 'has'],
+    answer: 0,
+  },
+
+  // comprehension / meaning items
+  {
+    q: "If you see 'There are 0 cookies', that means there _______ cookies.",
+    options: ["aren't", 'are', 'is', 'was'],
+    answer: 0,
+  },
+  {
+    q: 'Choose the correct sentence:',
     options: [
-      'I placed my chips on even.',
-      'I place my chips at even yesterday.',
-      'I am placing chip on evens nowed.',
-      'I putted chips by even.',
+      'There is a pen on the desk.',
+      'There are a pen on the desk.',
+      'There is pens on the desk.',
+      'There are is a pen on the desk.',
     ],
     answer: 0,
   },
   {
-    q: 'In roulette, "inside bet" is usually...',
-    options: [
-      'a bet on specific numbers',
-      'a bet outside the casino',
-      'a free bet',
-      'a team bet',
-    ],
+    q: 'There _______ a lot of water in the bottle.',
+    options: ['is', 'are', 'have', 'do'],
     answer: 0,
   },
   {
-    q: 'Choose the best completion: "After the spin, we checked the ____."',
-    options: ['result', 'kitchen', 'teacher', 'window'],
+    q: 'There _______ two people at the door.',
+    options: ['are', 'is', 'was', 'has'],
     answer: 0,
   },
 ];
+
 export default function Quiz({
   onComplete,
   primaryColor = '#E63946',
@@ -316,6 +309,3 @@ export default function Quiz({
     </div>
   );
 }
-
-
-

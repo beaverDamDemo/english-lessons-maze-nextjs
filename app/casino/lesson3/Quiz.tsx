@@ -3,139 +3,162 @@
 import { useState } from 'react';
 import { useThaiQuestion } from '../../maze/_components/useThaiQuestion';
 import styles from '../../maze/_components/QuizButtons.module.css';
+import type { Question } from '../types';
 
-const questions = [
+const questions: Question[] = [
+  // singular near -> "This" (index 0)
   {
-    q: 'What do we call the rotating columns in a slot machine?',
-    options: ['reels', 'cards', 'tracks', 'doors'],
+    q: '_______ is my book (near me).',
+    options: ['This', 'That', 'These', 'Those'],
     answer: 0,
   },
   {
-    q: 'What do you press to start the machine?',
-    options: ['spin button', 'home key', 'map button', 'speaker'],
+    q: '_______ cup (in my hand) is hot.',
+    options: ['This', 'That', 'These', 'Those'],
     answer: 0,
   },
   {
-    q: 'A row of symbols across the machine is called a...',
-    options: ['payline', 'lesson', 'ticket', 'wallet'],
+    q: '_______ sandwich (on my plate) is for you.',
+    options: ['This', 'That', 'These', 'Those'],
     answer: 0,
   },
   {
-    q: 'If three matching symbols land, you usually...',
-    options: ['lose', 'win', 'pause', 'fold'],
+    q: '_______ chair (next to me) is broken.',
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 0,
+  },
+
+  // singular far -> "That" (index 1)
+  {
+    q: '_______ is your house (over there).',
+    options: ['This', 'That', 'These', 'Those'],
     answer: 1,
   },
   {
-    q: 'What are the pictures on the reels called?',
-    options: ['symbols', 'letters', 'coins only', 'bets only'],
-    answer: 0,
+    q: "Pointing to a distant tree: '_______ is tall.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 1,
   },
   {
-    q: 'Choose the best sentence: "I ___ the slot machine."',
-    options: ['spin', 'spun', 'press', 'pressed'],
+    q: "Pointing to a car far away: '_______ car is blue.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 1,
+  },
+  {
+    q: "Pointing to a mountain in the distance: '_______ is high.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 1,
+  },
+
+  // plural near -> "These" (index 2)
+  {
+    q: '_______ are my keys (in my hand).',
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 2,
+  },
+  {
+    q: "Pointing to several pens near you: '_______ pens are new.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 2,
+  },
+  {
+    q: "Pointing to two cookies in your hand: '_______ are for you.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 2,
+  },
+  {
+    q: "Pointing to nearby shoes: '_______ shoes are dirty.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 2,
+  },
+
+  // plural far -> "Those" (index 3)
+  {
+    q: "Pointing to people across the street: '_______ people are waiting.'",
+    options: ['This', 'That', 'These', 'Those'],
     answer: 3,
   },
   {
-    q: 'What is the money you can still use in the game?',
-    options: ['credits', 'weather', 'sound', 'speed'],
-    answer: 0,
+    q: "Pointing to houses far away: '_______ are old.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 3,
   },
   {
-    q: 'The amount you risk each round is your...',
-    options: ['bet', 'teacher', 'window', 'music'],
-    answer: 0,
+    q: "Pointing to trees in the distance: '_______ are tall.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 3,
   },
   {
-    q: 'What does "jackpot" mean?',
-    options: ['a very big win', 'a broken machine', 'one coin', 'a table game'],
-    answer: 0,
+    q: "Pointing to plates on the far table: '_______ plates are clean.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 3,
   },
+
+  // mixed context, still unambiguous because of nouns
   {
-    q: 'Choose the natural sentence.',
+    q: 'Choose the correct sentence for one nearby cup:',
     options: [
-      'The reels are spinning.',
-      'The reels is spinning.',
-      'The reels spinning is.',
-      'The reels are spin.',
+      'This cup is hot.',
+      'That cup is hot.',
+      'These cup is hot.',
+      'Those cup is hot.',
     ],
     answer: 0,
   },
   {
-    q: 'If the symbols do not match, the spin is usually a...',
-    options: ['loss', 'lesson', 'bonus key', 'bank'],
-    answer: 0,
-  },
-  {
-    q: 'A slot machine bonus round is an extra...',
-    options: ['feature', 'shoe', 'table', 'door'],
-    answer: 0,
-  },
-  {
-    q: 'What does "cash out" mean?',
+    q: 'Choose the correct sentence for several nearby chairs:',
     options: [
-      'take your winnings/credits',
-      'spin again',
-      'change the wheel',
-      'hide the machine',
+      'This chairs are comfortable.',
+      'That chairs are comfortable.',
+      'These chairs are comfortable.',
+      'Those chairs are comfortable.',
     ],
-    answer: 0,
+    answer: 2,
   },
   {
-    q: 'Choose the best phrase: "Line up three bells" means...',
+    q: 'Choose the correct sentence for one far window:',
     options: [
-      'match three bell symbols',
-      'ring a real bell',
-      'leave the game',
-      'buy three bells',
+      'This window is open.',
+      'That window is open.',
+      'These window is open.',
+      'Those window is open.',
     ],
-    answer: 0,
+    answer: 1,
   },
   {
-    q: 'Which word belongs to slot machines?',
-    options: ['reel', 'dealer button', 'goalkeeper', 'suitcase'],
-    answer: 0,
-  },
-  {
-    q: 'What does "payout" mean in slots?',
+    q: 'Choose the correct sentence for many far birds:',
     options: [
-      'money or credits you win',
-      'the machine sound',
-      'the game screen',
-      'the chair',
+      'This birds are loud.',
+      'That birds are loud.',
+      'These birds are loud.',
+      'Those birds are loud.',
     ],
+    answer: 3,
+  },
+
+  // short comprehension items
+  {
+    q: "If something is close to you, you usually say '_______'.",
+    options: ['This/These', 'That/Those', 'There', 'Here'],
     answer: 0,
   },
   {
-    q: 'Choose the best completion: "She won because the symbols ___."',
-    options: ['matched', 'opened', 'walked', 'talked'],
+    q: "If something is far from you, you usually say '_______'.",
+    options: ['This/These', 'That/Those', 'Here', 'Now'],
+    answer: 1,
+  },
+  {
+    q: "You point to one friend next to you: '_______ is my friend.'",
+    options: ['This', 'That', 'These', 'Those'],
     answer: 0,
   },
   {
-    q: 'What is a "wild" symbol used for?',
-    options: [
-      'to help complete combinations',
-      'to stop the game',
-      'to lower your credits',
-      'to change language',
-    ],
-    answer: 0,
-  },
-  {
-    q: 'Choose the correct sentence.',
-    options: [
-      'I have one credit left.',
-      'I has one credit left.',
-      'I having one credit left.',
-      'I am one credit leave.',
-    ],
-    answer: 0,
-  },
-  {
-    q: 'After the reels stop, you check the...',
-    options: ['result', 'teacher', 'window curtain', 'street'],
-    answer: 0,
+    q: "You point to many friends across the street: '_______ are my friends.'",
+    options: ['This', 'That', 'These', 'Those'],
+    answer: 3,
   },
 ];
+
 export default function Quiz({
   onComplete,
   primaryColor = '#1D3557',
@@ -309,6 +332,3 @@ export default function Quiz({
     </div>
   );
 }
-
-
-
