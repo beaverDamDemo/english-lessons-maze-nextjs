@@ -1,6 +1,6 @@
 {
   "name": "thai-english-playland",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "private": true,
   "scripts": {
     "check:quotes": "node scripts/check-unescaped-apostrophes.mjs",
