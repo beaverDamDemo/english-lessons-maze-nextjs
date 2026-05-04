@@ -23,8 +23,8 @@ const questions: QuizQuestion[] = [
   },
   {
     q: '19:00 in 24h format is _______.',
-    options: ['7:00', '19:00', '7 AM'],
-    answer: 0,
+    options: ['7:00', '7 PM', '7 AM'],
+    answer: 1,
   },
   {
     q: 'I eat breakfast at 7 AM, which is _______ in 24h format.',
@@ -44,12 +44,12 @@ const questions: QuizQuestion[] = [
   },
   {
     q: '15:00 in 24h format is _______.',
-    options: ['3:00', '15:00', '3 AM'],
+    options: ['3:00', '3 PM', '3 AM'],
     answer: 1,
   },
   {
     q: '21:00 in 24h format is _______.',
-    options: ['9:00', '21:00', '9 AM'],
+    options: ['9:00', '9 PM', '9 AM'],
     answer: 1,
   },
   {
@@ -59,8 +59,8 @@ const questions: QuizQuestion[] = [
   },
   {
     q: "The flight arrives at 15:00. That's the same as _______.",
-    options: ['3:00', '15:00', '3 AM'],
-    answer: 2,
+    options: ['3:00', '3 PM', '3 AM'],
+    answer: 1,
   },
   // Noon and midnight
   {
